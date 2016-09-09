@@ -8,25 +8,29 @@ synchronizes data snapshots locally, and maps them to Docker volumes in the unde
 
 ## Usage
 
+To utilize the ClusterHQ `fs3todocker` utility, examine the following command line arguments.
+
 ```
 fs3docker --help
 Usage of fs3docker:
-  -c string
+  -c --compose-arguments string
     	Options to pass to Docker Compose such as 'up -d' (default "up")
-  -f string
+  -f --manifest string
     	Stateful application manifest file (default "manifest.yml")
-  -t string
+  -t --token string
     	Flocker Hub user token
-  -u string
+  -u --username string
     	Flocker Hub username
-  -v string
+  -e --endpoint string
     	Flocker Hub endpoint
 ```
 
 ### Example
 
+In the following example command, we are passing in a base Docker Compose YAML file, referencing a 
+
 ```
-$ fs3docker -c "up -d" -f dev-manifest.yml -t cf4add5b3be133f51de4044b9affd79edeca51d3 -u wallnerryan -v http://10.0.0.2:8080
+$ fs3docker -c "up -d" -f dev-manifest.yml -t cf4add5b3be133f51de4044b9affd79edeca51d3 -u wallnerryan -e http://10.0.0.2:8080
 ```
 
 ## Stateful Application Manifest (SAM)
@@ -36,12 +40,13 @@ The Stateful Application Manifest (SAM) looks similar to a Docker Compose file, 
 - The `volume_hub` node references an `endpoint` and a valid `auth_token`
 - The volumes are defined by name, and each reference a `snapshot` and `volumeset`
 
-
 The `fs3todocker` utility takes a `docker-compose.yml` file as input, and translates
 volumes in the Docker Compose file to Flocker Hub snapshots.
 
 An example of a Stateful App Manifest (SAM) YAML file could be `dev-manifest.yml` below. Notice, under the `volumes:` section of the 
-manifest, that each volume references a `volumeset` and a `snapshot`.
+manifest, that each named volume references a `volumeset` and a `snapshot`.
+You can obtain these identifiers from the Flocker Hub user interface, or the `fs3` command line utility.
+Documentation about the Flocker Hub product itself can be found at [ClusterHQ Documentation](https://clusterhq.com).
 
 ```yaml
 docker_app:

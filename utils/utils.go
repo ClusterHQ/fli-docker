@@ -12,5 +12,5 @@ func CheckForTool(cliPath string) (result bool, err error) {
 		return false, err
 	}
 	log.Println("Found path: " + path + "\n")
-    return true, nil
+	return true, nil
 }

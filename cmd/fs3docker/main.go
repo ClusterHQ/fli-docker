@@ -29,22 +29,22 @@ func main() {
     if (!isComposeAvail){
     	fmt.Printf("-----------------------------------------------------------------------\n")
     	fmt.Printf("docker-compose is not installed, it is needed to use fs3todocker\n")
-		fmt.Printf("docker-compose is available at https://docs.docker.com/compose/install/\n")
-		fmt.Printf("-----------------------------------------------------------------------\n")
-		log.Fatal(err.Error())
+	fmt.Printf("docker-compose is available at https://docs.docker.com/compose/install/\n")
+	fmt.Printf("-----------------------------------------------------------------------\n")
+	log.Fatal(err.Error())
     }else{
-		log.Println("docker-compose Ready!\n")
+	log.Println("docker-compose Ready!\n")
     }
 
     isDpcliAvail, err := utils.CheckForTool(dpcliPath)
     if (!isDpcliAvail){
     	fmt.Printf("-------------------------------------------------------\n")
     	fmt.Printf("dpcli is not installed, it is needed to use fs3todocker\n")
-		fmt.Printf("dpcli is available at https://clusterhq.com\n")
-		fmt.Printf("-------------------------------------------------------\n")
-		log.Fatal(err.Error())
+	fmt.Printf("dpcli is available at https://clusterhq.com\n")
+	fmt.Printf("-------------------------------------------------------\n")
+	log.Fatal(err.Error())
     }else{
-		log.Println("dpcli Ready!\n")
+	log.Println("dpcli Ready!\n")
     }
 
     flag.StringVar(&user, "u", "", "Flocker Hub username")

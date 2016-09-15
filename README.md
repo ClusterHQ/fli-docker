@@ -1,6 +1,6 @@
-# fs3todocker
+# flitodock
 
-The `fs3todocker` utility is designed to simplify the deployment of stateful applications inside Docker containers.
+The `flitodock` utility is designed to simplify the deployment of stateful applications inside Docker containers.
 
 This is achieved through creation of a Flocker Hub Stateful Application Manifest (SAM) file (aka. "manifest"), which essentially acts as a wrapper to a Docker Compose file.
 The SAM file is a YAML file that defines data volumes from [ClusterHQ](https://clusterhq.com)'s Flocker Hub,
@@ -8,7 +8,7 @@ synchronizes data snapshots locally, and maps them to Docker volumes in the unde
 
 ## Usage
 
-To utilize the ClusterHQ `fs3todocker` utility, examine the following command line arguments.
+To utilize the ClusterHQ `flitodock` utility, examine the following command line arguments.
 
 ```
 fs3docker --help
@@ -40,7 +40,7 @@ The Stateful Application Manifest (SAM) looks similar to a Docker Compose file, 
 - The `volume_hub` node references an `endpoint` and a valid `auth_token`
 - The volumes are defined by name, and each reference a `snapshot` and `volumeset`
 
-The `fs3todocker` utility takes a `docker-compose.yml` file as input, and translates
+The `flitodock` utility takes a `docker-compose.yml` file as input, and translates
 volumes in the Docker Compose file to Flocker Hub snapshots.
 
 An example of a Stateful App Manifest (SAM) YAML file could be `dev-manifest.yml` below. Notice, under the `volumes:` section of the 

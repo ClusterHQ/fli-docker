@@ -11,8 +11,8 @@ synchronizes data snapshots locally, and maps them to Docker volumes in the unde
 To utilize the ClusterHQ `flitodock` utility, examine the following command line arguments.
 
 ```
-fs3docker --help
-Usage of fs3docker:
+flitodock --help
+Usage of flitodock:
   -c --compose-arguments string
     	Options to pass to Docker Compose such as 'up -d' (default "up")
   -f --manifest string
@@ -30,7 +30,7 @@ Usage of fs3docker:
 In the following example command, we are passing in a base Docker Compose YAML file, referencing a 
 
 ```
-$ fs3docker -c "up -d" -f dev-manifest.yml -t cf4add5b3be133f51de4044b9affd79edeca51d3 -u wallnerryan -e http://10.0.0.2:8080
+$ flitodock -c "up -d" -f dev-manifest.yml -t cf4add5b3be133f51de4044b9affd79edeca51d3 -u wallnerryan -e http://10.0.0.2:8080
 ```
 
 ## Stateful Application Manifest (SAM)

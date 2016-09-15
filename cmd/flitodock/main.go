@@ -51,6 +51,14 @@ func main() {
     flag.StringVar(&token, "t", "", "Flocker Hub user token")
     flag.StringVar(&endpoint, "v", "", "Flocker Hub endpoint")
     flag.StringVar(&manifest, "f", "manifest.yml", "Stateful application manifest file")
+    /* 
+    Im thinking this should be optional meaning if its not
+    present then flidock will not also run the docker-compose command
+    but rather will just edit the docker-compose.yml file in place
+    and let the use run the docker-compose command. 
+    This may be even a good option to start with instead of using
+    '-c' at all.
+    */
     flag.StringVar(&composeOpts, "c", "up", "Options to pass to Docker Compose such as 'up -d'")
 
     flag.Parse()

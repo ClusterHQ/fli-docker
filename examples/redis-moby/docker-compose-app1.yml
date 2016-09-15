@@ -1,0 +1,16 @@
+version: '2'
+services:
+  web:
+    image: clusterhq/moby-counter
+    environment:
+       - "USE_REDIS_HOST=redis"
+    links:
+      - redis
+    ports:
+      - "80:80"
+    volumes:
+      - artifacts:/myapp/artifacts/
+  redis:
+    image: redis:latest
+    volumes:
+       - 'redis-data:/data'

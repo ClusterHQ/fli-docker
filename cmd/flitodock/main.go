@@ -55,9 +55,12 @@ func main() {
 
     flag.Parse()
 
+    /*
+    # only for debug
     fmt.Printf("user = %s\n", user)
     fmt.Printf("token = %s\n", token)
     fmt.Printf("endpoint = %s\n", endpoint)
     fmt.Printf("manifest = %s\n", manifest)
     fmt.Printf("composeOpts = %s\n", composeOpts)
+    */
 }

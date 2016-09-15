@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 	"flag"
-	"github.com/wallnerryan/fs3todocker/utils"
+	"github.com/wallnerryan/fli-docker/utils"
 )
 
 func main() {
@@ -28,7 +28,7 @@ func main() {
     isComposeAvail, err := utils.CheckForTool(composePath)
     if (!isComposeAvail){
     	fmt.Printf("-----------------------------------------------------------------------\n")
-    	fmt.Printf("docker-compose is not installed, it is needed to use fs3todocker\n")
+    	fmt.Printf("docker-compose is not installed, it is needed to use flitodock\n")
 	fmt.Printf("docker-compose is available at https://docs.docker.com/compose/install/\n")
 	fmt.Printf("-----------------------------------------------------------------------\n")
 	log.Fatal(err.Error())
@@ -39,7 +39,7 @@ func main() {
     isDpcliAvail, err := utils.CheckForTool(dpcliPath)
     if (!isDpcliAvail){
     	fmt.Printf("-------------------------------------------------------\n")
-    	fmt.Printf("dpcli is not installed, it is needed to use fs3todocker\n")
+    	fmt.Printf("dpcli is not installed, it is needed to use flitodock\n")
 	fmt.Printf("dpcli is available at https://clusterhq.com\n")
 	fmt.Printf("-------------------------------------------------------\n")
 	log.Fatal(err.Error())

@@ -5,12 +5,12 @@ import (
 	"log"
 )
 
-func CheckForTool(cliPath string) (result bool, err error) {
-	path, err := exec.LookPath(cliPath)
+func CheckForPath(path string) (result bool, err error) {
+	isPath, err := exec.LookPath(path)
 	if err != nil {
 		return false, err
 	}
-	log.Println("Found path: " + path + "\n")
+	log.Println("Found path: " + isPath + "\n")
 	return true, nil
 }
 
@@ -19,8 +19,11 @@ func CheckForTool(cliPath string) (result bool, err error) {
    manifest and docker-compose file.
 */
 
-// Need to create a struct for the YAML file
-/* https://github.com/go-yaml/yaml */
+// Need to create a struct for the Compose YAML file
+// Use `libcompose` - https://github.com/docker/libcompose
+
+// Need to create a struct for the Manifest file
+// Need to startt from scratch - https://github.com/go-yaml/yaml
 
 //func authenticateWithFlockerHub(user string, token string, endpoint string) {}
 

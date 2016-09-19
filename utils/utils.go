@@ -52,6 +52,9 @@ type Volume struct {
 	VolumeSet string `yaml:"volumeset"`
 }
 
+// Parse a raw yaml file.
+// TODO this should really return the manifest back
+// to the CLI so it can use it.
 func ParseManifest(yamlFile []byte) {
 	var manifest Manifest
 	err := yaml.Unmarshal(yamlFile, &manifest)

@@ -21,8 +21,8 @@ func main() {
     var composeCmd string
     composeCmd = "docker-compose version"
 
-    //var fliCmd string
-    //fliCmd = "fli init" //this will need `fli version` or somthing
+    var fliCmd string
+    fliCmd = "fli init" //this will need `fli version` or somthing
 
     // Check if needed dependencies are available
     isComposeAvail, err := utils.CheckForCmd(composeCmd)
@@ -36,7 +36,7 @@ func main() {
         log.Println("docker-compose Ready!\n")
     }
 
-    /*isFliAvail, err := utils.CheckForCmd(fliCmd)
+    isFliAvail, err := utils.CheckForCmd(fliCmd)
     if (!isFliAvail){
         fmt.Printf("-------------------------------------------------------\n")
         fmt.Printf("fli is not installed, it is needed to use fli-docker\n")
@@ -44,7 +44,7 @@ func main() {
         fmt.Printf("-------------------------------------------------------\n")
     }else{
         log.Println("fli Ready!\n")
-    }*/
+    }
 
     flag.StringVar(&user, "u", "", "Flocker Hub username")
     flag.StringVar(&token, "t", "", "Flocker Hub user token")
@@ -70,13 +70,15 @@ func main() {
     //         comopse_file: <file> (from `docker_app`)
     //         compose_volume_name : {volumeset: <id>, snapshot: <id>} (from `volumes`)
     //         flocker_hub : {endpoint : <url>, auth_token : <token>} (from `flocker_hub`), token can be optional
+    
+    // Get the yaml file passed in the args.
     filename, _ := filepath.Abs(manifest)
-
+    // Read the file.
     yamlFile, err := ioutil.ReadFile(filename)
     if err != nil {
         panic(err)
     }
-
+    // Pass the file to the ParseManifest
     fmt.Printf("Trying to unmarshall yaml file\n")
     utils.ParseManifest(yamlFile)
 

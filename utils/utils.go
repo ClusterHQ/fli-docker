@@ -6,11 +6,20 @@ import (
 )
 
 func CheckForPath(path string) (result bool, err error) {
-	isPath, err := exec.LookPath(path)
-	if err != nil {
-		return false, err
+	isPath, errPath := exec.LookPath(path)
+	if errPath != nil {
+		return false, errPath
 	}
-	log.Println("Found path: " + isPath + "\n")
+	log.Print("Found path: " + isPath + "\n")
+	return true, nil
+}
+
+func CheckForCmd(cmd string) (result bool, err error) {
+	_, errCmd := exec.Command("sh", "-c", cmd).Output()
+	if errCmd != nil {
+		return false, errCmd
+	}
+	log.Print("Found Command: " + cmd + "\n")
 	return true, nil
 }
 

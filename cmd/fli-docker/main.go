@@ -16,19 +16,17 @@ func main() {
     var manifest string
     var composeOpts string 
 
-    // should be configurable in the future?
-    var composePath string
-    composePath = "/usr/local/bin/docker-compose"
+    var composeCmd string
+    composeCmd = "docker-compose version"
 
-    // should be configurable in the future?
-    var dpcliPath string
-    dpcliPath = "/opt/clusterhq/bin/dpcli"
+    var fliCmd string
+    fliCmd = "fli init" //this will need `fli version` or somthing
 
     // Check if needed dependencies are available
-    isComposeAvail, err := utils.CheckForPath(composePath)
+    isComposeAvail, err := utils.CheckForCmd(composeCmd)
     if (!isComposeAvail){
         fmt.Printf("-----------------------------------------------------------------------\n")
-        fmt.Printf("docker-compose is not installed, it is needed to use flitodock\n")
+        fmt.Printf("docker-compose is not installed, it is needed to use fli-docker\n")
         fmt.Printf("docker-compose is available at https://docs.docker.com/compose/install/\n")
         fmt.Printf("-----------------------------------------------------------------------\n")
     log.Fatal(err.Error())
@@ -36,30 +34,21 @@ func main() {
     log.Println("docker-compose Ready!\n")
     }
 
-    isDpcliAvail, err := utils.CheckForPath(dpcliPath)
-    if (!isDpcliAvail){
+    isFliAvail, err := utils.CheckForCmd(fliCmd)
+    if (!isFliAvail){
         fmt.Printf("-------------------------------------------------------\n")
-        fmt.Printf("dpcli is not installed, it is needed to use flitodock\n")
-        fmt.Printf("dpcli is available at https://clusterhq.com\n")
+        fmt.Printf("fli is not installed, it is needed to use fli-docker\n")
+        fmt.Printf("fli is available at https://clusterhq.com\n")
         fmt.Printf("-------------------------------------------------------\n")
-    log.Fatal(err.Error())
     }else{
-    log.Println("dpcli Ready!\n")
+    log.Println("fli Ready!\n")
     }
 
     flag.StringVar(&user, "u", "", "Flocker Hub username")
     flag.StringVar(&token, "t", "", "Flocker Hub user token")
     flag.StringVar(&endpoint, "v", "", "Flocker Hub endpoint")
     flag.StringVar(&manifest, "f", "manifest.yml", "Stateful application manifest file")
-    flag.StringVar(&composeOpts, "c", "up", "Options to pass to Docker Compose such as 'up -d'")
-    /* 
-    Im thinking this should be optional meaning if its not
-    present then flidock will not also run the docker-compose command
-    but rather will just edit the docker-compose.yml file in place
-    and let the use run the docker-compose command. 
-    This may be even a good option to start with instead of using
-    '-c' at all.
-    */
+    flag.StringVar(&composeOpts, "c", "up", "Options to pass to Docker Compose such as 'up -d'") //optional
 
     // Parse all the flags from user input
     flag.Parse()

@@ -1,14 +1,13 @@
-docker_app:
-    - docker-compose-app1.yml
+docker_app: "docker-compose-app1.yml"
 
-volume_hub:
+flocker_hub:
     endpoint: http://<ip|dnsname>:<port>
     auth_token: 021e3d0f-9ad3-49dc-8d0a-dbe96a0477dc
 
 volumes:
-   redis-data:
+    - name: redis-data
       snapshot: be4b53d2-a8cf-443f-a672-139b281acf8f
       volumeset: e2799be7-cb75-4686-8707-e66083da3260
-   artifacts:
+    - name: artifacts
       snapshot: 02d474fa-ab81-4bcb-8a61-a04214896b67
       volumeset: e2799be7-cb75-4686-8707-e66083da3260

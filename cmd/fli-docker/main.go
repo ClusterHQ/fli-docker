@@ -22,7 +22,7 @@ func main() {
     composeCmd = "docker-compose version"
 
     var fliCmd string
-    fliCmd = "fli init" //this will need `fli version` or somthing
+    fliCmd = "dpcli init" //this will need `fli version` or somthing
 
     // Check if needed dependencies are available
     isComposeAvail, err := utils.CheckForCmd(composeCmd)
@@ -64,8 +64,27 @@ func main() {
     fmt.Printf("composeOpts = %s\n", composeOpts)
     */
 
+    //TODO check for empty vars, or default ones.
+    // to avoid errors like
+    /*
+         panic: open /home/output/manifest.yml: no such file or directory
 
-    // 1. Process the manifest into a Struct in YAML
+        goroutine 1 [running]:
+        panic(0x5104a0, 0xc420080210)
+            /usr/local/go/src/runtime/panic.go:500 +0x1a1
+        main.main()
+            /go/src/github.com/wallnerryan/fli-docker/cmd/fli-docker/main.go:79 +0x517
+    */
+
+    // 1. Verify that the manifest exists
+    isManifestAvail, err := utils.CheckForPath(manifest)
+    if (!isManifestAvail){
+        log.Fatal(err.Error())
+    }else{
+        log.Println("fli-docker manifest.yml file not found\n")
+    }
+
+    // 2. Process the manifest into a Struct in YAML
     //    and get a mapping of everything including:
     //         comopse_file: <file> (from `docker_app`)
     //         compose_volume_name : {volumeset: <id>, snapshot: <id>} (from `volumes`)
@@ -82,7 +101,7 @@ func main() {
     fmt.Printf("Trying to unmarshall yaml file\n")
     utils.ParseManifest(yamlFile)
 
-    // 2. Verify that the compose file exists.
+    // 3. Verify that the compose file exists.
     /*isComposeFileAvail, err := utils.CheckForPath(composeFile)
     if (!isComposeFileAvail){
         log.Fatal(err.Error())
@@ -90,20 +109,12 @@ func main() {
         log.Println("docker-compose file not found\n")
     }*/
 
-    // 3. Verify that the manifest exists
-    /*isManifestAvail, err := utils.CheckForPath(manifestFile)
-    if (!isManifestAvail){
-        log.Fatal(err.Error())
-    }else{
-        log.Println("fli-docker manifest.yml file not found\n")
-    }*/
-
-    // 5. Try and pull snapshots
-    // 6. Create volumes from snapshots and map them to 
+    // 4. Try and pull snapshots
+    // 5. Create volumes from snapshots and map them to 
     //    {compose_volume_name : "/chq/<vol_path>"}
-    // 7. Parse the the compose file into struct YAML
-    // 8. replace volume_name with volume_name's associated "/chq/<vol_path/"
-    // 9. write file back to compose file
-    // 10 (IF) -c is there for compose args, run compose, if not, done.
+    // 6. Parse the the compose file into struct YAML
+    // 7. replace volume_name with volume_name's associated "/chq/<vol_path/"
+    // 8. write file back to compose file
+    // 9. (IF) -c is there for compose args, run compose, if not, done.
 
 }

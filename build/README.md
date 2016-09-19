@@ -13,4 +13,4 @@ $ docker run --rm -it \
     clusterhq/fli-docker-build
 ```
 
-The binary will be available at  `/tmp/fli-docker/`
+The binary will be available at  `/tmp/fli-docker`

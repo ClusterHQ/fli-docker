@@ -49,8 +49,7 @@ You can obtain these identifiers from the Flocker Hub user interface, or the `fs
 Documentation about the Flocker Hub product itself can be found at [ClusterHQ Documentation](https://clusterhq.com).
 
 ```yaml
-docker_app:
-    - docker-compose-app1.yml
+docker_app: "docker-compose-app1.yml"
 
 flocker_hub:
     endpoint: http://<ip|dnsname>:<port>

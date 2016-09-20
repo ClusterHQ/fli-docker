@@ -94,23 +94,25 @@ func ParseManifest(yamlFile []byte) (*Manifest){
 // Run the command to sync a volumeset
 func syncVolumeset(volumeSetId string) {
 	log.Printf("Syncing Volumeset %s", volumeSetId)
-	syncCmdStr := fmt.Sprintf("/opt/clusterhq/bin/dpcli sync volumeset %s", volumeSetId)
-	syncCmd := exec.Command(syncCmdStr)
-	err := syncCmd.Run()
+	log.Printf("Running /opt/clusterhq/bin/dpcli sync volumeset %s", volumeSetId)
+	out, err := exec.Command("/opt/clusterhq/bin/dpcli", "sync",  "volumeset", volumeSetId).Output()
 	if err != nil {
+		log.Print(out)
         log.Fatal(err)
     }
+    log.Print(out)
 }
 
 // Run the command to pull a specific snapshot
 func pullSnapshot(snapshotId string){
 	log.Printf("Pulling Snapshot %s", snapshotId)
-	pullCmdStr := fmt.Sprintf("/opt/clusterhq/bin/dpcli pull snapshot %s", snapshotId)
-	pullCmd := exec.Command(pullCmdStr)
-	err := pullCmd.Run()
+	log.Printf("Running /opt/clusterhq/bin/dpcli pull %s", snapshotId)
+	out, err := exec.Command("/opt/clusterhq/bin/dpcli", "pull", "snapshot", snapshotId).Output()
 	if err != nil {
+		log.Print(out)
         log.Fatal(err)
     }
+    log.Print(out)
 }
 
 // Wrapper for sync and pull which takes
@@ -129,15 +131,14 @@ func PullSnapshots(volumes []Volume) {
 // Created a volume and returns it.
 func createVolumeFromSnapshot(volumeName string, snapshotId string) (vol NewVolume, err error){
 	log.Printf("Creating Volume from %s", snapshotId)
-	createCmdStr := fmt.Sprintf("/opt/clusterhq/bin/dpcli create volume --snapshot %s", snapshotId)
-	out, err := exec.Command(createCmdStr).Output()
+	out, err := exec.Command("/opt/clusterhq/bin/dpcli", "create", "volume", "--snapshot", snapshotId).Output()
 	if err != nil {
+		log.Print(out)
         log.Fatal(err)
     }
     log.Print(out)
-    output := fmt.Sprintf("%s", out)
     r, _ := regexp.Compile("/chq/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
-    path := r.FindString(output)
+    path := r.FindString(string(out))
     if path == "" {
     	log.Fatal("Could not find volume path")
     }

@@ -9,23 +9,23 @@ import (
 
 	"gopkg.in/yaml.v2"
 
-    "github.com/docker/libcompose/docker"
-    "github.com/docker/libcompose/docker/ctx"
-    "github.com/docker/libcompose/project"
+	"github.com/docker/libcompose/docker"
+	"github.com/docker/libcompose/docker/ctx"
+	"github.com/docker/libcompose/project"
 )
 
 var ComposeHelpMessage = `
-        "-----------------------------------------------------------------------
-        "docker-compose is not installed, it is needed to use fli-docker\n")
-        "docker-compose is available at https://docs.docker.com/compose/install/
-        "-----------------------------------------------------------------------
+		-----------------------------------------------------------------------
+		docker-compose is not installed, it is needed to use fli-docker\n")
+		docker-compose is available at https://docs.docker.com/compose/install/
+		-----------------------------------------------------------------------
 `
 
 var FliHelpMessage = `
-        -------------------------------------------------------
-        fli is not installed, it is needed to use fli-docker
-        fli is available at https://clusterhq.com
-        -------------------------------------------------------
+		-------------------------------------------------------
+		fli is not installed, it is needed to use fli-docker
+		fli is available at https://clusterhq.com
+		-------------------------------------------------------
 `
 
 func CheckForPath(path string) (result bool, err error) {
@@ -64,8 +64,8 @@ type Manifest struct {
 }
 
 type FlockerHub struct { 
-		Endpoint string   `yaml:"endpoint"`
-		AuthToken string  `yaml:"auth_token"`
+	Endpoint string   `yaml:"endpoint"`
+	AuthToken string  `yaml:"auth_token"`
 }
 
 type Volume struct {
@@ -87,8 +87,8 @@ func ParseManifest(yamlFile []byte) (*Manifest){
 	var manifest Manifest
 	err := yaml.Unmarshal(yamlFile, &manifest)
 	if err != nil {
-        panic(err)
-    }
+		panic(err)
+	}
 	//log.Print("Manifest: %#v\n", manifest)
 	return &manifest
 }
@@ -100,9 +100,9 @@ func syncVolumeset(volumeSetId string) {
 	out, err := exec.Command("/opt/clusterhq/bin/dpcli", "sync",  "volumeset", volumeSetId).Output()
 	if err != nil {
 		log.Print("Could not sync dataset, reason: ", out)
-        log.Fatal(err)
-    }
-    log.Print(out)
+		log.Fatal(err)
+	}
+	log.Print(out)
 }
 
 // Run the command to pull a specific snapshot
@@ -112,9 +112,9 @@ func pullSnapshot(snapshotId string){
 	out, err := exec.Command("/opt/clusterhq/bin/dpcli", "pull", "snapshot", snapshotId).Output()
 	if err != nil {
 		log.Print("Could not pull dataset, reason: ", out)
-        log.Fatal(err)
-    }
-    log.Print(out)
+		log.Fatal(err)
+	}
+	log.Print(out)
 }
 
 // Wrapper for sync and pull which takes
@@ -140,13 +140,13 @@ func createVolumeFromSnapshot(volumeName string, snapshotId string) (vol NewVolu
 	if err != nil {
 		log.Fatal(err)
 	}
-    	log.Print(string(combinedOut))
-    	r, _ := regexp.Compile("/chq/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
-    	path := r.FindString(string(combinedOut))
-   	if path == "" {
-    		log.Fatal("Could not find volume path")
-   	 }
-    	return NewVolume{Name: volumeName, VolumePath: path}, nil
+		log.Print(string(combinedOut))
+		r, _ := regexp.Compile("/chq/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
+		path := r.FindString(string(combinedOut))
+	if path == "" {
+			log.Fatal("Could not find volume path")
+	 }
+		return NewVolume{Name: volumeName, VolumePath: path}, nil
 }
 
 func CreateVolumesFromSnapshots(volumes []Volume) (newVols []NewVolume, err error) {
@@ -155,54 +155,54 @@ func CreateVolumesFromSnapshots(volumes []Volume) (newVols []NewVolume, err erro
 		vol, err := createVolumeFromSnapshot(volume.Name, volume.Snapshot)
 		if err != nil {
 			return nil, err
-    	}else {
-    		vols = append(vols, vol)
-    	}
+		}else {
+			vols = append(vols, vol)
+		}
 	}
 	return vols, nil
 }
 
 // Replace volume names with associated volume paths
-// 		This is crappy and platform specific, we could use a
-// 		native yaml reader/writer to do this more properly.
+// 	This is crappy and platform specific, we could use a
+// 	native yaml reader/writer to do this more properly.
 func MapVolumeToCompose(volume string, path string, composeFile string) {
-    sedStr := fmt.Sprintf("s@%s:@%s:@", volume, path)
-    sedCmd := exec.Command("/usr/bin/sed", "-i", "-e", sedStr, composeFile)
-    out, err := sedCmd.Output()
-    if err != nil {
-        log.Print("Error replacing paths in docker-compose file: ", out)
-        log.Fatal(err)
-    }
+	sedStr := fmt.Sprintf("s@%s:@%s:@", volume, path)
+	sedCmd := exec.Command("/usr/bin/sed", "-i", "-e", sedStr, composeFile)
+	out, err := sedCmd.Output()
+	if err != nil {
+		log.Print("Error replacing paths in docker-compose file: ", out)
+		log.Fatal(err)
+	}
 }
 
 // Parse the compose file, this will validate
 // the compose file and print it.
 func ParseCompose(composeFile string) {
 	project, err := docker.NewProject(&ctx.Context{
-        Context: project.Context{
-            ComposeFiles: []string{composeFile},
-            ProjectName:  "my-compose", // configurable?
-        },
-    }, nil)
+		Context: project.Context{
+			ComposeFiles: []string{composeFile},
+			ProjectName:  "my-compose", // configurable?
+		},
+	}, nil)
 
-    if err != nil {
-        log.Fatal(err)
-    }
+	if err != nil {
+		log.Fatal(err)
+	}
 
-    conf, err := project.Config()
-    log.Print(conf)
+	conf, err := project.Config()
+	log.Print(conf)
 }
 
 // A function to copy a file and 
 // label it as fli did it.
 func MakeCopy(composeFile string) {
 	srcFolder := composeFile
-    destFolder := composeFile + "-fli-copy"
-    cpCmd := exec.Command("cp", "-rf", srcFolder, destFolder)
-    err := cpCmd.Run()
-    if err !=nil {
-    	log.Fatal(err)
-    }
+	destFolder := composeFile + "-fli-copy"
+	cpCmd := exec.Command("cp", "-rf", srcFolder, destFolder)
+	err := cpCmd.Run()
+	if err !=nil {
+		log.Fatal(err)
+	}
 }
 
 //

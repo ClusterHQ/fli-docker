@@ -52,12 +52,8 @@ func main() {
     flag.Parse()
 
     /*
-    # only for debug
-    fmt.Printf("user = %s\n", user)
-    fmt.Printf("token = %s\n", token)
-    fmt.Printf("endpoint = %s\n", endpoint)
-    fmt.Printf("manifest = %s\n", manifest)
-    fmt.Printf("composeOpts = %s\n", composeOpts)
+    # args are available at the following var names:
+        - user, token, endpoint, manifest, composeOpts)
     */
 
     //TODO check for empty vars, or default ones.

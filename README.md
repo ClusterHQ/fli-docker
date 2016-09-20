@@ -38,8 +38,7 @@ $ git clone https://github.com/ClusterHQ/fli-docker/
 
 $ cd fli-docker/examples/redis-moby
 
-# should token/username be replaced with pointer to /vhub.txt?
-$ fli-docker -f fli-manifest.yml #[options]
+$ fli-docker -f fli-manifest.yml 
 2016/09/20 20:38:28 Found Command: docker-compose version
 2016/09/20 20:38:28 docker-compose Ready!
 
@@ -198,5 +197,5 @@ it can be brought up with your snapshots layed out in the manifest.
 
 ### Notes
 
-- You may run this from anywhere `docker-compose`, `docker` and `fs3` are installed.
-- Snapshots would need to be pushed to volumesets in ClusterHQ Flocker Hub prior to running this.
+- You may run this from anywhere `docker-compose`, `docker` and `fli` are installed.
+- Snapshots would need to be pushed to volumesets in ClusterHQ Flocker Hub using a manifest that references them, otherwise `pull` will fail.

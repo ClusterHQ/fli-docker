@@ -152,8 +152,8 @@ func CreateVolumesFromSnapshots(volumes []Volume) (newVols []NewVolume, err erro
 // 		This is crappy and platform specific, we could use a
 // 		native yaml reader/writer to do this more properly.
 func MapVolumeToCompose(volume string, path string, composeFile string) {
-    sedCmdStr := fmt.Sprintf("/usr/bin/sed -i 's@%s:@%s:@' %s", volume, path, composeFile)
-	sedCmd := exec.Command(sedCmdStr)
+    sedStr := fmt.Sprintf("'s@%s:@%s:@' %s", volume, path, composeFile)
+	sedCmd := exec.Command("/usr/bin/sed", "-i", sedStr)
 	err := sedCmd.Run()
 	if err != nil {
         log.Fatal(err)

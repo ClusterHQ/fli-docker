@@ -6,8 +6,8 @@ flocker_hub:
 
 volumes:
     - name: redis-data
-      snapshot: be4b53d2-a8cf-443f-a672-139b281acf8f
-      volumeset: e2799be7-cb75-4686-8707-e66083da3260
+      snapshot: 1ef7db29-124d-45d3-bd9f-3f12157b65a8
+      volumeset: 1734c879-641c-41cd-92b5-f47704338a1d
     - name: artifacts
-      snapshot: 02d474fa-ab81-4bcb-8a61-a04214896b67
-      volumeset: e2799be7-cb75-4686-8707-e66083da3260
+      snapshot: 4505d375-a00d-4458-8601-7bc6968c8ff4
+      volumeset: 1734c879-641c-41cd-92b5-f47704338a1d

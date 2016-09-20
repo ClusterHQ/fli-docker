@@ -67,7 +67,7 @@ func main() {
 
     //TODO check for empty vars, or default ones.
 
-    // 1. Verify that the manifest exists
+    // Verify that the manifest exists
     isManifestAvail, err := utils.CheckForFile(manifest)
     if (!isManifestAvail){
         log.Fatal(err.Error())
@@ -75,12 +75,6 @@ func main() {
         log.Println("fli-docker manifest found\n")
     }
 
-    // 2. Process the manifest into a Struct in YAML
-    //    and get a mapping of everything including:
-    //         comopse_file: <file> (from `docker_app`)
-    //         compose_volume_name : {volumeset: <id>, snapshot: <id>} (from `volumes`)
-    //         flocker_hub : {endpoint : <url>, auth_token : <token>} (from `flocker_hub`), token can be optional
-    
     // Get the yaml file passed in the args.
     filename, _ := filepath.Abs(manifest)
     // Read the file.
@@ -92,15 +86,7 @@ func main() {
     fmt.Printf("Trying to unmarshall yaml file\n")
     m := utils.ParseManifest(yamlFile)
 
-    fmt.Println(m.DockerApp)
-    fmt.Println(m.Hub)
-    fmt.Println(m.Hub.Endpoint)
-    fmt.Println(m.Hub.AuthToken)
-    fmt.Println(m.Volumes)
-    fmt.Println(m.Volumes[0])
-    fmt.Println(m.Volumes[1])
-
-    // 3. Verify that the compose file exists.
+    // Verify that the compose file exists.
     isComposeFileAvail, err := utils.CheckForFile(m.DockerApp)
     if (!isComposeFileAvail){
         log.Fatal(err.Error())
@@ -108,26 +94,27 @@ func main() {
         log.Println("docker-compose file found\n")
     }
 
-    // 4. Try and pull snapshots
-    // TODO need to return err and check for it
+    // Try and pull snapshots
+    // TODO need to return err and check for it?
     utils.PullSnapshots(m.Volumes)
 
-    // 5. Create volumes from snapshots and map them to 
+    // Create volumes from snapshots and map them to 
     //    newVolPaths = {compose_volume_name : "/chq/<vol_path>"}
     newVolPaths, err := utils.CreateVolumesFromSnapshots(m.Volumes)
-    fmt.Println(newVolPaths)
 
-    // TODO need to return err and check for it
+    // TODO need to return err and check for it?
     utils.MakeCopy(m.DockerApp)
 
-    // 7. replace volume_name with volume_name's associated "/chq/<vol_path/"
-    // 8. write file back to compose file
-
-    // TODO Loop through newVolPaths and perform
-    //utils.MapVolumeToCompose(<volname>, <chq_vol_path>, m.DockerApp)
+    // replace volume_name with volume_name's associated "/chq/<vol_path/"
+    // write file back to compose file
+    for _, newVol := range newVolPaths {
+        utils.MapVolumeToCompose(newVol.Name, newVol.VolumePath, m.DockerApp)
+    }
 
     // Verify Compose File
     utils.ParseCompose(m.DockerApp)
-    // 9. (IF) -c is there for compose args, run compose, if not, done.
+
+    // (IF) -c is there for compose args, run compose, if not, done.
+    // TODO
 
 }

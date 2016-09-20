@@ -43,16 +43,6 @@ func CheckForCmd(cmd string) (result bool, err error) {
 	return true, nil
 }
 
-/* Place holders and descriptions for what needs to be
-   added in order for the CLI to process the `fli`
-   manifest and docker-compose file.
-*/
-
-// Need to create a struct for the Compose YAML file
-// Use `libcompose` - https://github.com/docker/libcompose
-
-// Need to create a struct for the Manifest file
-// Need to startt from scratch - https://github.com/go-yaml/yaml
 type Manifest struct {
 	DockerApp string      `yaml:"docker_app"`
 	Hub FlockerHub        `yaml:"flocker_hub"`
@@ -79,8 +69,6 @@ type NewVolume struct {
 }
 
 // Parse a raw yaml file.
-// TODO this should really return the manifest back
-// to the CLI so it can use it.
 func ParseManifest(yamlFile []byte) (*Manifest){
 	var manifest Manifest
 	err := yaml.Unmarshal(yamlFile, &manifest)
@@ -126,7 +114,9 @@ func PullSnapshots(volumes []Volume) {
 	}
 }
 
+// ************************** TODO ****************************
 //func authenticateWithFlockerHub(user string, token string, endpoint string) {}
+// ************************** TODO ****************************
 
 // Created a volume and returns it.
 func createVolumeFromSnapshot(volumeName string, snapshotId string) (vol NewVolume, err error){
@@ -136,7 +126,7 @@ func createVolumeFromSnapshot(volumeName string, snapshotId string) (vol NewVolu
 	if err != nil {
 		log.Fatal(err)
 	}
-    	log.Print(combinedOut)
+    	log.Print(string(combinedOut))
     	r, _ := regexp.Compile("/chq/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
     	path := r.FindString(string(combinedOut))
    	if path == "" {

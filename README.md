@@ -40,18 +40,26 @@ $ cd fli-docker/examples/redis-moby
 
 # should token/username be replaced with pointer to /vhub.txt?
 $ fli-docker -f fli-manifest.yml #[options]
-2016/09/20 20:13:27 Found Command: docker-compose version
-2016/09/20 20:13:27 docker-compose Ready!
-2016/09/20 20:13:27 Found file: fli-manifest.yml
-2016/09/20 20:13:27 Found file: docker-compose-app1.yml
+2016/09/20 20:38:28 Found Command: docker-compose version
+2016/09/20 20:38:28 docker-compose Ready!
 
-2016/09/20 20:13:27 Syncing Volumeset 1734c879-641c-41cd-92b5-f47704338a1d
-2016/09/20 20:13:27 Running sync volumeset 1734c879-641c-41cd-92b5-f47704338a1d
-2016/09/20 20:13:30 Pulling Snapshot 1ef7db29-124d-45d3-bd9f-3f12157b65a8
-2016/09/20 20:13:30 Running pull 1ef7db29-124d-45d3-bd9f-3f12157b65a8
-.
-.
-.
+2016/09/20 20:38:28 Found path: /opt/clusterhq/bin/dpcli
+2016/09/20 20:38:28 fli Ready!
+
+2016/09/20 20:38:28 Found file: fli-manifest.yml
+2016/09/20 20:38:28 Found file: docker-compose-app1.yml
+2016/09/20 20:38:28 Syncing Volumeset 1734c879-641c-41cd-92b5-f47704338a1d
+2016/09/20 20:38:28 Running sync on volumeset 1734c879-641c-41cd-92b5-f47704338a1d
+2016/09/20 20:38:31 []
+2016/09/20 20:38:31 Pulling Snapshot 1ef7db29-124d-45d3-bd9f-3f12157b65a8
+2016/09/20 20:38:31 Running pull for snapshot: 1ef7db29-124d-45d3-bd9f-3f12157b65a8
+2016/09/20 20:38:31 []
+2016/09/20 20:38:31 Syncing Volumeset 1734c879-641c-41cd-92b5-f47704338a1d
+2016/09/20 20:38:31 Running sync on volumeset 1734c879-641c-41cd-92b5-f47704338a1d
+2016/09/20 20:38:34 []
+2016/09/20 20:38:34 Pulling Snapshot 4505d375-a00d-4458-8601-7bc6968c8ff4
+2016/09/20 20:38:34 Running pull for snapshot: 4505d375-a00d-4458-8601-7bc6968c8ff4
+2016/09/20 20:38:34 []
 2016/09/20 20:13:34 Creating Volume from 1ef7db29-124d-45d3-bd9f-3f12157b65a8
 2016/09/20 20:13:34 Creating volume off snapshot 1ef7db29-124d-45d3-bd9f-3f12157b65a8...[OK]
 Volumeset: 1734c879-641c-41cd-92b5-f47704338a1d
@@ -122,9 +130,9 @@ Creating redismoby_web_1
 redismoby_redis_1   docker-entrypoint.sh redis ...   Up      6379/tcp           
 redismoby_web_1     node index.js                    Up      0.0.0.0:80->80/tcp 
 
-$ docker inspect -f "{{.Mounts}}" 2d976ab7bf0a
+$ docker inspect -f "{{.Mounts}}" redismoby_redis_1
 [{ /chq/cc68b88a-e811-46d3-a629-9cc1ae147cf7 /myapp/artifacts  rw true rprivate}]
-$ docker inspect -f "{{.Mounts}}" 03f1205f7f2b
+$ docker inspect -f "{{.Mounts}}" redismoby_web_1
 [{ /chq/5a12c51f-569d-4f59-9713-3c2d48af30ae /data  rw true rprivate}]
 
 ```
@@ -153,11 +161,11 @@ flocker_hub:
 
 volumes:
     - name: redis-data
-      snapshot: be4b53d2-a8cf-443f-a672-139b281acf8f
-      volumeset: e2799be7-cb75-4686-8707-e66083da3260
+      snapshot: 1ef7db29-124d-45d3-bd9f-3f12157b65a8
+      volumeset: 1734c879-641c-41cd-92b5-f47704338a1d
     - name: artifacts
-      snapshot: 02d474fa-ab81-4bcb-8a61-a04214896b67
-      volumeset: e2799be7-cb75-4686-8707-e66083da3260
+      snapshot: 4505d375-a00d-4458-8601-7bc6968c8ff4
+      volumeset: 1734c879-641c-41cd-92b5-f47704338a1d
 ```
 
 The Docker Compose file that the SAM file leverages would be:

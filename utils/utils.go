@@ -14,6 +14,20 @@ import (
     "github.com/docker/libcompose/project"
 )
 
+var ComposeHelpMessage = `
+        "-----------------------------------------------------------------------
+        "docker-compose is not installed, it is needed to use fli-docker\n")
+        "docker-compose is available at https://docs.docker.com/compose/install/
+        "-----------------------------------------------------------------------
+`
+
+var FliHelpMessage = `
+        -------------------------------------------------------
+        fli is not installed, it is needed to use fli-docker
+        fli is available at https://clusterhq.com
+        -------------------------------------------------------
+`
+
 func CheckForPath(path string) (result bool, err error) {
 	isPath, errPath := exec.LookPath(path)
 	// LookPath searches for an executable binary 
@@ -82,7 +96,7 @@ func ParseManifest(yamlFile []byte) (*Manifest){
 // Run the command to sync a volumeset
 func syncVolumeset(volumeSetId string) {
 	log.Printf("Syncing Volumeset %s", volumeSetId)
-	log.Printf("Running /opt/clusterhq/bin/dpcli sync volumeset %s", volumeSetId)
+	log.Printf("Running sync on volumeset %s", volumeSetId)
 	out, err := exec.Command("/opt/clusterhq/bin/dpcli", "sync",  "volumeset", volumeSetId).Output()
 	if err != nil {
 		log.Print("Could not sync dataset, reason: ", out)
@@ -94,7 +108,7 @@ func syncVolumeset(volumeSetId string) {
 // Run the command to pull a specific snapshot
 func pullSnapshot(snapshotId string){
 	log.Printf("Pulling Snapshot %s", snapshotId)
-	log.Printf("Running /opt/clusterhq/bin/dpcli pull %s", snapshotId)
+	log.Printf("Running pull for snapshot: %s", snapshotId)
 	out, err := exec.Command("/opt/clusterhq/bin/dpcli", "pull", "snapshot", snapshotId).Output()
 	if err != nil {
 		log.Print("Could not pull dataset, reason: ", out)
@@ -120,7 +134,7 @@ func PullSnapshots(volumes []Volume) {
 
 // Created a volume and returns it.
 func createVolumeFromSnapshot(volumeName string, snapshotId string) (vol NewVolume, err error){
-	log.Printf("Creating Volume from %s", snapshotId)
+	log.Printf("Creating Volume from Snapshot: %s", snapshotId)
 	cmd := exec.Command("/opt/clusterhq/bin/dpcli", "create", "volume", "--snapshot", snapshotId)
 	combinedOut, err := cmd.CombinedOutput()
 	if err != nil {
@@ -152,10 +166,11 @@ func CreateVolumesFromSnapshots(volumes []Volume) (newVols []NewVolume, err erro
 // 		This is crappy and platform specific, we could use a
 // 		native yaml reader/writer to do this more properly.
 func MapVolumeToCompose(volume string, path string, composeFile string) {
-    sedStr := fmt.Sprintf("'s@%s:@%s:@' %s", volume, path, composeFile)
-	sedCmd := exec.Command("/usr/bin/sed", "-i", sedStr)
-	err := sedCmd.Run()
-	if err != nil {
+    sedStr := fmt.Sprintf("s@%s:@%s:@", volume, path)
+    sedCmd := exec.Command("/usr/bin/sed", "-i", "-e", sedStr, composeFile)
+    out, err := sedCmd.Output()
+    if err != nil {
+        log.Print("Error replacing paths in docker-compose file: ", out)
         log.Fatal(err)
     }
 }

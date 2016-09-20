@@ -39,8 +39,94 @@ $ git clone https://github.com/wallnerryan/fli-docker/
 $ cd fli-docker/examples/redis-moby
 
 # should token/username be replaced with pointer to /vhub.txt?
-$ fli-docker -f fli-manifest.yml  -t <token> -u <username>
-$ docker-compose -f <compose-file> up -d
+$ fli-docker -f fli-manifest.yml #[options]
+2016/09/20 20:13:27 Found Command: docker-compose version
+2016/09/20 20:13:27 docker-compose Ready!
+2016/09/20 20:13:27 Found file: fli-manifest.yml
+2016/09/20 20:13:27 Found file: docker-compose-app1.yml
+
+2016/09/20 20:13:27 Syncing Volumeset 1734c879-641c-41cd-92b5-f47704338a1d
+2016/09/20 20:13:27 Running sync volumeset 1734c879-641c-41cd-92b5-f47704338a1d
+2016/09/20 20:13:30 Pulling Snapshot 1ef7db29-124d-45d3-bd9f-3f12157b65a8
+2016/09/20 20:13:30 Running pull 1ef7db29-124d-45d3-bd9f-3f12157b65a8
+.
+.
+.
+2016/09/20 20:13:34 Creating Volume from 1ef7db29-124d-45d3-bd9f-3f12157b65a8
+2016/09/20 20:13:34 Creating volume off snapshot 1ef7db29-124d-45d3-bd9f-3f12157b65a8...[OK]
+Volumeset: 1734c879-641c-41cd-92b5-f47704338a1d
+Working Copy ID: 5a12c51f-569d-4f59-9713-3c2d48af30ae
+Working Copy Path: /chq/5a12c51f-569d-4f59-9713-3c2d48af30ae
+2016/09/20 20:13:34 Creating Volume from 4505d375-a00d-4458-8601-7bc6968c8ff4
+2016/09/20 20:13:34 Creating volume off snapshot 4505d375-a00d-4458-8601-7bc6968c8ff4...[OK]
+Volumeset: 1734c879-641c-41cd-92b5-f47704338a1d
+Working Copy ID: cc68b88a-e811-46d3-a629-9cc1ae147cf7
+Working Copy Path: /chq/cc68b88a-e811-46d3-a629-9cc1ae147cf7
+2016/09/20 20:13:34 version: "2.0"
+services:
+  redis:
+    image: redis:latest
+    networks:
+      default: {}
+    volumes:
+    - /chq/5a12c51f-569d-4f59-9713-3c2d48af30ae:/data
+  web:
+    environment:
+    - USE_REDIS_HOST=redis
+    image: clusterhq/moby-counter
+    links:
+    - redis
+    networks:
+      default: {}
+    ports:
+    - 80:80
+    volumes:
+    - /chq/cc68b88a-e811-46d3-a629-9cc1ae147cf7:/myapp/artifacts/
+volumes: {}
+networks: {}
+
+$ cat docker-compose-app1.yml
+version: '2'
+services:
+  web:
+    image: clusterhq/moby-counter
+    environment:
+       - "USE_REDIS_HOST=redis"
+    links:
+      - redis
+    ports:
+      - "80:80"
+    volumes:
+      - /chq/cc68b88a-e811-46d3-a629-9cc1ae147cf7:/myapp/artifacts/
+  redis:
+    image: redis:latest
+    volumes:
+       - '/chq/5a12c51f-569d-4f59-9713-3c2d48af30ae:/data'
+
+$ docker-compose -f docker-compose-app1.yml up -d
+Pulling web (clusterhq/moby-counter:dcsea)...
+dcsea: Pulling from clusterhq/moby-counter
+a3ed95caeb02: Pull complete
+93a86e942d51: Pull complete
+faecfcc1d7ff: Pull complete
+ddf3e3db435e: Pull complete
+81a4604c1077: Pull complete
+f8f4d4eabd85: Pull complete
+Digest: sha256:e11ed56f5dad87ddef9865e758067ae6a182c234d9f10d1cf5c2a7d18a811eea
+Status: Downloaded newer image for clusterhq/moby-counter:dcsea
+Creating redismoby_redis_1
+Creating redismoby_web_1
+[root@ip-10-0-40-199 redis-moby]# docker-compose -f docker-compose-app1.yml ps
+      Name                     Command               State         Ports        
+-------------------------------------------------------------------------------
+redismoby_redis_1   docker-entrypoint.sh redis ...   Up      6379/tcp           
+redismoby_web_1     node index.js                    Up      0.0.0.0:80->80/tcp 
+
+$ docker inspect -f "{{.Mounts}}" 2d976ab7bf0a
+[{ /chq/cc68b88a-e811-46d3-a629-9cc1ae147cf7 /myapp/artifacts  rw true rprivate}]
+$ docker inspect -f "{{.Mounts}}" 03f1205f7f2b
+[{ /chq/5a12c51f-569d-4f59-9713-3c2d48af30ae /data  rw true rprivate}]
+
 ```
 
 ## Stateful Application Manifest (SAM)

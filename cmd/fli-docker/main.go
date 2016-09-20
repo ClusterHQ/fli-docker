@@ -22,26 +22,21 @@ func main() {
     composeCmd = "docker-compose version"
 
     var fliCmd string
-    fliCmd = "dpcli init" //this will need `fli version` or somthing
+    fliCmd = "/opt/clusterhq/bin/dpcli" //this will need `fli version` or somthing
 
     // Check if needed dependencies are available
     isComposeAvail, err := utils.CheckForCmd(composeCmd)
     if (!isComposeAvail){
-        fmt.Printf("-----------------------------------------------------------------------\n")
-        fmt.Printf("docker-compose is not installed, it is needed to use fli-docker\n")
-        fmt.Printf("docker-compose is available at https://docs.docker.com/compose/install/\n")
-        fmt.Printf("-----------------------------------------------------------------------\n")
-        log.Fatal(err.Error())
+        fmt.Printf(utils.ComposeHelpMessage)
+        log.Fatal("Could not find `docker-compose` ", err)
     }else{
         log.Println("docker-compose Ready!\n")
     }
 
-    isFliAvail, err := utils.CheckForCmd(fliCmd)
+    isFliAvail, err := utils.CheckForPath(fliCmd)
     if (!isFliAvail){
-        fmt.Printf("-------------------------------------------------------\n")
-        fmt.Printf("fli is not installed, it is needed to use fli-docker\n")
-        fmt.Printf("fli is available at https://clusterhq.com\n")
-        fmt.Printf("-------------------------------------------------------\n")
+        fmt.Printf(utils.FliHelpMessage)
+        log.Fatal("Could not find `fli` ", err)
     }else{
         log.Println("fli Ready!\n")
     }
@@ -66,13 +61,16 @@ func main() {
     */
 
     //TODO check for empty vars, or default ones.
+    //  - only Opt being used now is 'manifest'
+    //    others need to be checked and used
+    //    such as the endpoint for vhub
+    //    and user/token if we want or if its in the
+    //    the manifest.
 
     // Verify that the manifest exists
     isManifestAvail, err := utils.CheckForFile(manifest)
     if (!isManifestAvail){
         log.Fatal(err.Error())
-    }else{
-        log.Println("fli-docker manifest found\n")
     }
 
     // Get the yaml file passed in the args.
@@ -82,16 +80,14 @@ func main() {
     if err != nil {
         panic(err)
     }
+
     // Pass the file to the ParseManifest
-    fmt.Printf("Trying to unmarshall yaml file\n")
     m := utils.ParseManifest(yamlFile)
 
     // Verify that the compose file exists.
     isComposeFileAvail, err := utils.CheckForFile(m.DockerApp)
     if (!isComposeFileAvail){
         log.Fatal(err.Error())
-    }else{
-        log.Println("docker-compose file found\n")
     }
 
     // Try and pull snapshots

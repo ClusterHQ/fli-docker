@@ -34,7 +34,7 @@ TODO (install fli, docker-compose, fli-docker)
 
 #### Run the example
 ```
-$ git clone https://github.com/wallnerryan/fli-docker/
+$ git clone https://github.com/ClusterHQ/fli-docker/
 
 $ cd fli-docker/examples/redis-moby
 

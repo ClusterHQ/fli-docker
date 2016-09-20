@@ -131,19 +131,18 @@ func PullSnapshots(volumes []Volume) {
 // Created a volume and returns it.
 func createVolumeFromSnapshot(volumeName string, snapshotId string) (vol NewVolume, err error){
 	log.Printf("Creating Volume from %s", snapshotId)
-	out, err := exec.Command("/opt/clusterhq/bin/dpcli", "create", "volume", "--snapshot", snapshotId).Output()
+	cmd := exec.Command("/opt/clusterhq/bin/dpcli", "create", "volume", "--snapshot", snapshotId)
+	combinedOut, err := cmd.CombinedOutput()
 	if err != nil {
-		log.Print("Could not create dataset, reason: ", out)
-        log.Fatal(err)
-    }
-    log.Print(out)
-    log.Print(err)
-    r, _ := regexp.Compile("/chq/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
-    path := r.FindString(string(out))
-    if path == "" {
-    	log.Fatal("Could not find volume path")
-    }
-    return NewVolume{Name: volumeName, VolumePath: path}, nil
+		log.Fatal(err)
+	}
+    	log.Print(combinedOut)
+    	r, _ := regexp.Compile("/chq/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
+    	path := r.FindString(string(combinedOut))
+   	if path == "" {
+    		log.Fatal("Could not find volume path")
+   	 }
+    	return NewVolume{Name: volumeName, VolumePath: path}, nil
 }
 
 func CreateVolumesFromSnapshots(volumes []Volume) (newVols []NewVolume, err error) {

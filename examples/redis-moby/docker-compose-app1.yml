@@ -1,7 +1,7 @@
 version: '2'
 services:
   web:
-    image: clusterhq/moby-counter
+    image: clusterhq/moby-counter:dcsea
     environment:
        - "USE_REDIS_HOST=redis"
     links:

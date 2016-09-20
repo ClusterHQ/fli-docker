@@ -27,10 +27,20 @@ Usage of fli-docker:
 
 ### Example
 
-In the following example command, we are passing in a base Docker Compose YAML file, referencing a 
+You can use the example here in this repository. Follow the below instructions.
 
+#### Install `fli-docker`
+TODO (install fli, docker-compose, fli-docker)
+
+#### Run the example
 ```
-$ fli-docker -c "up -d" -f dev-manifest.yml -t cf4add5b3be133f51de4044b9affd79edeca51d3 -u wallnerryan -e http://10.0.0.2:8080
+$ git clone https://github.com/wallnerryan/fli-docker/
+
+$ cd fli-docker/examples/redis-moby
+
+# should token/username be replaced with pointer to /vhub.txt?
+$ fli-docker -f fli-manifest.yml  -t <token> -u <username>
+$ docker-compose -f <compose-file> up -d
 ```
 
 ## Stateful Application Manifest (SAM)

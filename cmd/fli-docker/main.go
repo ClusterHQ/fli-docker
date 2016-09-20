@@ -48,6 +48,7 @@ func main() {
 
     flag.StringVar(&user, "u", "", "Flocker Hub username")
     flag.StringVar(&token, "t", "", "Flocker Hub user token")
+    // Should we replace or add the above with the option to point to vhub.txt?
     flag.StringVar(&endpoint, "v", "", "Flocker Hub endpoint")
     flag.StringVar(&manifest, "f", "manifest.yml", "Stateful application manifest file")
     flag.StringVar(&composeOpts, "c", "up", "Options to pass to Docker Compose such as 'up -d'") //optional
@@ -65,23 +66,13 @@ func main() {
     */
 
     //TODO check for empty vars, or default ones.
-    // to avoid errors like
-    /*
-         panic: open /home/output/manifest.yml: no such file or directory
-
-        goroutine 1 [running]:
-        panic(0x5104a0, 0xc420080210)
-            /usr/local/go/src/runtime/panic.go:500 +0x1a1
-        main.main()
-            /go/src/github.com/wallnerryan/fli-docker/cmd/fli-docker/main.go:79 +0x517
-    */
 
     // 1. Verify that the manifest exists
-    isManifestAvail, err := utils.CheckForPath(manifest)
+    isManifestAvail, err := utils.CheckForFile(manifest)
     if (!isManifestAvail){
         log.Fatal(err.Error())
     }else{
-        log.Println("fli-docker manifest.yml file not found\n")
+        log.Println("fli-docker manifest found\n")
     }
 
     // 2. Process the manifest into a Struct in YAML
@@ -99,22 +90,44 @@ func main() {
     }
     // Pass the file to the ParseManifest
     fmt.Printf("Trying to unmarshall yaml file\n")
-    utils.ParseManifest(yamlFile)
+    m := utils.ParseManifest(yamlFile)
+
+    fmt.Println(m.DockerApp)
+    fmt.Println(m.Hub)
+    fmt.Println(m.Hub.Endpoint)
+    fmt.Println(m.Hub.AuthToken)
+    fmt.Println(m.Volumes)
+    fmt.Println(m.Volumes[0])
+    fmt.Println(m.Volumes[1])
 
     // 3. Verify that the compose file exists.
-    /*isComposeFileAvail, err := utils.CheckForPath(composeFile)
+    isComposeFileAvail, err := utils.CheckForFile(m.DockerApp)
     if (!isComposeFileAvail){
         log.Fatal(err.Error())
     }else{
-        log.Println("docker-compose file not found\n")
-    }*/
+        log.Println("docker-compose file found\n")
+    }
 
     // 4. Try and pull snapshots
+    // TODO need to return err and check for it
+    utils.PullSnapshots(m.Volumes)
+
     // 5. Create volumes from snapshots and map them to 
-    //    {compose_volume_name : "/chq/<vol_path>"}
-    // 6. Parse the the compose file into struct YAML
+    //    newVolPaths = {compose_volume_name : "/chq/<vol_path>"}
+    newVolPaths, err := utils.CreateVolumesFromSnapshots(m.Volumes)
+    fmt.Println(newVolPaths)
+
+    // TODO need to return err and check for it
+    utils.MakeCopy(m.DockerApp)
+
     // 7. replace volume_name with volume_name's associated "/chq/<vol_path/"
     // 8. write file back to compose file
+
+    // TODO Loop through newVolPaths and perform
+    //utils.MapVolumeToCompose(<volname>, <chq_vol_path>, m.DockerApp)
+
+    // Verify Compose File
+    utils.ParseCompose(m.DockerApp)
     // 9. (IF) -c is there for compose args, run compose, if not, done.
 
 }

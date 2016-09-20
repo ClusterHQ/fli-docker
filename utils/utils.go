@@ -97,7 +97,7 @@ func syncVolumeset(volumeSetId string) {
 	log.Printf("Running /opt/clusterhq/bin/dpcli sync volumeset %s", volumeSetId)
 	out, err := exec.Command("/opt/clusterhq/bin/dpcli", "sync",  "volumeset", volumeSetId).Output()
 	if err != nil {
-		log.Print(out)
+		log.Print("Could not sync dataset, reason: ", out)
         log.Fatal(err)
     }
     log.Print(out)
@@ -109,7 +109,7 @@ func pullSnapshot(snapshotId string){
 	log.Printf("Running /opt/clusterhq/bin/dpcli pull %s", snapshotId)
 	out, err := exec.Command("/opt/clusterhq/bin/dpcli", "pull", "snapshot", snapshotId).Output()
 	if err != nil {
-		log.Print(out)
+		log.Print("Could not pull dataset, reason: ", out)
         log.Fatal(err)
     }
     log.Print(out)
@@ -133,10 +133,11 @@ func createVolumeFromSnapshot(volumeName string, snapshotId string) (vol NewVolu
 	log.Printf("Creating Volume from %s", snapshotId)
 	out, err := exec.Command("/opt/clusterhq/bin/dpcli", "create", "volume", "--snapshot", snapshotId).Output()
 	if err != nil {
-		log.Print(out)
+		log.Print("Could not create dataset, reason: ", out)
         log.Fatal(err)
     }
     log.Print(out)
+    log.Print(err)
     r, _ := regexp.Compile("/chq/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
     path := r.FindString(string(out))
     if path == "" {

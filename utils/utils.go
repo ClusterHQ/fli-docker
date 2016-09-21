@@ -171,27 +171,27 @@ func CreateVolumesFromSnapshots(volumes []Volume) (newVols []NewVolume, err erro
 // "named volumes" in the form of `-[space]<volume_name>:`
 func MapVolumeToCompose(volume string, path string, composeFile string) {
 	input, err := ioutil.ReadFile(composeFile)
-        if err != nil {
-        		log.Print("Trouble reading docker-compose file.")
-                log.Fatal(err)
-        }
-    prefixQuote := "- '"
-    prefixNoQuote := "- "
-    postfix := ":"
+		if err != nil {
+			log.Print("Trouble reading docker-compose file.")
+			log.Fatal(err)
+		}
+	prefixQuote := "- '"
+	prefixNoQuote := "- "
+	postfix := ":"
 
-    //replace the "- named_volume:" name with the Flucker Hub path. (without single quote)
-    output := bytes.Replace(input, []byte(prefixNoQuote + volume + postfix),
-    							   []byte(prefixNoQuote + path + postfix), -1)
+	//replace the "- named_volume:" name with the Flucker Hub path. (without single quote)
+	output := bytes.Replace(input, []byte(prefixNoQuote + volume + postfix),
+								   []byte(prefixNoQuote + path + postfix), -1)
 
-    //replace the "- 'named_volume:" name with the Flucker Hub path. (with single quote)
-    finalOutput := bytes.Replace(output, []byte(prefixQuote + volume + postfix),
-    									 []byte(prefixQuote + path + postfix), -1)
+	//replace the "- 'named_volume:" name with the Flucker Hub path. (with single quote)
+	finalOutput := bytes.Replace(output, []byte(prefixQuote + volume + postfix),
+										 []byte(prefixQuote + path + postfix), -1)
 
-    //re-write
-    if err = ioutil.WriteFile(composeFile, finalOutput, 0644); err != nil {
-    			log.Print("Error writing docker-compose file.")
-                log.Fatal(err)
-         }
+	//re-write
+	if err = ioutil.WriteFile(composeFile, finalOutput, 0644); err != nil {
+				log.Print("Error writing docker-compose file.")
+				log.Fatal(err)
+		 }
 
 }
 

@@ -157,7 +157,7 @@ volumes in the Docker Compose file to Flocker Hub snapshots.
 
 An example of a Stateful App Manifest (SAM) YAML file could be `dev-manifest.yml` below. Notice, under the `volumes:` section of the 
 manifest, that each named volume references a `volumeset` and a `snapshot`.
-You can obtain these identifiers from the Flocker Hub user interface, or the `fs3` command line utility.
+You can obtain these identifiers from the Flocker Hub user interface, or the `fli` command line utility.
 Documentation about the Flocker Hub product itself can be found at [ClusterHQ Documentation](https://clusterhq.com).
 
 ```yaml
@@ -198,7 +198,7 @@ services:
 ```
 
 In this case, the CLI commands above would perform the necessary `pull` and `create`
-commands with fs3 and manipulate the docker-compose file so that when it is brought up
+commands with fli and manipulate the docker-compose file so that when it is brought up
 it can be brought up with your snapshots layed out in the manifest.
 
 - `artifacts` would become snapshot : `02d474fa-ab81-4bcb-8a61-a04214896b67`

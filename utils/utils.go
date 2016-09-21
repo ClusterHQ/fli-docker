@@ -6,7 +6,6 @@ import (
 	"log"
 	"regexp"
 	"io/ioutil"
-	"bytes"
 
 	"gopkg.in/yaml.v2"
 
@@ -175,11 +174,16 @@ func MapVolumeToCompose(volume string, path string, composeFile string) {
         		log.Print("Trouble reading docker-compose file.")
                 log.Fatal(err)
         }
-    //replace the "named volume" name with the Flucker Hub path.
-    output := bytes.Replace(input, []byte("- " + volume + ":"), []byte("- " + path + ":"), -1)
+    //replace the "- named_volume:" name with the Flucker Hub path. (without single quote)
+    rNoQuote := regexp.MustCompile("-.*" + volume + ":")
+    //replace the "- 'named_volume:" name with the Flucker Hub path. (with single quote)
+    rWithQuote := regexp.MustCompile("-.*'.*" + volume + ":")
+
+    newBytes := rNoQuote.ReplaceAll(input, []byte("- " + volume + ":"))
+    newComposeBytes := rWithQuote.ReplaceAll(newBytes, []byte("- '" + volume + ":"))
 
     //re-write
-    if err = ioutil.WriteFile(composeFile, output, 0644); err != nil {
+    if err = ioutil.WriteFile(composeFile, newComposeBytes, 0644); err != nil {
     			log.Print("Error writing docker-compose file.")
                 log.Fatal(err)
          }

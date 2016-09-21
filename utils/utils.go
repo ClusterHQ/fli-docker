@@ -9,10 +9,12 @@ import (
 	"bytes"
 
 	"gopkg.in/yaml.v2"
+	"golang.org/x/net/context"
 
 	"github.com/docker/libcompose/docker"
 	"github.com/docker/libcompose/docker/ctx"
 	"github.com/docker/libcompose/project"
+	"github.com/docker/libcompose/project/options"
 )
 
 var ComposeHelpMessage = `
@@ -67,6 +69,7 @@ type Manifest struct {
 type FlockerHub struct { 
 	Endpoint string   `yaml:"endpoint"`
 	AuthToken string  `yaml:"auth_token"`
+	User string 	  `yaml:"username"`
 }
 
 type Volume struct {
@@ -201,7 +204,7 @@ func ParseCompose(composeFile string) {
 	project, err := docker.NewProject(&ctx.Context{
 		Context: project.Context{
 			ComposeFiles: []string{composeFile},
-			ProjectName:  "my-compose", // configurable?
+			ProjectName:  "fli-compose", // configurable?
 		},
 	}, nil)
 
@@ -211,6 +214,26 @@ func ParseCompose(composeFile string) {
 
 	conf, err := project.Config()
 	log.Print(conf)
+}
+
+// Run the compose file with options
+func RunCompose(composeFile string) {
+	project, err := docker.NewProject(&ctx.Context{
+		Context: project.Context{
+			ComposeFiles: []string{composeFile},
+			ProjectName:  "fli-compose", // configurable?
+		},
+	}, nil)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = project.Up(context.Background(), options.Up{})
+
+    if err != nil {
+        log.Fatal(err)
+    }
 }
 
 // A function to copy a file and 

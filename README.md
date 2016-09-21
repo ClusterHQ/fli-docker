@@ -13,16 +13,16 @@ To utilize the ClusterHQ `fli-docker` utility, examine the following command lin
 ```
 fli-docker --help
 Usage of fli-docker:
-  -c --compose-arguments string
-    	Options to pass to Docker Compose such as 'up -d' (default "up")
-  -f --manifest string
-    	Stateful application manifest file (default "manifest.yml")
-  -t --token string
-    	Flocker Hub user token
-  -u --username string
-    	Flocker Hub username
-  -e --endpoint string
-    	Flocker Hub endpoint
+  -c  if flag is present, fli-docker will start the compose services
+  -e string
+      Flocker Hub endpoint
+  -f string
+      Stateful application manifest file (default "manifest.yml")
+  -t string
+      Flocker Hub user token
+  -u string
+      Flocker Hub username
+  -v  verbose logging
 ```
 
 ### Example
@@ -38,7 +38,7 @@ $ git clone https://github.com/ClusterHQ/fli-docker/
 
 $ cd fli-docker/examples/redis-moby
 
-$ fli-docker -f fli-manifest.yml 
+$ fli-docker -f fli-manifest.yml -c
 2016/09/20 20:38:28 Found Command: docker-compose version
 2016/09/20 20:38:28 docker-compose Ready!
 
@@ -69,29 +69,28 @@ Working Copy Path: /chq/5a12c51f-569d-4f59-9713-3c2d48af30ae
 Volumeset: 1734c879-641c-41cd-92b5-f47704338a1d
 Working Copy ID: cc68b88a-e811-46d3-a629-9cc1ae147cf7
 Working Copy Path: /chq/cc68b88a-e811-46d3-a629-9cc1ae147cf7
-2016/09/20 20:13:34 version: "2.0"
-services:
-  redis:
-    image: redis:latest
-    networks:
-      default: {}
-    volumes:
-    - /chq/4083f9c2-3d8c-475e-bcab-06eefd49f60b:/data
-    - /chq/33a74a69-ef86-40bb-afe6-8d82a2128dd7:/tmp/path
-  web:
-    environment:
-    - USE_REDIS_HOST=redis
-    image: clusterhq/moby-counter:dcsea
-    links:
-    - redis
-    networks:
-      default: {}
-    ports:
-    - 80:80
-    volumes:
-    - /chq/aff85bcb-3e2d-44b4-a458-9a4d7f030795:/myapp/artifacts/
-volumes: {}
-networks: {}
+INFO[0010] [0/2] [redis]: Starting                      
+INFO[0010] [1/2] [redis]: Started                       
+INFO[0010] [1/2] [web]: Starting                        
+INFO[0011] [2/2] [web]: Started    
+
+$ docker ps
+CONTAINER ID        IMAGE                          COMMAND                  CREATED             STATUS              PORTS                NAMES
+d75c6f4b6e85        clusterhq/moby-counter:dcsea   "node index.js"          7 seconds ago       Up 6 seconds        0.0.0.0:80->80/tcp   flicompose_web_1
+6e2f78c6842d        redis:latest                   "docker-entrypoint.sh"   7 seconds ago       Up 6 seconds        6379/tcp             flicompose_redis_1
+
+$ $ docker inspect -f "{{.Mounts}}" flicompose_web_1
+[{ /chq/aff85bcb-3e2d-44b4-a458-9a4d7f030795 /myapp/artifacts  rw true rprivate}]
+$ docker inspect -f "{{.Mounts}}" flicompose_redis_1
+[{ /chq/4083f9c2-3d8c-475e-bcab-06eefd49f60b /data  rw true rprivate}
+ { /chq/33a74a69-ef86-40bb-afe6-8d82a2128dd7 /tmp/path  rw true rprivate}]
+```
+
+Optionally you dont have to specify `-c` so you can start the compose app yourself. Without `-c`
+`fli-docker` will just modify the docker compose file and let you manage bring the services up.
+
+```
+$ fli-docker -f fli-manifest.yml
 
 $ cat docker-compose-app1.yml
 version: '2'

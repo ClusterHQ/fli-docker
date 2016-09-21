@@ -47,7 +47,7 @@ func main() {
 	// Should we replace or add the above with the option to point to vhub.txt?
 	flag.StringVar(&endpoint, "e", "", "Flocker Hub endpoint")
 	flag.StringVar(&manifest, "f", "manifest.yml", "Stateful application manifest file")
-	flag.BoolVar(&compose, "c", false, "if flag is present, fli-docker will start the compose file with 'up -d'")
+	flag.BoolVar(&compose, "c", false, "if flag is present, fli-docker will start the compose services")
 	flag.BoolVar(&verbose, "v", false, "verbose logging")
 
 

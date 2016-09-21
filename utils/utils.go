@@ -164,7 +164,7 @@ func CreateVolumesFromSnapshots(volumes []Volume) (newVols []NewVolume, err erro
 }
 
 // Replace volume names with associated volume paths
-// 	Ultimately we should be able to support multiple types of volumes
+// Ultimately we should be able to support multiple types of volumes
 // https://docs.docker.com/compose/compose-file/#/volumes-volume-driver
 // where we can detect if it has a "named" volume, a path, or no "<inside>:"
 // and we should modify the file accordingly, for now we only support
@@ -181,16 +181,16 @@ func MapVolumeToCompose(volume string, path string, composeFile string) {
 
 	//replace the "- named_volume:" name with the Flucker Hub path. (without single quote)
 	output := bytes.Replace(input, []byte(prefixNoQuote + volume + postfix),
-								   []byte(prefixNoQuote + path + postfix), -1)
+		[]byte(prefixNoQuote + path + postfix), -1)
 
 	//replace the "- 'named_volume:" name with the Flucker Hub path. (with single quote)
 	finalOutput := bytes.Replace(output, []byte(prefixQuote + volume + postfix),
-										 []byte(prefixQuote + path + postfix), -1)
+		[]byte(prefixQuote + path + postfix), -1)
 
 	//re-write
 	if err = ioutil.WriteFile(composeFile, finalOutput, 0644); err != nil {
-				log.Print("Error writing docker-compose file.")
-				log.Fatal(err)
+			log.Print("Error writing docker-compose file.")
+			log.Fatal(err)
 		 }
 
 }

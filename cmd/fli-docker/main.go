@@ -1,112 +1,137 @@
 package main
 
 import (
-    "fmt"
-    "log"
-    "flag"
-    "path/filepath"
-    "io/ioutil"
-    "github.com/wallnerryan/fli-docker/utils"
+	"fmt"
+	"log"
+	"flag"
+	"path/filepath"
+	"io/ioutil"
+	"github.com/wallnerryan/fli-docker/utils"
 )
 
 func main() {
 
-    // should this be a struct?
-    var user string
-    var token string
-    var endpoint string
-    var manifest string
-    var composeOpts string 
+	// should this be a struct?
+	var user string
+	var token string
+	var endpoint string
+	var manifest string
+	var compose bool
+	var verbose bool
 
-    var composeCmd string
-    composeCmd = "docker-compose version"
+	var composeCmd string
+	composeCmd = "docker-compose version"
 
-    var fliCmd string
-    fliCmd = "/opt/clusterhq/bin/dpcli" //this will need `fli version` or somthing
+	var fliCmd string
+	fliCmd = "/opt/clusterhq/bin/dpcli" //this will need `fli version` or somthing
 
-    // Check if needed dependencies are available
-    isComposeAvail, err := utils.CheckForCmd(composeCmd)
-    if (!isComposeAvail){
-        fmt.Printf(utils.ComposeHelpMessage)
-        log.Fatal("Could not find `docker-compose` ", err)
-    }else{
-        log.Println("docker-compose Ready!\n")
-    }
+	// Check if needed dependencies are available
+	isComposeAvail, err := utils.CheckForCmd(composeCmd)
+	if (!isComposeAvail){
+		fmt.Printf(utils.ComposeHelpMessage)
+		log.Fatal("Could not find `docker-compose` ", err)
+	}else{
+		log.Println("docker-compose Ready!\n")
+	}
 
-    isFliAvail, err := utils.CheckForPath(fliCmd)
-    if (!isFliAvail){
-        fmt.Printf(utils.FliHelpMessage)
-        log.Fatal("Could not find `fli` ", err)
-    }else{
-        log.Println("fli Ready!\n")
-    }
+	isFliAvail, err := utils.CheckForPath(fliCmd)
+	if (!isFliAvail){
+		fmt.Printf(utils.FliHelpMessage)
+		log.Fatal("Could not find `fli` ", err)
+	}else{
+		log.Println("fli Ready!\n")
+	}
 
-    flag.StringVar(&user, "u", "", "Flocker Hub username")
-    flag.StringVar(&token, "t", "", "Flocker Hub user token")
-    // Should we replace or add the above with the option to point to vhub.txt?
-    flag.StringVar(&endpoint, "v", "", "Flocker Hub endpoint")
-    flag.StringVar(&manifest, "f", "manifest.yml", "Stateful application manifest file")
-    flag.StringVar(&composeOpts, "c", "up", "Options to pass to Docker Compose such as 'up -d'") //optional
+	flag.StringVar(&user, "u", "", "Flocker Hub username")
+	flag.StringVar(&token, "t", "", "Flocker Hub user token")
+	// Should we replace or add the above with the option to point to vhub.txt?
+	flag.StringVar(&endpoint, "e", "", "Flocker Hub endpoint")
+	flag.StringVar(&manifest, "f", "manifest.yml", "Stateful application manifest file")
+	flag.BoolVar(&compose, "c", false, "if flag is present, fli-docker will start the compose file with 'up -d'")
+	flag.BoolVar(&verbose, "v", false, "verbose logging")
 
-    // Parse all the flags from user input
-    flag.Parse()
 
-    /*
-    # args are available at the following var names:
-        - user, token, endpoint, manifest, composeOpts)
-    */
+	// Parse all the flags from user input
+	flag.Parse()
 
-    //TODO check for empty vars, or default ones.
-    //  - only Opt being used now is 'manifest'
-    //    others need to be checked and used
-    //    such as the endpoint for vhub
-    //    and user/token if we want or if its in the
-    //    the manifest.
+	if manifest == "manifest.yml" {
+		if verbose {
+			log.Println("Using default 'manifest.yml`, otherwise specify differently with -f")
+		}
+	}
 
-    // Verify that the manifest exists
-    isManifestAvail, err := utils.CheckForFile(manifest)
-    if (!isManifestAvail){
-        log.Fatal(err.Error())
-    }
+	// Verify that the manifest exists
+	isManifestAvail, err := utils.CheckForFile(manifest)
+	if (!isManifestAvail){
+		log.Fatal(err.Error())
+	}
 
-    // Get the yaml file passed in the args.
-    filename, _ := filepath.Abs(manifest)
-    // Read the file.
-    yamlFile, err := ioutil.ReadFile(filename)
-    if err != nil {
-        panic(err)
-    }
+	// Get the yaml file passed in the args.
+	filename, _ := filepath.Abs(manifest)
+	// Read the file.
+	yamlFile, err := ioutil.ReadFile(filename)
+	if err != nil {
+		panic(err)
+	}
 
-    // Pass the file to the ParseManifest
-    m := utils.ParseManifest(yamlFile)
+	// Pass the file to the ParseManifest
+	m := utils.ParseManifest(yamlFile)
 
-    // Verify that the compose file exists.
-    isComposeFileAvail, err := utils.CheckForFile(m.DockerApp)
-    if (!isComposeFileAvail){
-        log.Fatal(err.Error())
-    }
+	if endpoint == "" {
+		if verbose {
+			log.Println("endpoint not specifed with -e, checking manifest")
+		}
+		// TODO - then we can check m.Hub.Endpoint
+	}
 
-    // Try and pull snapshots
-    // TODO need to return err and check for it?
-    utils.PullSnapshots(m.Volumes)
+	if user == "" {
+		if verbose {
+			log.Println("user not specifed with -u, checking manifest")
+		}
+		// TODO - then we can check m.Hub.User
+	}
 
-    // Create volumes from snapshots and map them to 
-    //    newVolPaths = {compose_volume_name : "/chq/<vol_path>"}
-    newVolPaths, err := utils.CreateVolumesFromSnapshots(m.Volumes)
+	if token == "" {
+		if verbose {
+			log.Println("token not specifed with -t, checking manifest")
+		}
+		// TODO - then we can check m.Hub.AuthToken
+	}
 
-    // TODO need to return err and check for it?
-    utils.MakeCopy(m.DockerApp)
+	// Verify that the compose file exists.
+	isComposeFileAvail, err := utils.CheckForFile(m.DockerApp)
+	if (!isComposeFileAvail){
+		log.Fatal(err.Error())
+	}
 
-    // replace volume_name with volume_name's associated "/chq/<vol_path/"
-    // write file back to compose file
-    for _, newVol := range newVolPaths {
-        utils.MapVolumeToCompose(newVol.Name, newVol.VolumePath, m.DockerApp)
-    }
+	// Try and pull snapshots
+	// TODO need to return err and check for it?
+	utils.PullSnapshots(m.Volumes)
 
-    // Verify Compose File
-    utils.ParseCompose(m.DockerApp)
+	// Create volumes from snapshots and map them to 
+	//    newVolPaths = {compose_volume_name : "/chq/<vol_path>"}
+	newVolPaths, err := utils.CreateVolumesFromSnapshots(m.Volumes)
 
-    // (IF) -c is there for compose args, run compose, if not, done.
-    // TODO
+	// TODO need to return err and check for it?
+	utils.MakeCopy(m.DockerApp)
+
+	// replace volume_name with volume_name's associated "/chq/<vol_path/"
+	// write file back to compose file
+	for _, newVol := range newVolPaths {
+		utils.MapVolumeToCompose(newVol.Name, newVol.VolumePath, m.DockerApp)
+	}
+
+	if verbose {
+		// Verify Compose File
+		utils.ParseCompose(m.DockerApp)
+	}
+
+	// (IF) -c is there for compose args, run compose, if not, done.
+	if compose {
+		if verbose {
+			log.Println("compose option set, running docker-compose")
+		}
+		utils.RunCompose(m.DockerApp)
+	}
 
 }

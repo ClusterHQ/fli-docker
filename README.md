@@ -152,7 +152,8 @@ volumes in the Docker Compose file to Flocker Hub snapshots.
 
 ```
 # Named volume
-  - datavolume:/var/lib/mysql
+  - datavolume1:/var/lib/mysql
+  - 'datavolume2:/var/lib/mysql'
 ```
 
 An example of a Stateful App Manifest (SAM) YAML file could be `dev-manifest.yml` below. Notice, under the `volumes:` section of the 

@@ -2,9 +2,9 @@
 
 The `fli-docker` utility is designed to simplify the deployment of stateful applications inside Docker containers.
 
-This is achieved through creation of a Flocker Hub Stateful Application Manifest (SAM) file (aka. "manifest"), which essentially acts as a wrapper to a Docker Compose file.
+This is achieved through creation of a Flocker Hub Stateful Application Manifest (SAM) file (aka. "manifest"), which is used side by side with the Docker Compose file.
 The SAM file is a YAML file that defines data volumes from [ClusterHQ](https://clusterhq.com)'s Flocker Hub,
-synchronizes data snapshots locally, and maps them to Docker volumes in the underlying Docker Compose file.
+synchronizes data snapshots locally, and maps them to Docker volumes in the Docker Compose file.
 
 ## Usage
 
@@ -165,7 +165,6 @@ docker_app: docker-compose-app1.yml
 
 flocker_hub:
     endpoint: http://<ip|dnsname>:<port>
-    auth_token: 021e3d0f-9ad3-49dc-8d0a-dbe96a0477dc
 
 volumes:
     - name: redis-data

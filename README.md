@@ -131,10 +131,11 @@ Creating redismoby_web_1
 redismoby_redis_1   docker-entrypoint.sh redis ...   Up      6379/tcp           
 redismoby_web_1     node index.js                    Up      0.0.0.0:80->80/tcp 
 
-$ docker inspect -f "{{.Mounts}}" redismoby_redis_1
-[{ /chq/cc68b88a-e811-46d3-a629-9cc1ae147cf7 /myapp/artifacts  rw true rprivate}]
 $ docker inspect -f "{{.Mounts}}" redismoby_web_1
-[{ /chq/5a12c51f-569d-4f59-9713-3c2d48af30ae /data  rw true rprivate}]
+[{ /chq/aff85bcb-3e2d-44b4-a458-9a4d7f030795 /myapp/artifacts  rw true rprivate}]
+$ docker inspect -f "{{.Mounts}}" redismoby_redis_1
+[{ /chq/4083f9c2-3d8c-475e-bcab-06eefd49f60b /data  rw true rprivate}
+ { /chq/33a74a69-ef86-40bb-afe6-8d82a2128dd7 /tmp/path  rw true rprivate}]
 
 ```
 
@@ -150,7 +151,7 @@ volumes in the Docker Compose file to Flocker Hub snapshots.
 
 > Important Note: Right now, this only works with "named volumes" (see below)
 
-(Compose File Reference Link](https://docs.docker.com/compose/compose-file/#/volumes-volume-driver)
+[Compose File Reference Link](https://docs.docker.com/compose/compose-file/#/volumes-volume-driver)
 
 ```
 # Named volume

@@ -146,6 +146,15 @@ The Stateful Application Manifest (SAM) looks similar to a Docker Compose file, 
 The `fli-docker` utility takes a `docker-compose.yml` file as input, and translates
 volumes in the Docker Compose file to Flocker Hub snapshots.
 
+> Important Note: Right now, this only works with "named volumes" (see below)
+
+(Compose File Reference Link](https://docs.docker.com/compose/compose-file/#/volumes-volume-driver)
+
+```
+# Named volume
+  - datavolume:/var/lib/mysql
+```
+
 An example of a Stateful App Manifest (SAM) YAML file could be `dev-manifest.yml` below. Notice, under the `volumes:` section of the 
 manifest, that each named volume references a `volumeset` and a `snapshot`.
 You can obtain these identifiers from the Flocker Hub user interface, or the `fs3` command line utility.

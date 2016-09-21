@@ -4,8 +4,9 @@ import (
 	"os/exec"
 	"os"
 	"log"
-	"fmt"
 	"regexp"
+	"io/ioutil"
+	"bytes"
 
 	"gopkg.in/yaml.v2"
 
@@ -163,16 +164,26 @@ func CreateVolumesFromSnapshots(volumes []Volume) (newVols []NewVolume, err erro
 }
 
 // Replace volume names with associated volume paths
-// 	This is crappy and platform specific, we could use a
-// 	native yaml reader/writer to do this more properly.
+// 	Ultimately we should be able to support multiple types of volumes
+// https://docs.docker.com/compose/compose-file/#/volumes-volume-driver
+// where we can detect if it has a "named" volume, a path, or no "<inside>:"
+// and we should modify the file accordingly, for now we only support
+// "named volumes" in the form of `-[space]<volume_name>:`
 func MapVolumeToCompose(volume string, path string, composeFile string) {
-	sedStr := fmt.Sprintf("s@%s:@%s:@", volume, path)
-	sedCmd := exec.Command("/usr/bin/sed", "-i", "-e", sedStr, composeFile)
-	out, err := sedCmd.Output()
-	if err != nil {
-		log.Print("Error replacing paths in docker-compose file: ", out)
-		log.Fatal(err)
-	}
+	input, err := ioutil.ReadFile(composeFile)
+        if err != nil {
+        		log.Print("Trouble reading docker-compose file.")
+                log.Fatal(err)
+        }
+    //replace the "named volume" name with the Flucker Hub path.
+    output := bytes.Replace(input, []byte("- " + volume + ":"), []byte("- " + path + ":"), -1)
+
+    //re-write
+    if err = ioutil.WriteFile(composeFile, output, 0644); err != nil {
+    			log.Print("Error writing docker-compose file.")
+                log.Fatal(err)
+         }
+
 }
 
 // Parse the compose file, this will validate

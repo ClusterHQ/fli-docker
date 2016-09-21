@@ -10,3 +10,6 @@ volumes:
     - name: artifacts
       snapshot: 4505d375-a00d-4458-8601-7bc6968c8ff4
       volumeset: 1734c879-641c-41cd-92b5-f47704338a1d
+    - name: /my/path
+      snapshot: e1495abc-01ca-41a8-b58c-fe04fc3105f7
+      volumeset: 1734c879-641c-41cd-92b5-f47704338a1d

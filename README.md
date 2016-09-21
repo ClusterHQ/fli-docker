@@ -76,11 +76,12 @@ services:
     networks:
       default: {}
     volumes:
-    - /chq/5a12c51f-569d-4f59-9713-3c2d48af30ae:/data
+    - /chq/4083f9c2-3d8c-475e-bcab-06eefd49f60b:/data
+    - /chq/33a74a69-ef86-40bb-afe6-8d82a2128dd7:/tmp/path
   web:
     environment:
     - USE_REDIS_HOST=redis
-    image: clusterhq/moby-counter
+    image: clusterhq/moby-counter:dcsea
     links:
     - redis
     networks:
@@ -88,7 +89,7 @@ services:
     ports:
     - 80:80
     volumes:
-    - /chq/cc68b88a-e811-46d3-a629-9cc1ae147cf7:/myapp/artifacts/
+    - /chq/aff85bcb-3e2d-44b4-a458-9a4d7f030795:/myapp/artifacts/
 volumes: {}
 networks: {}
 
@@ -96,7 +97,7 @@ $ cat docker-compose-app1.yml
 version: '2'
 services:
   web:
-    image: clusterhq/moby-counter
+    image: clusterhq/moby-counter:dcsea
     environment:
        - "USE_REDIS_HOST=redis"
     links:
@@ -104,11 +105,12 @@ services:
     ports:
       - "80:80"
     volumes:
-      - /chq/cc68b88a-e811-46d3-a629-9cc1ae147cf7:/myapp/artifacts/
+      - /chq/aff85bcb-3e2d-44b4-a458-9a4d7f030795:/myapp/artifacts/
   redis:
     image: redis:latest
     volumes:
-       - '/chq/5a12c51f-569d-4f59-9713-3c2d48af30ae:/data'
+       - '/chq/4083f9c2-3d8c-475e-bcab-06eefd49f60b:/data'
+       - /chq/33a74a69-ef86-40bb-afe6-8d82a2128dd7:/tmp/path
 
 $ docker-compose -f docker-compose-app1.yml up -d
 Pulling web (clusterhq/moby-counter:dcsea)...
@@ -129,10 +131,11 @@ Creating redismoby_web_1
 redismoby_redis_1   docker-entrypoint.sh redis ...   Up      6379/tcp           
 redismoby_web_1     node index.js                    Up      0.0.0.0:80->80/tcp 
 
-$ docker inspect -f "{{.Mounts}}" redismoby_redis_1
-[{ /chq/cc68b88a-e811-46d3-a629-9cc1ae147cf7 /myapp/artifacts  rw true rprivate}]
 $ docker inspect -f "{{.Mounts}}" redismoby_web_1
-[{ /chq/5a12c51f-569d-4f59-9713-3c2d48af30ae /data  rw true rprivate}]
+[{ /chq/aff85bcb-3e2d-44b4-a458-9a4d7f030795 /myapp/artifacts  rw true rprivate}]
+$ docker inspect -f "{{.Mounts}}" redismoby_redis_1
+[{ /chq/4083f9c2-3d8c-475e-bcab-06eefd49f60b /data  rw true rprivate}
+ { /chq/33a74a69-ef86-40bb-afe6-8d82a2128dd7 /tmp/path  rw true rprivate}]
 
 ```
 
@@ -148,12 +151,14 @@ volumes in the Docker Compose file to Flocker Hub snapshots.
 
 > Important Note: Right now, this only works with "named volumes" (see below)
 
-(Compose File Reference Link](https://docs.docker.com/compose/compose-file/#/volumes-volume-driver)
+[Compose File Reference Link](https://docs.docker.com/compose/compose-file/#/volumes-volume-driver)
 
 ```
 # Named volume
   - datavolume1:/var/lib/mysql
   - 'datavolume2:/var/lib/mysql'
+  - /my/path1:/tmp/path1
+  - '/my/path2':/tmp/path2
 ```
 
 An example of a Stateful App Manifest (SAM) YAML file could be `dev-manifest.yml` below. Notice, under the `volumes:` section of the 
@@ -173,6 +178,9 @@ volumes:
       volumeset: 1734c879-641c-41cd-92b5-f47704338a1d
     - name: artifacts
       snapshot: 4505d375-a00d-4458-8601-7bc6968c8ff4
+      volumeset: 1734c879-641c-41cd-92b5-f47704338a1d
+    - name: /my/path
+      snapshot: e1495abc-01ca-41a8-b58c-fe04fc3105f7
       volumeset: 1734c879-641c-41cd-92b5-f47704338a1d
 ```
 
@@ -195,6 +203,7 @@ services:
     image: redis:latest
     volumes:
        - 'redis-data:/data'
+       - /my/path:/tmp/path
 ```
 
 In this case, the CLI commands above would perform the necessary `pull` and `create`

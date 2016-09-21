@@ -14,3 +14,4 @@ services:
     image: redis:latest
     volumes:
        - 'redis-data:/data'
+       - /my/path:/tmp/path

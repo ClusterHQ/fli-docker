@@ -2,9 +2,9 @@
 
 The `fli-docker` utility is designed to simplify the deployment of stateful applications inside Docker containers.
 
-This is achieved through creation of a Flocker Hub Stateful Application Manifest (SAM) file (aka. "manifest"), which essentially acts as a wrapper to a Docker Compose file.
+This is achieved through creation of a Flocker Hub Stateful Application Manifest (SAM) file (aka. "manifest"), which is used side by side with the Docker Compose file.
 The SAM file is a YAML file that defines data volumes from [ClusterHQ](https://clusterhq.com)'s Flocker Hub,
-synchronizes data snapshots locally, and maps them to Docker volumes in the underlying Docker Compose file.
+synchronizes data snapshots locally, and maps them to Docker volumes in the Docker Compose file.
 
 ## Usage
 
@@ -146,9 +146,19 @@ The Stateful Application Manifest (SAM) looks similar to a Docker Compose file, 
 The `fli-docker` utility takes a `docker-compose.yml` file as input, and translates
 volumes in the Docker Compose file to Flocker Hub snapshots.
 
+> Important Note: Right now, this only works with "named volumes" (see below)
+
+(Compose File Reference Link](https://docs.docker.com/compose/compose-file/#/volumes-volume-driver)
+
+```
+# Named volume
+  - datavolume1:/var/lib/mysql
+  - 'datavolume2:/var/lib/mysql'
+```
+
 An example of a Stateful App Manifest (SAM) YAML file could be `dev-manifest.yml` below. Notice, under the `volumes:` section of the 
 manifest, that each named volume references a `volumeset` and a `snapshot`.
-You can obtain these identifiers from the Flocker Hub user interface, or the `fs3` command line utility.
+You can obtain these identifiers from the Flocker Hub user interface, or the `fli` command line utility.
 Documentation about the Flocker Hub product itself can be found at [ClusterHQ Documentation](https://clusterhq.com).
 
 ```yaml
@@ -156,7 +166,6 @@ docker_app: docker-compose-app1.yml
 
 flocker_hub:
     endpoint: http://<ip|dnsname>:<port>
-    auth_token: 021e3d0f-9ad3-49dc-8d0a-dbe96a0477dc
 
 volumes:
     - name: redis-data
@@ -189,7 +198,7 @@ services:
 ```
 
 In this case, the CLI commands above would perform the necessary `pull` and `create`
-commands with fs3 and manipulate the docker-compose file so that when it is brought up
+commands with fli and manipulate the docker-compose file so that when it is brought up
 it can be brought up with your snapshots layed out in the manifest.
 
 - `artifacts` would become snapshot : `02d474fa-ab81-4bcb-8a61-a04214896b67`

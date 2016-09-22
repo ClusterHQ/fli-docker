@@ -144,13 +144,13 @@ func createVolumeFromSnapshot(volumeName string, snapshotId string) (vol NewVolu
 	if err != nil {
 		log.Fatal(err)
 	}
-		log.Print(string(combinedOut))
-		r, _ := regexp.Compile("/chq/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
-		path := r.FindString(string(combinedOut))
+	log.Print(string(combinedOut))
+	r, _ := regexp.Compile("/chq/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
+	path := r.FindString(string(combinedOut))
 	if path == "" {
 			log.Fatal("Could not find volume path")
 	 }
-		return NewVolume{Name: volumeName, VolumePath: path}, nil
+	return NewVolume{Name: volumeName, VolumePath: path}, nil
 }
 
 func CreateVolumesFromSnapshots(volumes []Volume) (newVols []NewVolume, err error) {

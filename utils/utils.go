@@ -163,13 +163,13 @@ func PullSnapshots(volumes []Volume) {
 func createVolumeFromSnapshot(volumeName string, snapshotId string) (vol NewVolume, err error){
 	log.Printf("Creating Volume from Snapshot: %s", snapshotId)
 	cmd := exec.Command("/opt/clusterhq/bin/dpcli", "create", "volume", "--snapshot", snapshotId)
-	combinedOut, err := cmd.CombinedOutput()
+	createOut, err := cmd.Output()
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Print(string(combinedOut))
+	log.Print(string(createOut))
 	r, _ := regexp.Compile("/chq/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
-	path := r.FindString(string(combinedOut))
+	path := r.FindString(string(createOut))
 	if path == "" {
 			log.Fatal("Could not find volume path")
 	 }

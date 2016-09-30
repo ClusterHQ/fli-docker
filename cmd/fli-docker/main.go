@@ -12,9 +12,8 @@ import (
 func main() {
 
 	// should this be a struct?
-	var user string
-	var token string
-	var endpoint string
+	var tokenfile string
+	var flockerhub string
 	var manifest string
 	var compose bool
 	var verbose bool
@@ -42,14 +41,12 @@ func main() {
 		log.Println("fli Ready!\n")
 	}
 
-	flag.StringVar(&user, "u", "", "Flocker Hub username")
-	flag.StringVar(&token, "t", "", "Flocker Hub user token")
+	flag.StringVar(&tokenfile, "t", "", "Flocker Hub user token")
 	// Should we replace or add the above with the option to point to vhub.txt?
-	flag.StringVar(&endpoint, "e", "", "Flocker Hub endpoint")
+	flag.StringVar(&flockerhub, "e", "", "Flocker Hub endpoint")
 	flag.StringVar(&manifest, "f", "manifest.yml", "Stateful application manifest file")
 	flag.BoolVar(&compose, "c", false, "if flag is present, fli-docker will start the compose services")
 	flag.BoolVar(&verbose, "v", false, "verbose logging")
-
 
 	// Parse all the flags from user input
 	flag.Parse()
@@ -77,25 +74,34 @@ func main() {
 	// Pass the file to the ParseManifest
 	m := utils.ParseManifest(yamlFile)
 
-	if endpoint == "" {
+	if flockerhub == "" {
 		if verbose {
-			log.Println("endpoint not specifed with -e, checking manifest")
+			log.Println("FlockerHub endpoint not specifed with -e, checking if set, or setting from manifest")
 		}
-		// TODO - then we can check m.Hub.Endpoint
+		// TODO check from `dpcli get volumehub` if set.
+		// utils.GetFlockerHubEndpoint()
+		// IF ITS NOT SET
+			// check for endpoint in m.Hub.Endpoint from manifest.
+		log.Println("Found FlockerHub Endpoint " + m.Hub.Endpoint + "in manifest")
+			// TODO check if blank, exit if blank "must set FlockerHub endpoint"
+		flockerhub = m.Hub.Endpoint
+			// TODO if not, set the endpoint
+			// utils.SetFlockerHubEndpoint(flockerhub)
 	}
 
-	if user == "" {
+	if tokenfile == "" {
 		if verbose {
-			log.Println("user not specifed with -u, checking manifest")
+			log.Println("token not specifed with -t, checking if set, or setting from manifest")
 		}
-		// TODO - then we can check m.Hub.User
-	}
-
-	if token == "" {
-		if verbose {
-			log.Println("token not specifed with -t, checking manifest")
-		}
-		// TODO - then we can check m.Hub.AuthToken
+		// TODO  check from `dpcli get tokenfile` if set
+		// utils.GetFlockerHubTokenFile()
+		// IF ITS NOT SET
+			// check for tokenfile in m.Hub.AuthToken from manifest.
+		log.Println("Found tokenfile " + m.Hub.AuthToken + "in manifest")
+			// TODO check if blank, exit if blank "must set FlockerHub tokenfile"
+		flockerhub = m.Hub.AuthToken
+			// TODO set dpcli tokenfile
+			// utils.SetFlockerHubTokenFile(tokenfile)
 	}
 
 	// Verify that the compose file exists.

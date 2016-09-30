@@ -69,7 +69,6 @@ type Manifest struct {
 type FlockerHub struct { 
 	Endpoint string   `yaml:"endpoint"`
 	AuthToken string  `yaml:"auth_token"`
-	User string 	  `yaml:"username"`
 }
 
 type Volume struct {
@@ -95,6 +94,30 @@ func ParseManifest(yamlFile []byte) (*Manifest){
 	}
 	//log.Print("Manifest: %#v\n", manifest)
 	return &manifest
+}
+
+//TODO update this to actually work/be used
+func SetFlockerHubEndpoint(endpoint string) (err error) {
+	log.Printf("Setting FlockerHub Endpoint %s", endpoint)
+	return nil
+}
+
+//TODO update this to actually work/be used
+func GetFlockerHubEndpoint() (flockerhubEndpoint string, err error) {
+	log.Printf("Getting FlockerHub Endpoint")
+	return "https://someurl:8084", nil
+}
+
+//TODO update this to actually work/be used
+func SetFlockerHubTokenFile(tokenFile string) (err error) {
+	log.Printf("Setting FlockerHub Tokenfile %s", tokenFile)
+	return nil
+}
+
+//TODO update this to actually work/be used
+func GetFlockerHubTokenFile() (flockerHubTokenFile string, err error) {
+	log.Printf("Getting FlockerHub Tokenfile")
+	return "/root/vhut.txt", nil
 }
 
 // Run the command to sync a volumeset

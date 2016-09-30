@@ -20,8 +20,6 @@ Usage of fli-docker:
       Stateful application manifest file (default "manifest.yml")
   -t string
       Flocker Hub user token
-  -u string
-      Flocker Hub username
   -v  verbose logging
 ```
 
@@ -170,17 +168,18 @@ docker_app: docker-compose-app1.yml
 
 flocker_hub:
     endpoint: http://<ip|dnsname>:<port>
+    tokenfile: /root/vhut.txt
 
 volumes:
     - name: redis-data
-      snapshot: 1ef7db29-124d-45d3-bd9f-3f12157b65a8
-      volumeset: 1734c879-641c-41cd-92b5-f47704338a1d
+      snapshot: 11105373-b878-4433-8c8a-af6d684fe506
+      volumeset: docker-app-example
     - name: artifacts
-      snapshot: 4505d375-a00d-4458-8601-7bc6968c8ff4
-      volumeset: 1734c879-641c-41cd-92b5-f47704338a1d
+      snapshot: 7c5c6dcb-8c65-4e68-ba60-262f8d5bf015
+      volumeset: docker-app-example
     - name: /my/path
-      snapshot: e1495abc-01ca-41a8-b58c-fe04fc3105f7
-      volumeset: 1734c879-641c-41cd-92b5-f47704338a1d
+      snapshot: 1670c1ff-c8be-4087-8eee-5a8598061a33
+      volumeset: docker-app-example
 ```
 
 The Docker Compose file that the SAM file leverages would be:
@@ -209,8 +208,9 @@ In this case, the CLI commands above would perform the necessary `pull` and `cre
 commands with fli and manipulate the docker-compose file so that when it is brought up
 it can be brought up with your snapshots layed out in the manifest.
 
-- `artifacts` would become snapshot : `02d474fa-ab81-4bcb-8a61-a04214896b67`
-- `redis-data` would become snapshot: `be4b53d2-a8cf-443f-a672-139b281acf8f`
+- `artifacts` would become snapshot : `11105373-b878-4433-8c8a-af6d684fe506`
+- `redis-data` would become snapshot: `7c5c6dcb-8c65-4e68-ba60-262f8d5bf015`
+- `/my/path` would become snapshot: `1670c1ff-c8be-4087-8eee-5a8598061a33`
 
 ### Notes
 

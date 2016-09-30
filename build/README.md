@@ -1,7 +1,7 @@
 How to build the project
 
 ```
-$ git clone https://github.com/wallneryan/fli-docker
+$ git clone https://github.com/ClusterHQ/fli-docker
 
 $ cd ~/fli-docker/build/
 

@@ -68,8 +68,7 @@ type Manifest struct {
 
 type FlockerHub struct { 
 	Endpoint string   `yaml:"endpoint"`
-	AuthToken string  `yaml:"auth_token"`
-	User string 	  `yaml:"username"`
+	AuthToken string  `yaml:"tokenfile"`
 }
 
 type Volume struct {
@@ -97,6 +96,30 @@ func ParseManifest(yamlFile []byte) (*Manifest){
 	return &manifest
 }
 
+//TODO update this to actually work/be used
+func SetFlockerHubEndpoint(endpoint string) (err error) {
+	log.Printf("Setting FlockerHub Endpoint %s", endpoint)
+	return nil
+}
+
+//TODO update this to actually work/be used
+func GetFlockerHubEndpoint() (flockerhubEndpoint string, err error) {
+	log.Printf("Getting FlockerHub Endpoint")
+	return "https://someurl:8084", nil
+}
+
+//TODO update this to actually work/be used
+func SetFlockerHubTokenFile(tokenFile string) (err error) {
+	log.Printf("Setting FlockerHub Tokenfile %s", tokenFile)
+	return nil
+}
+
+//TODO update this to actually work/be used
+func GetFlockerHubTokenFile() (flockerHubTokenFile string, err error) {
+	log.Printf("Getting FlockerHub Tokenfile")
+	return "/root/vhut.txt", nil
+}
+
 // Run the command to sync a volumeset
 func syncVolumeset(volumeSetId string) {
 	log.Printf("Syncing Volumeset %s", volumeSetId)
@@ -106,7 +129,7 @@ func syncVolumeset(volumeSetId string) {
 		log.Print("Could not sync dataset, reason: ", out)
 		log.Fatal(err)
 	}
-	log.Print(out)
+	//log.Print(out)
 }
 
 // Run the command to pull a specific snapshot
@@ -118,7 +141,7 @@ func pullSnapshot(snapshotId string){
 		log.Print("Could not pull dataset, reason: ", out)
 		log.Fatal(err)
 	}
-	log.Print(out)
+	//log.Print(out)
 }
 
 // Wrapper for sync and pull which takes
@@ -140,13 +163,13 @@ func PullSnapshots(volumes []Volume) {
 func createVolumeFromSnapshot(volumeName string, snapshotId string) (vol NewVolume, err error){
 	log.Printf("Creating Volume from Snapshot: %s", snapshotId)
 	cmd := exec.Command("/opt/clusterhq/bin/dpcli", "create", "volume", "--snapshot", snapshotId)
-	combinedOut, err := cmd.CombinedOutput()
+	createOut, err := cmd.Output()
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Print(string(combinedOut))
+	log.Print(string(createOut))
 	r, _ := regexp.Compile("/chq/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
-	path := r.FindString(string(combinedOut))
+	path := r.FindString(string(createOut))
 	if path == "" {
 			log.Fatal("Could not find volume path")
 	 }

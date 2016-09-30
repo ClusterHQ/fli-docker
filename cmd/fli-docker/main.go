@@ -6,7 +6,7 @@ import (
 	"flag"
 	"path/filepath"
 	"io/ioutil"
-	"github.com/wallnerryan/fli-docker/utils"
+	"github.com/ClusterHQ/fli-docker/utils"
 )
 
 func main() {

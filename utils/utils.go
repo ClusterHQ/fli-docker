@@ -68,7 +68,7 @@ type Manifest struct {
 
 type FlockerHub struct { 
 	Endpoint string   `yaml:"endpoint"`
-	AuthToken string  `yaml:"auth_token"`
+	AuthToken string  `yaml:"tokenfile"`
 }
 
 type Volume struct {
@@ -129,7 +129,7 @@ func syncVolumeset(volumeSetId string) {
 		log.Print("Could not sync dataset, reason: ", out)
 		log.Fatal(err)
 	}
-	log.Print(out)
+	//log.Print(out)
 }
 
 // Run the command to pull a specific snapshot
@@ -141,7 +141,7 @@ func pullSnapshot(snapshotId string){
 		log.Print("Could not pull dataset, reason: ", out)
 		log.Fatal(err)
 	}
-	log.Print(out)
+	//log.Print(out)
 }
 
 // Wrapper for sync and pull which takes

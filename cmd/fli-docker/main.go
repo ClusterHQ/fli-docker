@@ -1,12 +1,13 @@
 package main
 
 import (
-	"fmt"
-	"log"
+	"os"
 	"flag"
 	"path/filepath"
 	"io/ioutil"
 	"github.com/ClusterHQ/fli-docker/utils"
+	"github.com/ClusterHQ/fli-docker/cli"
+	"github.com/ClusterHQ/fli-docker/logger"
 )
 
 func main() {
@@ -17,72 +18,77 @@ func main() {
 	var manifest string
 	var compose bool
 	var verbose bool
+	var project string
+
+	flag.StringVar(&tokenfile, "t", "", "Flocker Hub user token")
+	flag.StringVar(&flockerhub, "e", "", "Flocker Hub endpoint")
+	flag.StringVar(&manifest, "f", "manifest.yml", "Stateful application manifest file")
+	flag.BoolVar(&compose, "c", false, "if flag is present, fli-docker will start the compose services")
+	flag.BoolVar(&verbose, "verbose", false, "verbose logging")
+	flag.StringVar(&project, "project", "fli-compose", "project name for compose if using -c")
+
+	// parse all the flags from user input
+	flag.Parse()
+
+    if verbose {
+    	logger.Init(os.Stdout, os.Stdout, os.Stdout, os.Stderr)
+    }else{
+    	logger.Init(os.Stdout, ioutil.Discard, ioutil.Discard, os.Stderr)
+    }
 
 	var composeCmd string
 	composeCmd = "docker-compose version"
 
 	var fliCmd string
-	fliCmd = "/opt/clusterhq/bin/dpcli" //this will need `fli version` or somthing
+	// this will need `fli version` or somthing
+	fliCmd = "/opt/clusterhq/bin/dpcli"
 
-	// Check if needed dependencies are available
+	// check if needed dependencies are available
 	isComposeAvail, err := utils.CheckForCmd(composeCmd)
 	if (!isComposeAvail){
-		fmt.Printf(utils.ComposeHelpMessage)
-		log.Fatal("Could not find `docker-compose` ", err)
+		logger.Info.Println(utils.ComposeHelpMessage)
+		logger.Error.Fatal("Could not find `docker-compose` ", err)
 	}else{
-		log.Println("docker-compose Ready!\n")
+		logger.Info.Println("docker-compose Ready!")
 	}
 
 	isFliAvail, err := utils.CheckForPath(fliCmd)
 	if (!isFliAvail){
-		fmt.Printf(utils.FliHelpMessage)
-		log.Fatal("Could not find `fli` ", err)
+		logger.Info.Println(utils.FliHelpMessage)
+		logger.Error.Fatal("Could not find `fli` ", err)
 	}else{
-		log.Println("fli Ready!\n")
+		logger.Info.Println("fli Ready!")
 	}
-
-	flag.StringVar(&tokenfile, "t", "", "Flocker Hub user token")
-	// Should we replace or add the above with the option to point to vhub.txt?
-	flag.StringVar(&flockerhub, "e", "", "Flocker Hub endpoint")
-	flag.StringVar(&manifest, "f", "manifest.yml", "Stateful application manifest file")
-	flag.BoolVar(&compose, "c", false, "if flag is present, fli-docker will start the compose services")
-	flag.BoolVar(&verbose, "v", false, "verbose logging")
-
-	// Parse all the flags from user input
-	flag.Parse()
 
 	if manifest == "manifest.yml" {
-		if verbose {
-			log.Println("Using default 'manifest.yml`, otherwise specify differently with -f")
-		}
+		logger.Warning.Println("Using default 'manifest.yml`, otherwise specify differently with -f")
 	}
 
-	// Verify that the manifest exists
+	// verify that the manifest exists
 	isManifestAvail, err := utils.CheckForFile(manifest)
 	if (!isManifestAvail){
-		log.Fatal(err.Error())
+		logger.Error.Fatal(err.Error())
 	}
 
-	// Get the yaml file passed in the args.
+	// get the yaml file passed in the args.
 	filename, _ := filepath.Abs(manifest)
-	// Read the file.
+	// read the file.
 	yamlFile, err := ioutil.ReadFile(filename)
 	if err != nil {
-		panic(err)
+		logger.Error.Fatal(err.Error())
 	}
 
-	// Pass the file to the ParseManifest
+	// pass the file to the ParseManifest
+	logger.Message.Println("Parsing the fli manifest...")
 	m := utils.ParseManifest(yamlFile)
 
 	if flockerhub == "" {
-		if verbose {
-			log.Println("FlockerHub endpoint not specifed with -e, checking if set, or setting from manifest")
-		}
+		logger.Warning.Println("FlockerHub endpoint not specified with -e, checking if set, or setting from manifest")
 		// TODO check from `dpcli get volumehub` if set.
 		// utils.GetFlockerHubEndpoint()
 		// IF ITS NOT SET
 			// check for endpoint in m.Hub.Endpoint from manifest.
-		log.Println("Found FlockerHub Endpoint " + m.Hub.Endpoint + "in manifest")
+		logger.Info.Println("Found FlockerHub Endpoint " + m.Hub.Endpoint + "in manifest")
 			// TODO check if blank, exit if blank "must set FlockerHub endpoint"
 		flockerhub = m.Hub.Endpoint
 			// TODO if not, set the endpoint
@@ -90,54 +96,52 @@ func main() {
 	}
 
 	if tokenfile == "" {
-		if verbose {
-			log.Println("token not specifed with -t, checking if set, or setting from manifest")
-		}
+		logger.Warning.Println("token not specifed with -t, checking if set, or setting from manifest")
 		// TODO  check from `dpcli get tokenfile` if set
 		// utils.GetFlockerHubTokenFile()
 		// IF ITS NOT SET
 			// check for tokenfile in m.Hub.AuthToken from manifest.
-		log.Println("Found tokenfile " + m.Hub.AuthToken + "in manifest")
+		logger.Info.Println("Found tokenfile " + m.Hub.AuthToken + "in manifest")
 			// TODO check if blank, exit if blank "must set FlockerHub tokenfile"
 		flockerhub = m.Hub.AuthToken
 			// TODO set dpcli tokenfile
 			// utils.SetFlockerHubTokenFile(tokenfile)
 	}
 
-	// Verify that the compose file exists.
+	// verify that the compose file exists.
 	isComposeFileAvail, err := utils.CheckForFile(m.DockerApp)
 	if (!isComposeFileAvail){
-		log.Fatal(err.Error())
+		logger.Error.Fatal(err.Error())
 	}
 
-	// Try and pull snapshots
-	// TODO need to return err and check for it?
-	utils.PullSnapshots(m.Volumes)
+	// try and pull snapshots
+	logger.Message.Println("Pulling FlockerHub volumes...")
+	cli.PullSnapshots(m.Volumes)
 
-	// Create volumes from snapshots and map them to 
-	//    newVolPaths = {compose_volume_name : "/chq/<vol_path>"}
-	newVolPaths, err := utils.CreateVolumesFromSnapshots(m.Volumes)
+	// create volumes from snapshots and map them to 
+	// `newVolPaths = {compose_volume_name : "/chq/<vol_path>"...}`
+	logger.Message.Println("Creating volumes from snapshots...")
+	newVolPaths, err := cli.CreateVolumesFromSnapshots(m.Volumes)
 
-	// TODO need to return err and check for it?
+	// create a copy of the compose file before we edit it.
+	// it will be `filename` + `-fli.copy`
 	utils.MakeCopy(m.DockerApp)
 
-	// replace volume_name with volume_name's associated "/chq/<vol_path/"
-	// write file back to compose file
+	// replace volume_name with `volume_name`'s associated 
+	// "/chq/<vol_path/" and modify the compose file
+	logger.Message.Println("Mapping new volumes in compose file...")
 	for _, newVol := range newVolPaths {
 		utils.MapVolumeToCompose(newVol.Name, newVol.VolumePath, m.DockerApp)
 	}
 
-	if verbose {
-		// Verify Compose File
-		utils.ParseCompose(m.DockerApp)
-	}
+	// this just parses the compose file, not needed, 
+	// but in verbose we can be thorough as it also prints it.
+	utils.ParseCompose(m.DockerApp)
 
-	// (IF) -c is there for compose args, run compose, if not, done.
+	// `-c` means "run compose".
+	// if not, done, we only modified the compose file.
 	if compose {
-		if verbose {
-			log.Println("compose option set, running docker-compose")
-		}
-		utils.RunCompose(m.DockerApp)
+		logger.Info.Println("compose option set, running docker-compose")
+		utils.RunCompose(m.DockerApp, project)
 	}
-
 }

@@ -13,14 +13,17 @@ To utilize the ClusterHQ `fli-docker` utility, examine the following command lin
 ```
 fli-docker --help
 Usage of fli-docker:
-  -c  if flag is present, fli-docker will start the compose services
+  -c if flag is present, fli-docker will start the compose services
   -e string
       Flocker Hub endpoint
   -f string
       Stateful application manifest file (default "manifest.yml")
+  -p string
+      project name for compose if using -c (default "fli-compose")
   -t string
       Flocker Hub user token
-  -v  verbose logging
+  -verbose
+      verbose logging
 ```
 
 ### Example

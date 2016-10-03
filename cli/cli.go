@@ -3,6 +3,7 @@ package cli
 import (
 	"os/exec"
 	"regexp"
+	"fmt"
 
 	"github.com/ClusterHQ/fli-docker/types"
 	"github.com/ClusterHQ/fli-docker/logger"
@@ -12,28 +13,50 @@ import (
 	Bindings to the FlockerHub CLI
 */
 
-//TODO update this to actually work/be used
-func SetFlockerHubEndpoint(endpoint string) (err error) {
+func SetFlockerHubEndpoint(endpoint string) {
 	logger.Info.Println("Setting FlockerHub Endpoint %s", endpoint)
-	return nil
+	out, err := exec.Command("/opt/clusterhq/bin/dpcli", "set", "volumehub", endpoint).Output()
+	if err != nil {
+		logger.Error.Println("Could not set endpoint, reason: ", out)
+		logger.Error.Fatal(err)
+	}
+	logger.Info.Println(out)
 }
 
-//TODO update this to actually work/be used
 func GetFlockerHubEndpoint() (flockerhubEndpoint string, err error) {
 	logger.Info.Println("Getting FlockerHub Endpoint")
-	return "https://someurl:8084", nil
+	out, err := exec.Command("/opt/clusterhq/bin/dpcli", "get", "volumehub").Output()
+	if err != nil {
+		logger.Error.Println("Could not get endpoint, reason: ", out)
+		return "", err
+	}
+	logger.Info.Println(out)
+	//TODO Parse, "out" to get specific volumehub string
+	//TODO return "https://someurl:8084", nil
+	return string(out), nil
 }
 
-//TODO update this to actually work/be used
-func SetFlockerHubTokenFile(tokenFile string) (err error) {
+func SetFlockerHubTokenFile(tokenFile string) {
 	logger.Info.Println("Setting FlockerHub Tokenfile %s", tokenFile)
-	return nil
+	out, err := exec.Command("/opt/clusterhq/bin/dpcli", "set", "tokenfile", tokenFile).Output()
+	if err != nil {
+		logger.Error.Println("Could not set tokenfile, reason: ", out)
+		logger.Error.Fatal(err)
+	}
+	logger.Info.Println(out)
 }
 
-//TODO update this to actually work/be used
 func GetFlockerHubTokenFile() (flockerHubTokenFile string, err error) {
 	logger.Info.Println("Getting FlockerHub Tokenfile")
-	return "/root/vhut.txt", nil
+	out, err := exec.Command("/opt/clusterhq/bin/dpcli", "get", "tokenfile").Output()
+	if err != nil {
+		logger.Error.Println("Could not get tokenfile, reason: ", out)
+		return "", err
+	}
+	logger.Info.Println(out)
+	//TODO Parse, "out" to get specific tokenfile string
+	//TODO return "/root/vhut.txt", nil
+	return string(out), nil
 }
 
 // Run the command to sync a volumeset
@@ -72,7 +95,8 @@ func PullSnapshots(volumes []types.Volume) {
 // Created a volume and returns it.
 func createVolumeFromSnapshot(volumeName string, snapshotId string) (vol types.NewVolume, err error){
 	logger.Info.Println("Creating Volume from Snapshot: %s", snapshotId)
-	cmd := exec.Command("/opt/clusterhq/bin/dpcli", "create", "volume", "--snapshot", snapshotId)
+	var attrString = fmt.Sprintf("created_by=fli-docker,from_snap=%s", snapshotId)
+	cmd := exec.Command("/opt/clusterhq/bin/dpcli", "create", "volume", "--snapshot", snapshotId, "-a", attrString)
 	createOut, err := cmd.Output()
 	if err != nil {
 		logger.Error.Fatal(err)

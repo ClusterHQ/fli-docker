@@ -38,7 +38,7 @@ func GetFlockerHubEndpoint() (flockerhubEndpoint string, err error) {
 }
 
 func SetFlockerHubTokenFile(tokenFile string) {
-	logger.Info.Println("Setting FlockerHub Tokenfile %s", tokenFile)
+	logger.Info.Println("Setting FlockerHub Tokenfile: ", tokenFile)
 	out, err := exec.Command("/opt/clusterhq/bin/dpcli", "set", "tokenfile", tokenFile).Output()
 	if err != nil {
 		logger.Error.Println("Could not set tokenfile, reason: ", out)
@@ -63,7 +63,7 @@ func GetFlockerHubTokenFile() (flockerHubTokenFile string, err error) {
 // Run the command to sync a volumeset
 func syncVolumeset(volumeSetId string) {
 	logger.Info.Println("Syncing Volumeset: ", volumeSetId)
-	out, err := exec.Command("/opt/clusterhq/bin/dpcli", "sync",  "volumeset", volumeSetId).Output()
+	out, err := exec.Command("/opt/clusterhq/bin/dpcli", "sync",  "volumeset", volumeSetId).CombinedOutput()
 	if err != nil {
 		logger.Error.Println("Could not sync dataset, reason: ", out)
 		logger.Error.Fatal(err)
@@ -78,7 +78,7 @@ func syncVolumeset(volumeSetId string) {
 // Run the command to pull a specific snapshot
 func pullSnapshot(snapshotId string){
 	logger.Info.Println("Pulling Snapshot: ", snapshotId)
-	out, err := exec.Command("/opt/clusterhq/bin/dpcli", "pull", "snapshot", snapshotId).Output()
+	out, err := exec.Command("/opt/clusterhq/bin/dpcli", "pull", "snapshot", snapshotId).CombinedOutput()
 	if err != nil {
 		logger.Error.Println("Could not pull dataset, reason: ", out)
 		logger.Error.Fatal(err)

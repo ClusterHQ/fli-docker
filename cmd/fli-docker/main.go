@@ -93,7 +93,7 @@ func main() {
 		logger.Info.Println("Existing FlockerHub Endpoint config: ", fh)
 		// Was is placed in manifest?
 		flockerhubFromManifest := m.Hub.Endpoint
-		logger.Info.Println("FlockerHub Endpoint " + m.Hub.Endpoint + "in manifest")
+		logger.Info.Println("FlockerHub Endpoint " + m.Hub.Endpoint + " in manifest")
 		if flockerhubFromManifest == "" {
 			// Did the user have a pre-existing fli setup? 
 			// Lets try and assume the volumes are there.
@@ -119,7 +119,7 @@ func main() {
 		}
 		logger.Info.Println("Existing tokenfile configuration: ", tf)
 		// Was is placed in the manifest?
-		logger.Info.Println("tokenfile " + m.Hub.AuthToken + "in manifest")
+		logger.Info.Println("tokenfile " + m.Hub.AuthToken + " in manifest")
 		tokenfileFromManifest := m.Hub.AuthToken
 		if tokenfileFromManifest == "" {
 			if tf == "" {

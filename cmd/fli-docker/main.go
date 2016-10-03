@@ -150,7 +150,10 @@ func main() {
 	newVolPaths, err := cli.CreateVolumesFromSnapshots(m.Volumes)
 
 	// create a copy of the compose file before we edit it.
+	// replace a fresh copy if we already copied before
+	utils.CheckForCopy(m.DockerApp)
 	// it will be `filename` + `-fli.copy`
+	// will only copy if copy doesnt exist already
 	utils.MakeCopy(m.DockerApp)
 
 	// replace volume_name with `volume_name`'s associated 

@@ -20,9 +20,9 @@ func main() {
 	var verbose bool
 	var project string
 
-	flag.StringVar(&tokenfile, "t", "", "[OPTIONAL] Flocker Hub user token")
-	flag.StringVar(&flockerhub, "e", "", "[OPTIONAL] Flocker Hub endpoint")
-	flag.StringVar(&manifest, "f", "manifest.yml", "[REQUIRED] Stateful application manifest file")
+	flag.StringVar(&tokenfile, "t", "", "[OPTIONAL] Flocker Hub user token, optionally set it in the manifest YAML")
+	flag.StringVar(&flockerhub, "e", "", "[OPTIONAL] Flocker Hub endpoint, optionally set it in the manifest YAML")
+	flag.StringVar(&manifest, "f", "manifest.yml", "[OPTIONAL] Stateful application manifest file")
 	flag.BoolVar(&compose, "c", false, "[OPTIONAL] if flag is present, fli-docker will start the compose services")
 	flag.BoolVar(&verbose, "verbose", false, "[OPTIONAL] verbose logging")
 	flag.StringVar(&project, "p", "fli-compose", "[OPTIONAL] project name for compose if using -c")

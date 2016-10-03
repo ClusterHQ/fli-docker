@@ -15,13 +15,13 @@ fli-docker --help
 Usage of fli-docker:
   -c  [OPTIONAL] if flag is present, fli-docker will start the compose services
   -e string
-      [OPTIONAL] Flocker Hub endpoint
+      [OPTIONAL] Flocker Hub endpoint, optionally set it in the manifest YAML
   -f string
-      [REQUIRED] Stateful application manifest file (default "manifest.yml")
+      [OPTIONAL] Stateful application manifest file (default "manifest.yml")
   -p string
       [OPTIONAL] project name for compose if using -c (default "fli-compose")
   -t string
-      [OPTIONAL] Flocker Hub user token
+      [OPTIONAL] Flocker Hub user token, optionally set it in the manifest YAML
   -verbose
       [OPTIONAL] verbose logging
 ```

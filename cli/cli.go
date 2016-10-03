@@ -18,7 +18,7 @@ func SetFlockerHubEndpoint(endpoint string) {
 	logger.Info.Println("Setting FlockerHub Endpoint: ", endpoint)
 	out, err := exec.Command("/opt/clusterhq/bin/dpcli", "set", "volumehub", endpoint).Output()
 	if err != nil {
-		logger.Error.Println("Could not set endpoint, reason: ", out)
+		logger.Error.Println("Could not set endpoint, reason: ", string(out))
 		logger.Error.Fatal(err)
 	}
 	logger.Info.Println(string(out))
@@ -28,7 +28,7 @@ func GetFlockerHubEndpoint() (flockerhubEndpoint string, err error) {
 	logger.Info.Println("Getting FlockerHub Endpoint")
 	out, err := exec.Command("/opt/clusterhq/bin/dpcli", "get", "volumehub").Output()
 	if err != nil {
-		logger.Error.Println("Could not get endpoint, reason: ", out)
+		logger.Error.Println("Could not get endpoint, reason: ", string(out))
 		return "", err
 	}
 	logger.Info.Println(string(out))
@@ -41,7 +41,7 @@ func SetFlockerHubTokenFile(tokenFile string) {
 	logger.Info.Println("Setting FlockerHub Tokenfile: ", tokenFile)
 	out, err := exec.Command("/opt/clusterhq/bin/dpcli", "set", "tokenfile", tokenFile).Output()
 	if err != nil {
-		logger.Error.Println("Could not set tokenfile, reason: ", out)
+		logger.Error.Println("Could not set tokenfile, reason: ", string(out))
 		logger.Error.Fatal(err)
 	}
 	logger.Info.Println(string(out))
@@ -51,7 +51,7 @@ func GetFlockerHubTokenFile() (flockerHubTokenFile string, err error) {
 	logger.Info.Println("Getting FlockerHub Tokenfile")
 	out, err := exec.Command("/opt/clusterhq/bin/dpcli", "get", "tokenfile").Output()
 	if err != nil {
-		logger.Error.Println("Could not get tokenfile, reason: ", out)
+		logger.Error.Println("Could not get tokenfile, reason: ", string(out))
 		return "", err
 	}
 	logger.Info.Println(string(out))
@@ -65,11 +65,11 @@ func syncVolumeset(volumeSetId string) {
 	logger.Info.Println("Syncing Volumeset: ", volumeSetId)
 	out, err := exec.Command("/opt/clusterhq/bin/dpcli", "sync",  "volumeset", volumeSetId).CombinedOutput()
 	if err != nil {
-		logger.Error.Println("Could not sync dataset, reason: ", out)
+		logger.Error.Println("Could not sync dataset, reason: ", string(out))
 		logger.Error.Fatal(err)
 	// sometimes errors dont get sent to Stderr?
 	}else if strings.Contains(strings.ToLower(string(out)), "error"){
-		logger.Error.Println("Could not sync dataset, reason: ", out)
+		logger.Error.Println("Could not sync dataset, reason: ", string(out))
 		logger.Error.Fatal(err)
 	}
 	logger.Info.Println(string(out))
@@ -80,11 +80,11 @@ func pullSnapshot(snapshotId string){
 	logger.Info.Println("Pulling Snapshot: ", snapshotId)
 	out, err := exec.Command("/opt/clusterhq/bin/dpcli", "pull", "snapshot", snapshotId).CombinedOutput()
 	if err != nil {
-		logger.Error.Println("Could not pull dataset, reason: ", out)
+		logger.Error.Println("Could not pull dataset, reason: ", string(out))
 		logger.Error.Fatal(err)
 	// sometimes errors dont get sent to Stderr?
 	}else if strings.Contains(strings.ToLower(string(out)), "error"){
-		logger.Error.Println("Could not pull dataset, reason: ", out)
+		logger.Error.Println("Could not pull dataset, reason: ", string(out))
 		logger.Error.Fatal(err)
 	}
 	logger.Info.Println(string(out))

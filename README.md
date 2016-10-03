@@ -31,7 +31,10 @@ Usage of fli-docker:
 You can use the example here in this repository. Follow the below instructions.
 
 #### Install `fli-docker`
-TODO (install fli, docker-compose, fli-docker)
+
+- Install `fli` (TODO)
+- Install `docker` and `docker-compose`, see [here](https://docs.docker.com/compose/install/)
+- Install the fli-docker binary. (TODO)
 
 #### Run the example
 ```

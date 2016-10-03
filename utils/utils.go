@@ -65,7 +65,7 @@ func MakeCopy(composeFile string) {
 	srcFolder := composeFile
 	destFolder := composeFile + "-fli.copy"
 	exists, err := CheckForFile(destFolder)
-	if err !=nil {
+	if err != nil {
 			logger.Error.Fatal(err)
 		}
 	if exists {
@@ -73,7 +73,7 @@ func MakeCopy(composeFile string) {
 	}else {
 		cpCmd := exec.Command("cp", "-rf", srcFolder, destFolder)
 		err := cpCmd.Run()
-		if err !=nil {
+		if err != nil {
 			logger.Error.Fatal(err)
 		}
 	}
@@ -87,13 +87,14 @@ func CheckForCopy(composeFile string) {
 	srcFolder := composeFile
 	destFolder := composeFile + "-fli.copy"
 	exists, err := CheckForFile(destFolder)
-	if err !=nil {
-			logger.Error.Fatal(err)
+	if err != nil {
+			logger.Info.Println("No existing compose file copy.")
+			logger.Info.Println(err)
 		}
 	if exists{
 		cpCopyCmd := exec.Command("cp", "-rf", destFolder, srcFolder)
 		err := cpCopyCmd.Run()
-		if err !=nil {
+		if err != nil {
 			logger.Error.Fatal(err)
 		}
 	}

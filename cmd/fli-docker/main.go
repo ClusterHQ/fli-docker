@@ -67,7 +67,8 @@ func main() {
 	// verify that the manifest exists
 	isManifestAvail, err := utils.CheckForFile(manifest)
 	if (!isManifestAvail){
-		logger.Error.Fatal(err.Error())
+		logger.Error.Println(err.Error())
+		logger.Message.Println("Missing manifest, either name it 'manifest.yml' or pass in file with '-f'.)
 	}
 
 	// get the yaml file passed in the args.

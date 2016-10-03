@@ -19,7 +19,7 @@ func Init(
 	errorHandle io.Writer) {
 
 	Message = log.New(messageHandle,
-		"TRACE: ", log.Ldate|log.Ltime|log.Lshortfile)
+		"MESSAGE: ", log.Ldate|log.Ltime|log.Lshortfile)
 
 	Info = log.New(infoHandle,
 		"INFO: ", log.Ldate|log.Ltime|log.Lshortfile)

@@ -64,10 +64,41 @@ func CheckForCmd(cmd string) (result bool, err error) {
 func MakeCopy(composeFile string) {
 	srcFolder := composeFile
 	destFolder := composeFile + "-fli.copy"
-	cpCmd := exec.Command("cp", "-rf", srcFolder, destFolder)
-	err := cpCmd.Run()
-	if err !=nil {
-		logger.Error.Fatal(err)
+	exists, err := CheckForFile(destFolder)
+	if err != nil {
+		logger.Info.Println("No existing compose file copy.")
+		logger.Info.Println(err)
+	}
+	if exists {
+		logger.Info.Println("Copy already exists, not copying")
+	}else {
+		cpCmd := exec.Command("cp", "-rf", srcFolder, destFolder)
+		err := cpCmd.Run()
+		if err != nil {
+			logger.Error.Fatal(err)
+		}
+	}
+}
+
+func CheckForCopy(composeFile string) {
+	// If we already copied the original, we
+	// want to make sure we copy back the original
+	// before modifying it agian otherwise
+	// correct volume names may not exist.
+	srcFolder := composeFile
+	destFolder := composeFile + "-fli.copy"
+	exists, err := CheckForFile(destFolder)
+	if err != nil {
+		logger.Info.Println("No existing compose file copy.")
+		logger.Info.Println(err)
+	}
+	if exists {
+		logger.Info.Println("Refreshing compose app from copy")
+		cpCopyCmd := exec.Command("cp", "-rf", destFolder, srcFolder)
+		err := cpCopyCmd.Run()
+		if err != nil {
+			logger.Error.Fatal(err)
+		}
 	}
 }
 

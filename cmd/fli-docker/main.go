@@ -20,27 +20,27 @@ func main() {
 	var verbose bool
 	var project string
 
-	flag.StringVar(&tokenfile, "t", "", "Flocker Hub user token")
-	flag.StringVar(&flockerhub, "e", "", "Flocker Hub endpoint")
-	flag.StringVar(&manifest, "f", "manifest.yml", "Stateful application manifest file")
-	flag.BoolVar(&compose, "c", false, "if flag is present, fli-docker will start the compose services")
-	flag.BoolVar(&verbose, "verbose", false, "verbose logging")
-	flag.StringVar(&project, "project", "fli-compose", "project name for compose if using -c")
+	flag.StringVar(&tokenfile, "t", "", "[OPTIONAL] Flocker Hub user token")
+	flag.StringVar(&flockerhub, "e", "", "[OPTIONAL] Flocker Hub endpoint")
+	flag.StringVar(&manifest, "f", "manifest.yml", "[REQUIRED] Stateful application manifest file")
+	flag.BoolVar(&compose, "c", false, "[OPTIONAL] if flag is present, fli-docker will start the compose services")
+	flag.BoolVar(&verbose, "verbose", false, "[OPTIONAL] verbose logging")
+	flag.StringVar(&project, "p", "fli-compose", "[OPTIONAL] project name for compose if using -c")
 
 	// parse all the flags from user input
 	flag.Parse()
 
-    if verbose {
-    	logger.Init(os.Stdout, os.Stdout, os.Stdout, os.Stderr)
-    }else{
-    	logger.Init(os.Stdout, ioutil.Discard, ioutil.Discard, os.Stderr)
-    }
+	if verbose {
+		logger.Init(os.Stdout, os.Stdout, os.Stdout, os.Stderr)
+	}else{
+		logger.Init(os.Stdout, ioutil.Discard, ioutil.Discard, os.Stderr)
+	}
 
 	var composeCmd string
 	composeCmd = "docker-compose version"
 
 	var fliCmd string
-	// this will need `fli version` or somthing
+	// this will need `fli version` or something
 	fliCmd = "/opt/clusterhq/bin/dpcli"
 
 	// check if needed dependencies are available
@@ -67,7 +67,8 @@ func main() {
 	// verify that the manifest exists
 	isManifestAvail, err := utils.CheckForFile(manifest)
 	if (!isManifestAvail){
-		logger.Error.Fatal(err.Error())
+		logger.Error.Println(err.Error())
+		logger.Message.Fatal("Missing manifest, either name it 'manifest.yml' or pass in file with '-f'.")
 	}
 
 	// get the yaml file passed in the args.
@@ -82,30 +83,55 @@ func main() {
 	logger.Message.Println("Parsing the fli manifest...")
 	m := utils.ParseManifest(yamlFile)
 
+	// Was is passed with `-e`?
 	if flockerhub == "" {
 		logger.Warning.Println("FlockerHub endpoint not specified with -e, checking if set, or setting from manifest")
-		// TODO check from `dpcli get volumehub` if set.
-		// utils.GetFlockerHubEndpoint()
-		// IF ITS NOT SET
-			// check for endpoint in m.Hub.Endpoint from manifest.
-		logger.Info.Println("Found FlockerHub Endpoint " + m.Hub.Endpoint + "in manifest")
-			// TODO check if blank, exit if blank "must set FlockerHub endpoint"
-		flockerhub = m.Hub.Endpoint
-			// TODO if not, set the endpoint
-			// utils.SetFlockerHubEndpoint(flockerhub)
+		fh, err := cli.GetFlockerHubEndpoint()
+		if err != nil{
+			logger.Error.Fatal("Could not get FlockerHub configuration")
+		}
+		logger.Info.Println("Existing FlockerHub Endpoint config: ", fh)
+		// Was is placed in manifest?
+		flockerhubFromManifest := m.Hub.Endpoint
+		logger.Info.Println("FlockerHub Endpoint " + m.Hub.Endpoint + " in manifest")
+		if flockerhubFromManifest == "" {
+			// Did the user have a pre-existing fli setup? 
+			// Lets try and assume the volumes are there.
+			if fh == "" {
+				logger.Error.Fatal("Must set FlockerHub Endpoint")
+			}else{
+				logger.Info.Println("Trying existing FlockerHub configuration: ", fh)
+			}
+		}else{
+			// set endpoint from manifest
+			cli.SetFlockerHubEndpoint(flockerhubFromManifest)
+		}
+	}else{
+		// set endpoint from fli-docker arg
+		cli.SetFlockerHubEndpoint(flockerhub)
 	}
 
 	if tokenfile == "" {
-		logger.Warning.Println("token not specifed with -t, checking if set, or setting from manifest")
-		// TODO  check from `dpcli get tokenfile` if set
-		// utils.GetFlockerHubTokenFile()
-		// IF ITS NOT SET
-			// check for tokenfile in m.Hub.AuthToken from manifest.
-		logger.Info.Println("Found tokenfile " + m.Hub.AuthToken + "in manifest")
-			// TODO check if blank, exit if blank "must set FlockerHub tokenfile"
-		flockerhub = m.Hub.AuthToken
-			// TODO set dpcli tokenfile
-			// utils.SetFlockerHubTokenFile(tokenfile)
+		logger.Warning.Println("token not specified with -t, checking if set, or setting from manifest")
+		tf, err := cli.GetFlockerHubTokenFile()
+		if err != nil{
+			logger.Error.Fatal("Could not get tokenfile configuration")
+		}
+		logger.Info.Println("Existing tokenfile configuration: ", tf)
+		// Was is placed in the manifest?
+		logger.Info.Println("tokenfile " + m.Hub.AuthToken + " in manifest")
+		tokenfileFromManifest := m.Hub.AuthToken
+		if tokenfileFromManifest == "" {
+			if tf == "" {
+				logger.Error.Fatal("Must set tokenfile")
+			}else{
+				logger.Info.Println("Trying existing tokenfile configuration: ", tf)
+			}
+		}else{
+			cli.SetFlockerHubTokenFile(tokenfileFromManifest)
+		}
+	}else{
+		cli.SetFlockerHubTokenFile(tokenfile)
 	}
 
 	// verify that the compose file exists.
@@ -124,7 +150,10 @@ func main() {
 	newVolPaths, err := cli.CreateVolumesFromSnapshots(m.Volumes)
 
 	// create a copy of the compose file before we edit it.
+	// replace a fresh copy if we already copied before
+	utils.CheckForCopy(m.DockerApp)
 	// it will be `filename` + `-fli.copy`
+	// will only copy if copy doesnt exist already
 	utils.MakeCopy(m.DockerApp)
 
 	// replace volume_name with `volume_name`'s associated 

@@ -91,8 +91,9 @@ func CheckForCopy(composeFile string) {
 	if err != nil {
 		logger.Info.Println("No existing compose file copy.")
 		logger.Info.Println(err)
-		}
-	if exists{
+	}
+	if exists {
+		logger.Info.Println("Refreshing compose app from copy")
 		cpCopyCmd := exec.Command("cp", "-rf", destFolder, srcFolder)
 		err := cpCopyCmd.Run()
 		if err != nil {

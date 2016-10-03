@@ -33,7 +33,7 @@ func main() {
 	if verbose {
 		logger.Init(os.Stdout, os.Stdout, os.Stdout, os.Stderr)
 	}else{
-	logger.Init(os.Stdout, ioutil.Discard, ioutil.Discard, os.Stderr)
+		logger.Init(os.Stdout, ioutil.Discard, ioutil.Discard, os.Stderr)
 	}
 
 	var composeCmd string
@@ -68,7 +68,7 @@ func main() {
 	isManifestAvail, err := utils.CheckForFile(manifest)
 	if (!isManifestAvail){
 		logger.Error.Println(err.Error())
-		logger.Message.Println("Missing manifest, either name it 'manifest.yml' or pass in file with '-f'.")
+		logger.Message.Fatal("Missing manifest, either name it 'manifest.yml' or pass in file with '-f'.")
 	}
 
 	// get the yaml file passed in the args.

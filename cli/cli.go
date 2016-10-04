@@ -68,6 +68,8 @@ func syncVolumeset(volumeSetId string) {
 		logger.Error.Println("Could not sync dataset, reason: ", string(out))
 		logger.Error.Fatal(err)
 	// sometimes errors dont get sent to Stderr?
+	// **update from abhishek that this is fixed, so this will
+	// not be needed after we uupdate fli-docker to use fli grammer/later cli.**
 	}else if strings.Contains(strings.ToLower(string(out)), "error"){
 		logger.Error.Println("Could not sync dataset, reason: ", string(out))
 		logger.Error.Fatal(err)
@@ -83,6 +85,8 @@ func pullSnapshot(snapshotId string){
 		logger.Error.Println("Could not pull dataset, reason: ", string(out))
 		logger.Error.Fatal(err)
 	// sometimes errors dont get sent to Stderr?
+	// **update from abhishek that this is fixed, so this will
+	// not be needed after we uupdate fli-docker to use fli grammer/later cli.**
 	}else if strings.Contains(strings.ToLower(string(out)), "error"){
 		logger.Error.Println("Could not pull dataset, reason: ", string(out))
 		logger.Error.Fatal(err)

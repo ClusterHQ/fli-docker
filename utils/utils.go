@@ -5,6 +5,7 @@ import (
 	"os"
 	"io/ioutil"
 	"bytes"
+	"strings"
 
 	"gopkg.in/yaml.v2"
 	"golang.org/x/net/context"
@@ -149,7 +150,7 @@ func ParseCompose(composeFile string) {
 	project, err := docker.NewProject(&ctx.Context{
 		Context: project.Context{
 			ComposeFiles: []string{composeFile},
-			ProjectName:  "fli-compose", // configurable?
+			ProjectName:  "fli-compose",
 		},
 	}, nil)
 
@@ -179,4 +180,14 @@ func RunCompose(composeFile string, projectName string) {
     if err != nil {
         logger.Error.Fatal(err)
     }
+}
+
+//Generate UUIDs
+func GenUUID() (uuid string, err error){
+	out, err := exec.Command("uuidgen").Output()
+    if err != nil {
+        logger.Error.Println(err)
+        return " ", err
+    }
+    return strings.ToLower(string(out)), nil
 }

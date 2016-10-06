@@ -7,33 +7,23 @@ First, create some snapshots to use with a SAM
 ```
 $ dpcli set volumehub "http://<FlockerHub_URL>"
 $ dpcli set tokenfile /root/vhut.txt 
-$ dpcli create volumeset -n docker-app-example
-$ dpcli create volume -v docker-app-example
+$ dpcli create volumeset -d "a volumeset for fli-docker"  docker-app-example
+$ dpcli create volume -v docker-app-example first_volume
 
 $ touch /chq/<volume>/one.txt
-$ dpcli create snapshot -V <volume> -b sam-example -a purpose=sam
+$ dpcli create snapshot -V <volume> -b fli-docker-branch snapshotOf_first_volume
 
 $ touch /chq/<volume>/two.txt
-$ dpcli create snapshot -V <volume> -b sam-example -a purpose=sam,snap=two
+$ dpcli create snapshot -V <volume> -b fli-docker-branch -a snap=2 snapshotOf_first_volume_2
 
 $ touch /chq/<volume>/three.txt
-$ dpcli create snapshot -V <volume> -b sam-example -a purpose=sam,snap=three
+$ dpcli create snapshot -V <volume> -b fli-docker-branch -a snap=3 snapshotOf_first_volume_3
 
 $ dpcli sync volumeset docker-app-example
 $ dpcli push volumeset docker-app-example
 ```
 
 Use these three snapshots in the SAM
-
-> example output
-
-```
-$ dpcli show snapshot -v ca7f73e8-3665-4559-9414-36f89bbb80ec
-BRANCH      ID                                   ATTRIBUTES
-sam-example 11105373-b878-4433-8c8a-af6d684fe506 purpose=sam,snap=three
-            7c5c6dcb-8c65-4e68-ba60-262f8d5bf015 purpose=sam,snap=two
-            1670c1ff-c8be-4087-8eee-5a8598061a33 purpose=sam
-```
 
 Example SAM
 
@@ -46,20 +36,12 @@ flocker_hub:
 
 volumes:
     - name: redis-data
-      snapshot: 11105373-b878-4433-8c8a-af6d684fe506
+      snapshot: snapshotOf_first_volume
       volumeset: docker-app-example
     - name: artifacts
-      snapshot: 7c5c6dcb-8c65-4e68-ba60-262f8d5bf015
+      snapshot: snapshotOf_first_volume_2
       volumeset: docker-app-example
     - name: /my/path
-      snapshot: 1670c1ff-c8be-4087-8eee-5a8598061a33
+      snapshot: snapshotOf_first_volume_3
       volumeset: docker-app-example
 ```
-
-## Example 2
-
-TODO
-
-## Example 3
-
-TODO

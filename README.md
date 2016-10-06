@@ -156,13 +156,13 @@ flocker_hub:
 
 volumes:
     - name: redis-data
-      snapshot: 11105373-b878-4433-8c8a-af6d684fe506
+      snapshot: snapshotOf_first_volume
       volumeset: docker-app-example
     - name: artifacts
-      snapshot: 7c5c6dcb-8c65-4e68-ba60-262f8d5bf015
+      snapshot: snapshotOf_first_volume_2
       volumeset: docker-app-example
     - name: /my/path
-      snapshot: 1670c1ff-c8be-4087-8eee-5a8598061a33
+      snapshot: snapshotOf_first_volume_3
       volumeset: docker-app-example
 ```
 
@@ -192,9 +192,35 @@ In this case, the CLI commands above would perform the necessary `pull` and `cre
 commands with fli and manipulate the docker-compose file so that when it is brought up
 it can be brought up with your snapshots layed out in the manifest.
 
-- `artifacts` would become snapshot : `11105373-b878-4433-8c8a-af6d684fe506`
-- `redis-data` would become snapshot: `7c5c6dcb-8c65-4e68-ba60-262f8d5bf015`
-- `/my/path` would become snapshot: `1670c1ff-c8be-4087-8eee-5a8598061a33`
+- `artifacts` would become snapshot : `snapshotOf_first_volume_2`
+- `redis-data` would become snapshot: `snapshotOf_first_volume`
+- `/my/path` would become snapshot: `snapshotOf_first_volume_3`
+
+### Using Branches or Volumsets for volumes.
+
+FlockerHub allows a user to create a volume from the tip of a branch or volumeset which is
+compromised of many volumes.
+
+#### To use a branch (Not implemented yet)
+
+Use `branch` instead of `snapshot`
+
+```
+volumes:
+    - name: redis-data
+      branch: branch-name
+      volumeset: docker-app-example
+```
+
+#### To use a volumeset (Not implemented yet)
+
+Just leave out `branch` or `snapshot` and `fli` will use the `volumeset`
+
+```
+volumes:
+    - name: redis-data
+      volumeset: docker-app-example
+```
 
 ### Notes
 

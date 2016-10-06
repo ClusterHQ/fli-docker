@@ -11,10 +11,15 @@ type FlockerHub struct {
 	AuthToken string  `yaml:"tokenfile"`
 }
 
+// The idea is that we could use the manifest
+// to create a volume from a snapshot, branch, or volumeset.
+// Having only a VolumeSet in the manifest can indicate
+// creating from a VolumeSet or branch or snapshot respectively.
 type Volume struct {
 	Name string      `yaml:"name"`
 	Snapshot string  `yaml:"snapshot"`
 	VolumeSet string `yaml:"volumeset"`
+	Branch string  `yaml:"branch"`
 }
 
 // Represents {compose_volume_name : "/chq/<vol_path>"}

@@ -40,7 +40,8 @@ func main() {
 	composeCmd = "docker-compose version"
 
 	var fliCmd string
-	// this will need `fli version` or something
+	// this needs `fli version` or something better
+	// to check if fli is installed / functional
 	fliCmd = "/opt/clusterhq/bin/dpcli"
 
 	// check if needed dependencies are available
@@ -83,15 +84,15 @@ func main() {
 	logger.Message.Println("Parsing the fli manifest...")
 	m := utils.ParseManifest(yamlFile)
 
-	// Was is passed with `-e`?
+	// was it passed with `-e`?
 	if flockerhub == "" {
-		logger.Warning.Println("FlockerHub endpoint not specified with -e, checking if set, or setting from manifest")
+		logger.Info.Println("FlockerHub endpoint not specified with -e")
 		fh, err := cli.GetFlockerHubEndpoint()
 		if err != nil{
-			logger.Error.Fatal("Could not get FlockerHub configuration")
+			logger.Error.Fatal("Could not get FlockerHub config")
 		}
 		logger.Info.Println("Existing FlockerHub Endpoint config: ", fh)
-		// Was is placed in manifest?
+		// was it placed in manifest?
 		flockerhubFromManifest := m.Hub.Endpoint
 		logger.Info.Println("FlockerHub Endpoint " + m.Hub.Endpoint + " in manifest")
 		if flockerhubFromManifest == "" {
@@ -112,12 +113,12 @@ func main() {
 	}
 
 	if tokenfile == "" {
-		logger.Warning.Println("token not specified with -t, checking if set, or setting from manifest")
+		logger.Info.Println("token not specified with -t")
 		tf, err := cli.GetFlockerHubTokenFile()
 		if err != nil{
-			logger.Error.Fatal("Could not get tokenfile configuration")
+			logger.Error.Fatal("Could not get tokenfile config")
 		}
-		logger.Info.Println("Existing tokenfile configuration: ", tf)
+		logger.Info.Println("Existing tokenfile config: ", tf)
 		// Was is placed in the manifest?
 		logger.Info.Println("tokenfile " + m.Hub.AuthToken + " in manifest")
 		tokenfileFromManifest := m.Hub.AuthToken
@@ -125,7 +126,7 @@ func main() {
 			if tf == "" {
 				logger.Error.Fatal("Must set tokenfile")
 			}else{
-				logger.Info.Println("Trying existing tokenfile configuration: ", tf)
+				logger.Info.Println("Trying existing tokenfile config: ", tf)
 			}
 		}else{
 			cli.SetFlockerHubTokenFile(tokenfileFromManifest)

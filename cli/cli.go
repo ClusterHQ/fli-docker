@@ -8,6 +8,7 @@ import (
 
 	"github.com/ClusterHQ/fli-docker/types"
 	"github.com/ClusterHQ/fli-docker/logger"
+	"github.com/ClusterHQ/fli-docker/utils"
 )
 
 /*
@@ -32,8 +33,7 @@ func GetFlockerHubEndpoint() (flockerhubEndpoint string, err error) {
 		return "", err
 	}
 	logger.Info.Println(string(out))
-	//TODO Parse, "out" to get specific volumehub string
-	//TODO return "https://someurl:8084", nil
+	//TODO Parse, output to get specific volumehub string
 	return string(out), nil
 }
 
@@ -55,8 +55,7 @@ func GetFlockerHubTokenFile() (flockerHubTokenFile string, err error) {
 		return "", err
 	}
 	logger.Info.Println(string(out))
-	//TODO Parse, "out" to get specific tokenfile string
-	//TODO return "/root/vhut.txt", nil
+	//TODO Parse, output to get specific tokenfile string
 	return string(out), nil
 }
 
@@ -67,9 +66,9 @@ func syncVolumeset(volumeSetId string) {
 	if err != nil {
 		logger.Error.Println("Could not sync dataset, reason: ", string(out))
 		logger.Error.Fatal(err)
-	// sometimes errors dont get sent to Stderr?
-	// **update from abhishek that this is fixed, so this will
-	// not be needed after we uupdate fli-docker to use fli grammer/later cli.**
+	// sometimes errors dont get sent to STDERR?
+	// update from abhishek 10/4/16 that this will be fixed, so this will
+	// not be needed after we update fli-docker to use fli grammer/later cli.
 	}else if strings.Contains(strings.ToLower(string(out)), "error"){
 		logger.Error.Println("Could not sync dataset, reason: ", string(out))
 		logger.Error.Fatal(err)
@@ -79,14 +78,17 @@ func syncVolumeset(volumeSetId string) {
 
 // Run the command to pull a specific snapshot
 func pullSnapshot(snapshotId string){
+	// in this dpcli version its you cannot pull by snapshot name.
+	// so this will fail if user provides the name instead of the id.
+	// should be easily fixed in later fli versions it think.
 	logger.Info.Println("Pulling Snapshot: ", snapshotId)
 	out, err := exec.Command("/opt/clusterhq/bin/dpcli", "pull", "snapshot", snapshotId).CombinedOutput()
 	if err != nil {
 		logger.Error.Println("Could not pull dataset, reason: ", string(out))
 		logger.Error.Fatal(err)
-	// sometimes errors dont get sent to Stderr?
-	// **update from abhishek that this is fixed, so this will
-	// not be needed after we uupdate fli-docker to use fli grammer/later cli.**
+	// sometimes errors dont get sent to STDERR?
+	// update from abhishek 10/4/16 that this will be fixed, so this will
+	// not be needed after we update fli-docker to use fli grammer/later cli.
 	}else if strings.Contains(strings.ToLower(string(out)), "error"){
 		logger.Error.Println("Could not pull dataset, reason: ", string(out))
 		logger.Error.Fatal(err)
@@ -95,12 +97,10 @@ func pullSnapshot(snapshotId string){
 }
 
 // Wrapper for sync and pull which takes
-// a List of type Volume above to pull.
+// a list of type Volume
 func PullSnapshots(volumes []types.Volume) {
 	for _, volume := range volumes {
 		syncVolumeset(volume.VolumeSet)
-		// maybe worth traking if we already sync'd a volumset
-		// and skipping another sync during the same PullSnapshots call.
 		pullSnapshot(volume.Snapshot)
 	}
 }
@@ -109,13 +109,22 @@ func PullSnapshots(volumes []types.Volume) {
 func createVolumeFromSnapshot(volumeName string, snapshotId string) (vol types.NewVolume, err error){
 	logger.Info.Println("Creating Volume from Snapshot: ", snapshotId)
 	var attrString = fmt.Sprintf("created_by=fli-docker,from_snap=%s", snapshotId)
-	cmd := exec.Command("/opt/clusterhq/bin/dpcli", "create", "volume", "--snapshot", snapshotId, "-a", attrString)
+	uuid, err := utils.GenUUID()
+	if err != nil {
+		logger.Error.Fatal(err)
+	}
+
+	var volName = fmt.Sprintf("fli-%s", uuid)
+	cmd := exec.Command("/opt/clusterhq/bin/dpcli", "create", "volume", 
+		"--snapshot", snapshotId, "-a", attrString, volName)
 	createOut, err := cmd.Output()
 	if err != nil {
 		logger.Error.Fatal(err)
 	}
+
 	logger.Info.Println(string(createOut))
-	r, _ := regexp.Compile("/chq/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
+	// This is where dpcli volume path <volume-name> would be handy.
+	r, _ := regexp.Compile("/chq/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
 	path := r.FindString(string(createOut))
 	if path == "" {
 			logger.Error.Fatal("Could not find volume path")

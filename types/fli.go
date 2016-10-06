@@ -19,7 +19,7 @@ type Volume struct {
 	Name string      `yaml:"name"`
 	Snapshot string  `yaml:"snapshot"`
 	VolumeSet string `yaml:"volumeset"`
-	Branch string  `yaml:"branch"`
+	Branch string    `yaml:"branch"`
 }
 
 // Represents {compose_volume_name : "/chq/<vol_path>"}

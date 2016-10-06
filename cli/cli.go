@@ -78,6 +78,9 @@ func syncVolumeset(volumeSetId string) {
 
 // Run the command to pull a specific snapshot
 func pullSnapshot(snapshotId string){
+	// in this dpcli version its you cannot pull by snapshot name.
+	// so this will fail if user provides the name instead of the id.
+	// should be easily fixed in later fli versions it think.
 	logger.Info.Println("Pulling Snapshot: ", snapshotId)
 	out, err := exec.Command("/opt/clusterhq/bin/dpcli", "pull", "snapshot", snapshotId).CombinedOutput()
 	if err != nil {

@@ -57,11 +57,11 @@ dd97db0fc133        clusterhq/moby-counter:dcsea   "node index.js"          6 se
 5d535f5e1d55        redis:latest                   "docker-entrypoint.sh"   6 seconds ago       Up 5 seconds        6379/tcp             myproject_redis_1
 
 
-$ $ docker inspect -f "{{.Mounts}}" myproject_web_1
-[{ /chq/aff85bcb-3e2d-44b4-a458-9a4d7f030795 /myapp/artifacts  rw true rprivate}]
-$ docker inspect -f "{{.Mounts}}" myproject_redis_1
-[{ /chq/4083f9c2-3d8c-475e-bcab-06eefd49f60b /data  rw true rprivate}
- { /chq/33a74a69-ef86-40bb-afe6-8d82a2128dd7 /tmp/path  rw true rprivate}]
+$ docker inspect -f "{{.Mounts}}" redismoby_web_1
+[{ /chq/907ee560-0110-4ab2-aaad-091ed9bb474f/e4aed515-4f80-426c-ae13-b9a7b0487ab4 /myapp/artifacts  rw true rprivate}]
+
+$ docker inspect -f "{{.Mounts}}" redismoby_redis_1
+[{ /chq/907ee560-0110-4ab2-aaad-091ed9bb474f/94ec5b24-1f3a-4695-b172-d17b840596c5 /data  rw true rprivate} { /chq/907ee560-0110-4ab2-aaad-091ed9bb474f/c574874b-822e-4bf3-8a25-e63b4733619e /tmp/path  rw true rprivate}]
 ```
 
 Optionally you dont have to specify `-c` or  `-p` so you can start the compose app yourself. Without `-c`
@@ -86,12 +86,12 @@ services:
     ports:
       - "80:80"
     volumes:
-      - /chq/aff85bcb-3e2d-44b4-a458-9a4d7f030795:/myapp/artifacts/
+      - /chq/907ee560-0110-4ab2-aaad-091ed9bb474f/e4aed515-4f80-426c-ae13-b9a7b0487ab4:/myapp/artifacts/
   redis:
     image: redis:latest
     volumes:
-       - '/chq/4083f9c2-3d8c-475e-bcab-06eefd49f60b:/data'
-       - /chq/33a74a69-ef86-40bb-afe6-8d82a2128dd7:/tmp/path
+       - '/chq/907ee560-0110-4ab2-aaad-091ed9bb474f/94ec5b24-1f3a-4695-b172-d17b840596c5:/data'
+       - /chq/907ee560-0110-4ab2-aaad-091ed9bb474f/c574874b-822e-4bf3-8a25-e63b4733619e:/tmp/path
 
 $ docker-compose -f docker-compose-app1.yml up -d
 Pulling web (clusterhq/moby-counter:dcsea)...
@@ -113,11 +113,10 @@ redismoby_redis_1   docker-entrypoint.sh redis ...   Up      6379/tcp
 redismoby_web_1     node index.js                    Up      0.0.0.0:80->80/tcp 
 
 $ docker inspect -f "{{.Mounts}}" redismoby_web_1
-[{ /chq/aff85bcb-3e2d-44b4-a458-9a4d7f030795 /myapp/artifacts  rw true rprivate}]
-$ docker inspect -f "{{.Mounts}}" redismoby_redis_1
-[{ /chq/4083f9c2-3d8c-475e-bcab-06eefd49f60b /data  rw true rprivate}
- { /chq/33a74a69-ef86-40bb-afe6-8d82a2128dd7 /tmp/path  rw true rprivate}]
+[{ /chq/907ee560-0110-4ab2-aaad-091ed9bb474f/e4aed515-4f80-426c-ae13-b9a7b0487ab4 /myapp/artifacts  rw true rprivate}]
 
+$ docker inspect -f "{{.Mounts}}" redismoby_redis_1
+[{ /chq/907ee560-0110-4ab2-aaad-091ed9bb474f/94ec5b24-1f3a-4695-b172-d17b840596c5 /data  rw true rprivate} { /chq/907ee560-0110-4ab2-aaad-091ed9bb474f/c574874b-822e-4bf3-8a25-e63b4733619e /tmp/path  rw true rprivate}]
 ```
 
 ## Stateful Application Manifest (SAM)
@@ -156,13 +155,13 @@ flocker_hub:
 
 volumes:
     - name: redis-data
-      snapshot: snapshotOf_first_volume
+      snapshot: e6bfe755-6423-48cb-bf22-d9e4b799c305
       volumeset: docker-app-example
     - name: artifacts
-      snapshot: snapshotOf_first_volume_2
+      snapshot: 17ba9c95-dacf-4341-b434-58bb88186562
       volumeset: docker-app-example
     - name: /my/path
-      snapshot: snapshotOf_first_volume_3
+      snapshot: fa838c3a-4647-4bd9-951b-d56ba5a0ce12
       volumeset: docker-app-example
 ```
 

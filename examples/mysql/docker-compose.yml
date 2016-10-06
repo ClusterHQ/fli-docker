@@ -1,0 +1,10 @@
+version: '2'
+services:
+  web:
+    image: mysql/mysql-server
+    environment:
+       - "MYSQL_ROOT_PASSWORD=my-secret-pw"
+    ports:
+      - "3306"
+    volumes:
+      - mysql-data:/var/lib/mysql

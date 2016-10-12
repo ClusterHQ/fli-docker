@@ -211,16 +211,6 @@ volumes:
       volumeset: docker-app-example
 ```
 
-#### To use a volumeset (Not implemented yet)
-
-Just leave out `branch` or `snapshot` and `fli` will use the `volumeset`
-
-```
-volumes:
-    - name: redis-data
-      volumeset: docker-app-example
-```
-
 ### Notes
 
 - You may run this from anywhere `docker-compose`, `docker` and `fli` are installed.

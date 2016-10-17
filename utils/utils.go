@@ -36,10 +36,10 @@ Version: v0.0.1`
 
 var FliDockerHelp = `
 Usage:
-	fli-docker version
-	fli-docker run
-	fli-docker snapshot
-	fli-docker help
+	fli-docker version  (Get current tool version)
+	fli-docker run      (Run with a manifest to pull and use snapshots for the compose app)
+	fli-docker snapshot (Run to snapshot existing volumes use by the compose app)
+	fli-docker --help   (Get this help message)
 
 	For help on a specific command, use: $ fli-docker <subcommand> --help`
 

@@ -20,16 +20,29 @@ import (
 )
 
 var ComposeHelpMessage = `
-		-----------------------------------------------------------------------
-		docker-compose is not installed, it is needed to use fli-docker\n")
-		docker-compose is available at https://docs.docker.com/compose/install/
-		-----------------------------------------------------------------------`
+-----------------------------------------------------------------------
+docker-compose is not installed, it is needed to use fli-docker\n")
+docker-compose is available at https://docs.docker.com/compose/install/
+-----------------------------------------------------------------------`
 
 var FliHelpMessage = `
-		-------------------------------------------------------
-		fli is not installed, it is needed to use fli-docker
-		fli is available at https://clusterhq.com
-		-------------------------------------------------------`
+-------------------------------------------------------
+fli is not installed, it is needed to use fli-docker
+fli is available at https://clusterhq.com
+-------------------------------------------------------`
+
+var FliDockerVersion = `
+Version: v0.0.1`
+
+var FliDockerHelp = `
+Usage:
+	fli-docker version
+	fli-docker run
+	fli-docker snapshot
+	fli-docker help
+
+	For help on a specific command, use: $ fli-docker <subcommand> --help`
+
 
 func CheckForPath(path string) (result bool, err error) {
 	isPath, errPath := exec.LookPath(path)

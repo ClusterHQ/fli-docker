@@ -18,7 +18,6 @@ type FlockerHub struct {
 type Volume struct {
 	Name string      `yaml:"name"`
 	Snapshot string  `yaml:"snapshot"`
-	VolumeSet string `yaml:"volumeset"`
 	Branch string    `yaml:"branch"`
 }
 

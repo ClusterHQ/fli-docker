@@ -2,7 +2,7 @@ docker_app: docker-compose.yml
 
 flocker_hub:
     endpoint: http://<ip|dnsname>:<port>
-    tokenfile: /root/vhut.txt
+    tokenfile: /root/fhut.txt
 
 volumes:
     - name: mysql-data

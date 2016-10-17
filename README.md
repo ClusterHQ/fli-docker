@@ -11,19 +11,14 @@ synchronizes data snapshots locally, and maps them to Docker volumes in the Dock
 To utilize the ClusterHQ `fli-docker` utility, examine the following command line arguments.
 
 ```
-fli-docker --help
-Usage of fli-docker:
-  -c  [OPTIONAL] if flag is present, fli-docker will start the compose services
-  -e string
-      [OPTIONAL] Flocker Hub endpoint, optionally set it in the manifest YAML
-  -f string
-      [OPTIONAL] Stateful application manifest file (default "manifest.yml")
-  -p string
-      [OPTIONAL] project name for compose if using -c (default "fli-compose")
-  -t string
-      [OPTIONAL] Flocker Hub user token, optionally set it in the manifest YAML
-  -verbose
-      [OPTIONAL] verbose logging
+$ fli-docker --help
+Usage:
+  fli-docker version  (Get current tool version)
+  fli-docker run      (Run with a manifest to pull and use snapshots for the compose app)
+  fli-docker snapshot (Run to snapshot existing volumes use by the compose app)
+  fli-docker --help   (Get this help message)
+
+  For help on a specific command, use: $ fli-docker <subcommand> --help
 ```
 
 ### Example
@@ -36,13 +31,18 @@ You can use the example here in this repository. Follow the below instructions.
 - Install `docker` and `docker-compose`, see [here](https://docs.docker.com/compose/install/)
 - Install the fli-docker binary. (TODO)
 
-#### Run the example
+#### fli-docker run
+
+Use the example if you want.
 ```
 $ git clone https://github.com/ClusterHQ/fli-docker/
 
 $ cd fli-docker/examples/redis-moby
+```
 
-$ fli-docker -f fli-manifest.yml -c -p myproject
+Run the example
+```
+$ fli-docker run -f fli-manifest.yml -c -p myproject
 MESSAGE: 2016/10/03 21:55:19 main.go:83: Parsing the fli manifest...
 MESSAGE: 2016/10/03 21:55:19 main.go:144: Pulling FlockerHub volumes...
 MESSAGE: 2016/10/03 21:55:24 main.go:149: Creating volumes from snapshots...
@@ -68,7 +68,7 @@ Optionally you dont have to specify `-c` or  `-p` so you can start the compose a
 `fli-docker` will just modify the docker compose file and let you manage bring the services up.
 
 ```
-$ fli-docker -f fli-manifest.yml
+$ fli-docker run -f fli-manifest.yml
 MESSAGE: 2016/10/03 22:06:21 main.go:83: Parsing the fli manifest...
 MESSAGE: 2016/10/03 22:06:21 main.go:144: Pulling FlockerHub volumes...
 MESSAGE: 2016/10/03 22:06:26 main.go:149: Creating volumes from snapshots...
@@ -119,6 +119,23 @@ $ docker inspect -f "{{.Mounts}}" redismoby_redis_1
 [{ /chq/907ee560-0110-4ab2-aaad-091ed9bb474f/94ec5b24-1f3a-4695-b172-d17b840596c5 /data  rw true rprivate} { /chq/907ee560-0110-4ab2-aaad-091ed9bb474f/c574874b-822e-4bf3-8a25-e63b4733619e /tmp/path  rw true rprivate}]
 ```
 
+#### fli-docker snapshot
+
+Once you have a compose app running with `fli-docker`, you can snapshot and optionally push the volumes
+back to FlockerHub.
+
+> Note: This is not implemented yet.
+
+Snapshot the volumes and push them to FlockerHub
+```
+$ fli-docker snapshot -f manifest.yml --push
+```
+
+Snapshot the volumes, but do not push them to FlockerHub
+```
+$ fli-docker snapshot -f manifest.yml
+```
+
 ## Stateful Application Manifest (SAM)
 
 The Stateful Application Manifest (SAM) looks similar to a Docker Compose file, with a few key changes.
@@ -128,8 +145,6 @@ The Stateful Application Manifest (SAM) looks similar to a Docker Compose file, 
 
 The `fli-docker` utility takes a `docker-compose.yml` file as input, and translates
 volumes in the Docker Compose file to Flocker Hub snapshots.
-
-> Important Note: Right now, this only works with "named volumes" (see below)
 
 [Compose File Reference Link](https://docs.docker.com/compose/compose-file/#/volumes-volume-driver)
 
@@ -151,7 +166,7 @@ docker_app: docker-compose-app1.yml
 
 flocker_hub:
     endpoint: http://<ip|dnsname>:<port>
-    tokenfile: /root/vhut.txt
+    tokenfile: /root/fhut.txt
 
 volumes:
     - name: redis-data

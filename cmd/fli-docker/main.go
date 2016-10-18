@@ -43,7 +43,7 @@ func main() {
 
 	// Initialize logger before `verbose` is captured for
 	// log messages before that conditional
-	logger.Init(os.Stdout, os.Stdout, os.Stdout, os.Stderr)
+	logger.Init(os.Stdout, ioutil.Discard, ioutil.Discard, os.Stderr)
 
 	if (len(os.Args) > 1) {
 		if (strings.Contains(os.Args[1], "help")) {os.Args[1] = "help"}

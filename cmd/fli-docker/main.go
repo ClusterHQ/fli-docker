@@ -25,6 +25,7 @@ func main() {
 	// FlagSets for SubCommands
 	runSet := flag.NewFlagSet("fli-docker run", flag.ExitOnError)
 	snapSet := flag.NewFlagSet("fli-docker snapshot", flag.ExitOnError)
+	stopDestroySet := flag.NewFlagSet("fli-docker stop (or) fli-docker destroy", flag.ExitOnError)
 
 	// runSet
 	runSet.StringVar(&tokenfile, "t", "", "[OPTIONAL] Flocker Hub user token, optionally set it in the manifest YAML")
@@ -41,9 +42,14 @@ func main() {
 	snapSet.BoolVar(&push, "push", false, "[OPTIONAL] if flag is present, fli-docker will push new snapshots back to FlockerHub")
 	snapSet.BoolVar(&verbose, "verbose", false, "[OPTIONAL] verbose logging")
 
+	// stopSet
+	stopDestroySet.BoolVar(&verbose, "verbose", false, "[OPTIONAL] verbose logging")
+	stopDestroySet.StringVar(&manifest, "f", "manifest.yml", "[OPTIONAL] Stateful application manifest file")
+    stopDestroySet.StringVar(&project, "p", "fli-compose", "[OPTIONAL] project name for compose if using -c")
+
 	// Initialize logger before `verbose` is captured for
 	// log messages before that conditional
-	logger.Init(os.Stdout, os.Stdout, os.Stdout, os.Stderr)
+	logger.Init(os.Stdout, ioutil.Discard, ioutil.Discard, os.Stderr)
 
 	if (len(os.Args) > 1) {
 		if (strings.Contains(os.Args[1], "help")) {os.Args[1] = "help"}
@@ -55,7 +61,15 @@ func main() {
     			runSet.Parse(os.Args[2:])
     		case "snapshot":
     			snapSet.Parse(os.Args[2:])
-    			logger.Message.Println("Not Implemented Yet")
+    			logger.Message.Println("snapshot Not Implemented Yet")
+    			os.Exit(0)
+    		case "destroy":
+    			stopDestroySet.Parse(os.Args[2:])
+    			logger.Message.Println("destroy Not Implemented Yet")
+    			os.Exit(0)
+    		case "stop":
+    			stopDestroySet.Parse(os.Args[2:])
+    			logger.Message.Println("stop Not Implemented Yet")
     			os.Exit(0)
     		case "help":
     			snapSet.Parse(os.Args[2:])
@@ -233,5 +247,27 @@ func main() {
 		}
 
 		logger.Info.Println("Running: `fli-docker snapshot`")
+
+	} else if os.Args[1] == "destroy" {
+		// TODO this will do docker-compose rm -f
+
+		if verbose {
+			logger.Init(os.Stdout, os.Stdout, os.Stdout, os.Stderr)
+		}else{
+			logger.Init(os.Stdout, ioutil.Discard, ioutil.Discard, os.Stderr)
+		}
+
+		logger.Info.Println("Running: `fli-docker destroy`")
+
+	} else if os.Args[1] == "stop" {
+		// TODO this will do docker-compose stop
+
+		if verbose {
+			logger.Init(os.Stdout, os.Stdout, os.Stdout, os.Stderr)
+		}else{
+			logger.Init(os.Stdout, ioutil.Discard, ioutil.Discard, os.Stderr)
+		}
+
+		logger.Info.Println("Running: `fli-docker stop`")
 	}
 }

@@ -78,7 +78,7 @@ func GetFlockerHubTokenFile(bin bool) (flockerHubTokenFile string, err error) {
 	}
 
 	logger.Info.Println("Getting FlockerHub Tokenfile")
-	var cmd = fmt.Sprintf("%s config | grep 'Authentication Token File:' | awk '{print $3}'", fli)
+	var cmd = fmt.Sprintf("%s config | grep 'Authentication Token File:' | awk '{print $4}'", fli)
 	out, err := exec.Command("sh", "-c", cmd).Output()
 	if err != nil {
 		logger.Error.Println("Could not get tokenfile")

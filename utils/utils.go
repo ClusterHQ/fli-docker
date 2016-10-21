@@ -31,14 +31,15 @@ fli is not installed, it is needed to use fli-docker
 fli is available at https://clusterhq.com
 -------------------------------------------------------`
 
-var FliDockerVersion = `
-Version: v0.0.1`
+var FliDockerVersion = `Version: v0.0.1-dev`
 
 var FliDockerHelp = `
 Usage:
-	fli-docker version  (Get current tool version)
-	fli-docker run      (Run with a manifest to pull and use snapshots for the compose app)
-	fli-docker snapshot (Run to snapshot existing FlockerHub volumes used by the compose app)
+	fli-docker version  [options]  (Get current tool version)
+	fli-docker run      [options]  (Run with a manifest to pull and use snapshots for the compose app)
+	fli-docker snapshot [options]  (Run to snapshot existing FlockerHub volumes used by the compose app)
+	fli-docker stop     [options]  (Just like running a docker-compose stop)
+	fli-docker destroy  [options]  (Just like running a docker-compose rm -f)
 	fli-docker --help   (Get this help message)
 
 	For help on a specific command, use: $ fli-docker <subcommand> --help`

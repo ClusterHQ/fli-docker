@@ -40,7 +40,7 @@ func GetFlockerHubEndpoint(bin bool) (flockerhubEndpoint string, err error) {
 	}
 
 	logger.Info.Println("Getting FlockerHub Endpoint")
-	var cmd = fmt.Sprintf("%s config | grep 'FlockerHub URL:' | ark '{print $3}'", fli)
+	var cmd = fmt.Sprintf("%s config | grep 'FlockerHub URL:' | awk '{print $3}'", fli)
 	out, err := exec.Command("sh", "-c", cmd).Output()
 	if err != nil {
 		logger.Error.Println("Could not get endpoint")

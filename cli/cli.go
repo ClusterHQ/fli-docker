@@ -60,7 +60,7 @@ func SetFlockerHubTokenFile(tokenFile string, bin bool) {
 	}
 
 	logger.Info.Println("Setting FlockerHub Tokenfile: ", tokenFile)
-	var cmd = fmt.Sprintf("%s config -f %s", fli, tokenFile)
+	var cmd = fmt.Sprintf("%s config -t %s", fli, tokenFile)
 	out, err := exec.Command("sh", "-c", cmd).Output()
 	if err != nil {
 		logger.Error.Println("Could not set tokenfile")

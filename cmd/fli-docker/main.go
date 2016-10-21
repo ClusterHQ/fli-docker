@@ -59,16 +59,36 @@ func main() {
     			os.Exit(0)
   			case "run":
     			runSet.Parse(os.Args[2:])
+    			if verbose {
+					logger.Init(os.Stdout, os.Stdout, os.Stdout, os.Stderr)
+				}else{
+					logger.Init(os.Stdout, ioutil.Discard, ioutil.Discard, os.Stderr)
+				}
     		case "snapshot":
     			snapSet.Parse(os.Args[2:])
+    			if verbose {
+					logger.Init(os.Stdout, os.Stdout, os.Stdout, os.Stderr)
+				}else{
+					logger.Init(os.Stdout, ioutil.Discard, ioutil.Discard, os.Stderr)
+				}
     			logger.Message.Println("snapshot Not Implemented Yet")
     			os.Exit(0)
     		case "destroy":
     			stopDestroySet.Parse(os.Args[2:])
+    			if verbose {
+					logger.Init(os.Stdout, os.Stdout, os.Stdout, os.Stderr)
+				}else{
+					logger.Init(os.Stdout, ioutil.Discard, ioutil.Discard, os.Stderr)
+				}
     			logger.Message.Println("destroy Not Implemented Yet")
     			os.Exit(0)
     		case "stop":
     			stopDestroySet.Parse(os.Args[2:])
+    			if verbose {
+					logger.Init(os.Stdout, os.Stdout, os.Stdout, os.Stderr)
+				}else{
+					logger.Init(os.Stdout, ioutil.Discard, ioutil.Discard, os.Stderr)
+				}
     			logger.Message.Println("stop Not Implemented Yet")
     			os.Exit(0)
     		case "help":
@@ -119,13 +139,6 @@ func main() {
 	}
 
 	if os.Args[1] == "run" {
-
-		if verbose {
-			logger.Init(os.Stdout, os.Stdout, os.Stdout, os.Stderr)
-		}else{
-			logger.Init(os.Stdout, ioutil.Discard, ioutil.Discard, os.Stderr)
-		}
-
 		logger.Info.Println("Running: `fli-docker run`")
 
 		if manifest == "manifest.yml" {
@@ -249,24 +262,9 @@ func main() {
 		// A user may want to "snapshot" the volumes in the compose
 		// file. Optionally with `-push` they can push them back to
 		// FlockerHub
-
-		if verbose {
-			logger.Init(os.Stdout, os.Stdout, os.Stdout, os.Stderr)
-		}else{
-			logger.Init(os.Stdout, ioutil.Discard, ioutil.Discard, os.Stderr)
-		}
-
 		logger.Info.Println("Running: `fli-docker snapshot`")
 
 	} else if os.Args[1] == "destroy" {
-		// TODO this will do docker-compose rm -f
-
-		if verbose {
-			logger.Init(os.Stdout, os.Stdout, os.Stdout, os.Stderr)
-		}else{
-			logger.Init(os.Stdout, ioutil.Discard, ioutil.Discard, os.Stderr)
-		}
-
 		logger.Info.Println("Running: `fli-docker destroy`")
 
 		if manifest == "manifest.yml" {
@@ -296,14 +294,6 @@ func main() {
 		utils.DestroyCompose(m.DockerApp, project)
 
 	} else if os.Args[1] == "stop" {
-		// TODO this will do docker-compose stop
-
-		if verbose {
-			logger.Init(os.Stdout, os.Stdout, os.Stdout, os.Stderr)
-		}else{
-			logger.Init(os.Stdout, ioutil.Discard, ioutil.Discard, os.Stderr)
-		}
-
 		logger.Info.Println("Running: `fli-docker stop`")
 
 		if manifest == "manifest.yml" {

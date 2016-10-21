@@ -67,9 +67,13 @@ Vagrant.configure(2) do |config|
      sudo fallocate -l 3G $HOME/zfs.disk && zpool create -f chq $HOME/zfs.disk
      echo "Getting fli ready"
      sudo docker login -e="." -u="clusterhq_prod+pull_fli" -p="99E32PIAJQB83WB3YWBD0XW2X6EJMC7CRK1ZVVNQRN27JLLMF2DPJ035SG4O1QKV" quay.io
-     sudo echo "alias fli='docker run --rm --privileged -v /chq/:/chq/:shared -v /root:/root -v /lib/modules:/lib/modules quay.io/clusterhq_prod/fli:babb6ba89b2b80f51c90ee14ea1eb5d12d175df6'" >> /root/.bashrc
+     sudo echo "alias fli='docker run --rm --privileged -v /chq/:/chq/:shared -v /root:/root -v /lib/modules:/lib/modules quay.io/clusterhq_prod/fli:e0b3bcffb4332a7bb4c2ed75f1e8ef3231ba7905'" >> /root/.bashrc
      sudo curl -o docker-compose -L "https://github.com/docker/compose/releases/download/1.8.1/docker-compose-$(uname -s)-$(uname -m)"
      sudo mv docker-compose /usr/local/bin/docker-compose
      sudo chmod +x /usr/local/bin/docker-compose
+     sudo wget https://storage.googleapis.com/golang/go1.7.3.linux-amd64.tar.gz
+     sudo tar -C /usr/local -xzf go1.7.3.linux-amd64.tar.gz 
+     sudo echo "export PATH=$PATH:/usr/local/go/bin" >> /root/.bashrc
+     sudo echo "export GOPATH=$HOME/work" >> /root/.bashrc
    SHELL
 end

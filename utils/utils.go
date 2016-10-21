@@ -195,6 +195,46 @@ func RunCompose(composeFile string, projectName string) {
     }
 }
 
+// Run the compose file with options
+func StopCompose(composeFile string, projectName string) {
+	project, err := docker.NewProject(&ctx.Context{
+		Context: project.Context{
+			ComposeFiles: []string{composeFile},
+			ProjectName:  projectName,
+		},
+	}, nil)
+
+	if err != nil {
+		logger.Error.Fatal(err)
+	}
+
+	err = project.Stop(context.Background(), 60)
+
+    if err != nil {
+        logger.Error.Fatal(err)
+    }
+}
+
+// Run the compose file with options
+func DestroyCompose(composeFile string, projectName string) {
+	project, err := docker.NewProject(&ctx.Context{
+		Context: project.Context{
+			ComposeFiles: []string{composeFile},
+			ProjectName:  projectName,
+		},
+	}, nil)
+
+	if err != nil {
+		logger.Error.Fatal(err)
+	}
+
+	err = project.Delete(context.Background(), options.Delete{true,true})
+
+    if err != nil {
+        logger.Error.Fatal(err)
+    }
+}
+
 //Generate UUIDs
 func GenUUID() (uuid string, err error){
 	out, err := exec.Command("uuidgen").Output()

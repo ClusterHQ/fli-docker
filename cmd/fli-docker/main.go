@@ -269,6 +269,32 @@ func main() {
 
 		logger.Info.Println("Running: `fli-docker destroy`")
 
+		if manifest == "manifest.yml" {
+			logger.Warning.Println("Using default 'manifest.yml`, otherwise specify differently with -f")
+		}
+
+		// verify that the manifest exists
+		isManifestAvail, err := utils.CheckForFile(manifest)
+		if (!isManifestAvail){
+			logger.Error.Println(err.Error())
+			logger.Message.Fatal("Missing manifest, either name it 'manifest.yml' or pass in file with '-f'.")
+		}
+
+		// get the yaml file passed in the args.
+		filename, _ := filepath.Abs(manifest)
+		// read the file.
+		yamlFile, err := ioutil.ReadFile(filename)
+		if err != nil {
+			logger.Error.Fatal(err.Error())
+		}
+
+		// pass the file to the ParseManifest
+		logger.Message.Println("Parsing the fli manifest...")
+		m := utils.ParseManifest(yamlFile)
+
+		logger.Info.Println("Destroying compose application")
+		utils.DestroyCompose(m.DockerApp, project)
+
 	} else if os.Args[1] == "stop" {
 		// TODO this will do docker-compose stop
 
@@ -279,5 +305,31 @@ func main() {
 		}
 
 		logger.Info.Println("Running: `fli-docker stop`")
+
+		if manifest == "manifest.yml" {
+			logger.Warning.Println("Using default 'manifest.yml`, otherwise specify differently with -f")
+		}
+
+		// verify that the manifest exists
+		isManifestAvail, err := utils.CheckForFile(manifest)
+		if (!isManifestAvail){
+			logger.Error.Println(err.Error())
+			logger.Message.Fatal("Missing manifest, either name it 'manifest.yml' or pass in file with '-f'.")
+		}
+
+		// get the yaml file passed in the args.
+		filename, _ := filepath.Abs(manifest)
+		// read the file.
+		yamlFile, err := ioutil.ReadFile(filename)
+		if err != nil {
+			logger.Error.Fatal(err.Error())
+		}
+
+		// pass the file to the ParseManifest
+		logger.Message.Println("Parsing the fli manifest...")
+		m := utils.ParseManifest(yamlFile)
+
+		logger.Info.Println("Destroying compose application")
+		utils.StopCompose(m.DockerApp, project)
 	}
 }

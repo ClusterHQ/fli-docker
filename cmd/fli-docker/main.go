@@ -86,10 +86,11 @@ func main() {
 
 	var composeCmd string
 	composeCmd = "docker-compose version"
-	var fliCmd string
-	// this needs `fli version` or something better
-	// to check if fli is installed / functional
-	fliCmd = "/opt/clusterhq/bin/dpcli"
+
+	var fliCmd1 string
+	var fliCmd2 string
+	fliCmd1 = "fli version"
+	fliCmd2 = "docker run --rm --privileged -v /chq/:/chq/:shared -v /root:/root -v /lib/modules:/lib/modules clusterhq/fli --version"
 
 	// check if needed dependencies are available
 	isComposeAvail, err := utils.CheckForCmd(composeCmd)
@@ -100,12 +101,21 @@ func main() {
 		logger.Info.Println("docker-compose Ready!")
 	}
 
-	isFliAvail, err := utils.CheckForPath(fliCmd)
-	if (!isFliAvail){
-		logger.Info.Println(utils.FliHelpMessage)
-		logger.Error.Fatal("Could not find `fli` ", err)
+	isFliAvail1, err := utils.CheckForPath(fliCmd1)
+	isFliAvail2, err := utils.CheckForPath(fliCmd2)
+	var binary bool
+	var docker bool
+	binary = true
+	docker = false
+	if (!isFliAvail1 && !isFliAvail2){
+		logger.Info.Println("clusterhq/fli container not detected")
 	}else{
-		logger.Info.Println("fli Ready!")
+		if (!isFliAvail1) {
+			binary = false
+			docker = true
+		}
+		logger.Info.Println("using fli container: ", docker)
+		logger.Info.Println("using fli binary: ", binary)
 	}
 
 	if os.Args[1] == "run" {
@@ -144,7 +154,7 @@ func main() {
 		// was it passed with `-e`?
 		if flockerhub == "" {
 			logger.Info.Println("FlockerHub endpoint not specified with -e")
-			fh, err := cli.GetFlockerHubEndpoint()
+			fh, err := cli.GetFlockerHubEndpoint(binary)
 			if err != nil{
 				logger.Error.Fatal("Could not get FlockerHub config")
 			}
@@ -155,23 +165,23 @@ func main() {
 			if flockerhubFromManifest == "" {
 				// Did the user have a pre-existing fli setup? 
 				// Lets try and assume the volumes are there.
-				if fh == "" {
+				if strings.Contains(fh, "FlockerHub URL:            -") {
 					logger.Error.Fatal("Must set FlockerHub Endpoint")
 				}else{
 					logger.Info.Println("Trying existing FlockerHub configuration: ", fh)
 				}
 			}else{
 				// set endpoint from manifest
-				cli.SetFlockerHubEndpoint(flockerhubFromManifest)
+				cli.SetFlockerHubEndpoint(flockerhubFromManifest, binary)
 			}
 		}else{
 			// set endpoint from fli-docker arg
-			cli.SetFlockerHubEndpoint(flockerhub)
+			cli.SetFlockerHubEndpoint(flockerhub, binary)
 		}
 
 		if tokenfile == "" {
 			logger.Info.Println("token not specified with -t")
-			tf, err := cli.GetFlockerHubTokenFile()
+			tf, err := cli.GetFlockerHubTokenFile(binary)
 			if err != nil{
 				logger.Error.Fatal("Could not get tokenfile config")
 			}
@@ -180,16 +190,16 @@ func main() {
 			logger.Info.Println("tokenfile " + m.Hub.AuthToken + " in manifest")
 			tokenfileFromManifest := m.Hub.AuthToken
 			if tokenfileFromManifest == "" {
-				if tf == "" {
+				if strings.Contains(tf, "Authentication Token File: -") {
 					logger.Error.Fatal("Must set tokenfile")
 				}else{
 					logger.Info.Println("Trying existing tokenfile config: ", tf)
 				}
 			}else{
-				cli.SetFlockerHubTokenFile(tokenfileFromManifest)
+				cli.SetFlockerHubTokenFile(tokenfileFromManifest, binary)
 			}
 		}else{
-			cli.SetFlockerHubTokenFile(tokenfile)
+			cli.SetFlockerHubTokenFile(tokenfile, binary)
 		}
 
 		// verify that the compose file exists.
@@ -200,12 +210,12 @@ func main() {
 
 		// try and pull snapshots
 		logger.Message.Println("Pulling FlockerHub volumes...")
-		cli.PullSnapshots(m.Volumes)
+		cli.PullSnapshots(m.Volumes, binary)
 
 		// create volumes from snapshots and map them to 
 		// `newVolPaths = {compose_volume_name : "/chq/<vol_path>"...}`
 		logger.Message.Println("Creating volumes from snapshots...")
-		newVolPaths, err := cli.CreateVolumesFromSnapshots(m.Volumes)
+		newVolPaths, err := cli.CreateVolumesFromSnapshots(m.Volumes, binary)
 
 		// create a copy of the compose file before we edit it.
 		// replace a fresh copy if we already copied before

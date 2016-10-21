@@ -121,14 +121,15 @@ func main() {
 		logger.Info.Println("docker-compose Ready!")
 	}
 
-	isFliAvail1, err := utils.CheckForPath(fliCmd1)
-	isFliAvail2, err := utils.CheckForPath(fliCmd2)
+	isFliAvail1, err := utils.CheckForCmd(fliCmd1)
+	isFliAvail2, err := utils.CheckForCmd(fliCmd2)
 	var binary bool
 	var docker bool
 	binary = true
 	docker = false
 	if (!isFliAvail1 && !isFliAvail2){
-		logger.Info.Println("clusterhq/fli container not detected")
+		logger.Info.Println(utils.FliHelpMessage)
+		logger.Info.Fatal("fli not detected")
 	}else{
 		if (!isFliAvail1) {
 			binary = false

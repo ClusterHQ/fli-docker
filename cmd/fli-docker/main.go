@@ -110,7 +110,7 @@ func main() {
 	var fliCmd1 string
 	var fliCmd2 string
 	fliCmd1 = "fli version"
-	fliCmd2 = "docker run --rm --privileged -v /chq/:/chq/:shared -v /root:/root -v /lib/modules:/lib/modules clusterhq/fli --version"
+	fliCmd2 = utils.FliDockerCmd
 
 	// check if needed dependencies are available
 	isComposeAvail, err := utils.CheckForCmd(composeCmd)

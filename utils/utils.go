@@ -59,7 +59,7 @@ func CheckForPath(path string) (result bool, err error) {
 func CheckForFile(file string) (result bool, err error) {
 	_, errFile := os.Stat(file)
 	if errFile != nil {
-		logger.Error.Println("Error: " + errFile)
+		logger.Error.Println(errFile)
 		return false, errFile
 	}
 	logger.Info.Println("Found file: " + file)
@@ -69,7 +69,7 @@ func CheckForFile(file string) (result bool, err error) {
 func CheckForCmd(cmd string) (result bool, err error) {
 	_, errCmd := exec.Command("sh", "-c", cmd).Output()
 	if errCmd != nil {
-		logger.Error.Println("Error: " + errCmd)
+		logger.Error.Println(errCmd)
 		return false, errCmd
 	}
 	logger.Info.Println("Found Command: " + cmd)

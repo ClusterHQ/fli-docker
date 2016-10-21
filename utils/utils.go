@@ -29,6 +29,7 @@ var FliHelpMessage = `
 -------------------------------------------------------
 fli is not installed, it is needed to use fli-docker
 fli is available at https://clusterhq.com
+Using the fli contianer? Make sure it used docker tag 'clusterhq/fli'
 -------------------------------------------------------`
 
 var FliDockerVersion = `Version: v0.0.1-dev`
@@ -44,6 +45,7 @@ Usage:
 
   For help on a specific command, use: $ fli-docker <subcommand> --help`
 
+var FliDockerCmd = "docker run --rm --privileged -v /chq/:/chq/:shared -v /root:/root -v /lib/modules:/lib/modules clusterhq/fli "
 
 func CheckForPath(path string) (result bool, err error) {
 	isPath, errPath := exec.LookPath(path)

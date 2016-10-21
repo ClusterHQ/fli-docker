@@ -13,35 +13,36 @@ import (
 	Bindings to the FlockerHub CLI
 */
 
-var fli string
-
-func init() {
-	fli = "docker run --rm --privileged -v /chq/:/chq/:shared -v /root:/root -v /lib/modules:/lib/modules clusterhq/fli "
-}
-
 func SetFlockerHubEndpoint(endpoint string, bin bool) {
+	var fli string
 	if (bin){
 		fli = "fli "
+	}else{
+		fli = utils.FliDockerCmd
 	}
 
 	logger.Info.Println("Setting FlockerHub Endpoint: ", endpoint)
 	out, err := exec.Command(fli, "config", "-u", endpoint).Output()
 	if err != nil {
-		logger.Error.Println("Could not set endpoint, reason: ", string(out))
+		logger.Error.Println("Could not set endpoint")
 		logger.Error.Fatal(err)
 	}
 	logger.Info.Println(string(out))
 }
 
 func GetFlockerHubEndpoint(bin bool) (flockerhubEndpoint string, err error) {
+	var fli string
 	if (bin){
 		fli = "fli "
+	}else{
+		fli = utils.FliDockerCmd
 	}
 
 	logger.Info.Println("Getting FlockerHub Endpoint")
 	out, err := exec.Command(fli, "config", "|", "grep", "'FlockerHub URL:'", "|", "awk", "'{print $3}'").Output()
 	if err != nil {
-		logger.Error.Println("Could not get endpoint, reason: ", string(out))
+		logger.Error.Println("Could not get endpoint")
+		logger.Error.Println(err)
 		return "", err
 	}
 	logger.Info.Println(string(out))
@@ -49,28 +50,35 @@ func GetFlockerHubEndpoint(bin bool) (flockerhubEndpoint string, err error) {
 }
 
 func SetFlockerHubTokenFile(tokenFile string, bin bool) {
+	var fli string
 	if (bin){
 		fli = "fli "
+	}else{
+		fli = utils.FliDockerCmd
 	}
 
 	logger.Info.Println("Setting FlockerHub Tokenfile: ", tokenFile)
 	out, err := exec.Command(fli, "config", "-t", tokenFile).Output()
 	if err != nil {
-		logger.Error.Println("Could not set tokenfile, reason: ", string(out))
+		logger.Error.Println("Could not set tokenfile")
 		logger.Error.Fatal(err)
 	}
 	logger.Info.Println(string(out))
 }
 
 func GetFlockerHubTokenFile(bin bool) (flockerHubTokenFile string, err error) {
+	var fli string
 	if (bin){
 		fli = "fli "
+	}else{
+		fli = utils.FliDockerCmd
 	}
 
 	logger.Info.Println("Getting FlockerHub Tokenfile")
 	out, err := exec.Command(fli, "config", "|", "grep", "'Authentication Token File:'", "|", "awk", "'{print $3}'").Output()
 	if err != nil {
-		logger.Error.Println("Could not get tokenfile, reason: ", string(out))
+		logger.Error.Println("Could not get tokenfile")
+		logger.Error.Println(err)
 		return "", err
 	}
 	logger.Info.Println(string(out))
@@ -79,14 +87,17 @@ func GetFlockerHubTokenFile(bin bool) (flockerHubTokenFile string, err error) {
 
 // Run the command to sync a volumeset
 func syncVolumeset(volumeSetId string, bin bool) {
+	var fli string
 	if (bin){
 		fli = "fli "
+	}else{
+		fli = utils.FliDockerCmd
 	}
 
 	logger.Info.Println("Syncing Volumeset: ", volumeSetId)
 	out, err := exec.Command(fli, "sync", volumeSetId).Output()
 	if err != nil {
-		logger.Error.Println("Could not sync dataset, reason: ", string(out))
+		logger.Error.Println("Could not sync dataset")
 		logger.Error.Fatal(err)
 	}
 	logger.Info.Println(string(out))
@@ -94,13 +105,17 @@ func syncVolumeset(volumeSetId string, bin bool) {
 
 // Run the command to pull a specific snapshot
 func pullSnapshot(volumeSetId string, snapshotId string, bin bool){
+	var fli string
 	if (bin){
 		fli = "fli "
+	}else{
+		fli = utils.FliDockerCmd
 	}
+
 	logger.Info.Println("Pulling Snapshot: ", snapshotId)
 	out, err := exec.Command(fli, "pull", volumeSetId, ":", snapshotId).Output()
 	if err != nil {
-		logger.Error.Println("Could not pull dataset, reason: ", string(out))
+		logger.Error.Println("Could not pull dataset, reason")
 		logger.Error.Fatal(err)
 	}
 	logger.Info.Println(string(out))
@@ -117,8 +132,11 @@ func PullSnapshots(volumes []types.Volume, bin bool) {
 
 // Created a volume and returns it.
 func createVolumeFromSnapshot(volumeName string, volumeSet string, snapshotId string, bin bool) (vol types.NewVolume, err error){
+	var fli string
 	if (bin){
 		fli = "fli "
+	}else{
+		fli = utils.FliDockerCmd
 	}
 
 	logger.Info.Println("Creating Volume from Snapshot: ", snapshotId)

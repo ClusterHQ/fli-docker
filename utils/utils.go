@@ -35,14 +35,14 @@ var FliDockerVersion = `Version: v0.0.1-dev`
 
 var FliDockerHelp = `
 Usage:
-	fli-docker version  [options]  (Get current tool version)
-	fli-docker run      [options]  (Run with a manifest to pull and use snapshots for the compose app)
-	fli-docker snapshot [options]  (Run to snapshot existing FlockerHub volumes used by the compose app)
-	fli-docker stop     [options]  (Just like running a docker-compose stop)
-	fli-docker destroy  [options]  (Just like running a docker-compose rm -f)
-	fli-docker --help   (Get this help message)
+  fli-docker version  [options]  (Get current tool version)
+  fli-docker run      [options]  (Run with a manifest to pull and use snapshots for the compose app)
+  fli-docker snapshot [options]  (Snapshot existing FlockerHub volumes used by the compose app)
+  fli-docker stop     [options]  (Just like running a docker-compose stop)
+  fli-docker destroy  [options]  (Just like running a docker-compose rm -f)
+  fli-docker --help   (Get this help message)
 
-	For help on a specific command, use: $ fli-docker <subcommand> --help`
+  For help on a specific command, use: $ fli-docker <subcommand> --help`
 
 
 func CheckForPath(path string) (result bool, err error) {

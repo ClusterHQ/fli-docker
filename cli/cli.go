@@ -22,7 +22,7 @@ func SetFlockerHubEndpoint(endpoint string, bin bool) {
 	}
 
 	logger.Info.Println("Setting FlockerHub Endpoint: ", endpoint)
-	out, err := exec.Command(fli, "config", "-u", endpoint).Output()
+	out, err := exec.Command("sh", "-c", fli, "config", "-u", endpoint).Output()
 	if err != nil {
 		logger.Error.Println("Could not set endpoint")
 		logger.Error.Fatal(err)
@@ -39,7 +39,7 @@ func GetFlockerHubEndpoint(bin bool) (flockerhubEndpoint string, err error) {
 	}
 
 	logger.Info.Println("Getting FlockerHub Endpoint")
-	out, err := exec.Command(fli, "config", "|", "grep", "'FlockerHub URL:'", "|", "awk", "'{print $3}'").Output()
+	out, err := exec.Command("sh", "-c", fli, "config", "|", "grep", "'FlockerHub URL:'", "|", "awk", "'{print $3}'").Output()
 	if err != nil {
 		logger.Error.Println("Could not get endpoint")
 		logger.Error.Println(err)
@@ -58,7 +58,7 @@ func SetFlockerHubTokenFile(tokenFile string, bin bool) {
 	}
 
 	logger.Info.Println("Setting FlockerHub Tokenfile: ", tokenFile)
-	out, err := exec.Command(fli, "config", "-t", tokenFile).Output()
+	out, err := exec.Command("sh", "-c", fli, "config", "-t", tokenFile).Output()
 	if err != nil {
 		logger.Error.Println("Could not set tokenfile")
 		logger.Error.Fatal(err)
@@ -75,7 +75,7 @@ func GetFlockerHubTokenFile(bin bool) (flockerHubTokenFile string, err error) {
 	}
 
 	logger.Info.Println("Getting FlockerHub Tokenfile")
-	out, err := exec.Command(fli, "config", "|", "grep", "'Authentication Token File:'", "|", "awk", "'{print $3}'").Output()
+	out, err := exec.Command("sh", "-c", fli, "config", "|", "grep", "'Authentication Token File:'", "|", "awk", "'{print $3}'").Output()
 	if err != nil {
 		logger.Error.Println("Could not get tokenfile")
 		logger.Error.Println(err)
@@ -95,7 +95,7 @@ func syncVolumeset(volumeSetId string, bin bool) {
 	}
 
 	logger.Info.Println("Syncing Volumeset: ", volumeSetId)
-	out, err := exec.Command(fli, "sync", volumeSetId).Output()
+	out, err := exec.Command("sh", "-c", fli, "sync", volumeSetId).Output()
 	if err != nil {
 		logger.Error.Println("Could not sync dataset")
 		logger.Error.Fatal(err)
@@ -113,7 +113,7 @@ func pullSnapshot(volumeSetId string, snapshotId string, bin bool){
 	}
 
 	logger.Info.Println("Pulling Snapshot: ", snapshotId)
-	out, err := exec.Command(fli, "pull", volumeSetId, ":", snapshotId).Output()
+	out, err := exec.Command("sh", "-c", fli, "pull", volumeSetId, ":", snapshotId).Output()
 	if err != nil {
 		logger.Error.Println("Could not pull dataset, reason")
 		logger.Error.Fatal(err)
@@ -147,7 +147,7 @@ func createVolumeFromSnapshot(volumeName string, volumeSet string, snapshotId st
 	}
 
 	var volName = fmt.Sprintf("fli-%s", uuid)
-	cmd := exec.Command(fli, "create", volumeSet, 
+	cmd := exec.Command("sh", "-c", fli, "create", volumeSet, 
 		":", snapshotId, "-a", attrString, volName)
 	createOut, err := cmd.Output()
 	if err != nil {

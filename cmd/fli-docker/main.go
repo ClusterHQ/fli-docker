@@ -39,7 +39,6 @@ func main() {
 	// snapSet
 	snapSet.StringVar(&tokenfile, "t", "", "[OPTIONAL] Flocker Hub user token, optionally set it in the manifest YAML")
 	snapSet.StringVar(&flockerhub, "e", "", "[OPTIONAL] Flocker Hub endpoint, optionally set it in the manifest YAML")
-	snapSet.StringVar(&manifest, "f", "manifest.yml", "[OPTIONAL] Stateful application manifest file")
 	snapSet.BoolVar(&push, "push", false, "[OPTIONAL] if flag is present, fli-docker will push new snapshots back to FlockerHub")
 	snapSet.BoolVar(&verbose, "verbose", false, "[OPTIONAL] verbose logging")
 

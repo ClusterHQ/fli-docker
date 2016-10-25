@@ -129,6 +129,10 @@ func saveCurrentWorkingVols(volumes []types.NewVolume) {
 			logger.Error.Fatal("Could not delete .flidockervols")
 		}
 	}
+	_, err := os.Create(".flidockervols")
+	if err != nil {
+        logger.Error.Fatal(err)
+    }
     file, err := os.OpenFile(".flidockervols", os.O_APPEND|os.O_WRONLY,0600)
     if err != nil {
         logger.Error.Fatal(err)

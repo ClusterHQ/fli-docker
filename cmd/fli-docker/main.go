@@ -80,8 +80,6 @@ func main() {
 				}else{
 					logger.Init(os.Stdout, ioutil.Discard, ioutil.Discard, os.Stderr)
 				}
-    			logger.Message.Println("destroy Not Implemented Yet")
-    			os.Exit(0)
     		case "stop":
     			stopDestroySet.Parse(os.Args[2:])
     			if verbose {
@@ -89,8 +87,6 @@ func main() {
 				}else{
 					logger.Init(os.Stdout, ioutil.Discard, ioutil.Discard, os.Stderr)
 				}
-    			logger.Message.Println("stop Not Implemented Yet")
-    			os.Exit(0)
     		case "help":
     			snapSet.Parse(os.Args[2:])
     			logger.Message.Println(utils.FliDockerHelp)

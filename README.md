@@ -41,6 +41,9 @@ $ cd fli-docker/examples/redis-moby
 ```
 
 Run the example
+
+> Note: you will need to set the `tokenfile` in the `fli-manifest.yml` or provide them as plags to `fli-docker run` using `-e https://flocker.com -t /root/your.token`.
+
 ```
 $ fli-docker run -f fli-manifest.yml -c -p myproject
 MESSAGE: 2016/10/03 21:55:19 main.go:83: Parsing the fli manifest...

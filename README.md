@@ -1,5 +1,7 @@
 # fli-docker
 
+[![Build Status](https://travis-ci.com/ClusterHQ/fli-docker.svg?token=q3MVd7yngMiAP2Yk1Rkp&branch=master)](https://travis-ci.com/ClusterHQ/fli-docker)
+
 The `fli-docker` utility is designed to simplify the deployment of stateful applications inside Docker containers.
 
 This is achieved through creation of a Flocker Hub Stateful Application Manifest (SAM) file (aka. "manifest"), which is used side by side with the Docker Compose file.

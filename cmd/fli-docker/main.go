@@ -11,6 +11,7 @@ import (
 	"github.com/ClusterHQ/fli-docker/logger"
 )
 
+
 func main() {
 
 	// should this be a struct?
@@ -25,6 +26,7 @@ func main() {
 	// FlagSets for SubCommands
 	runSet := flag.NewFlagSet("fli-docker run", flag.ExitOnError)
 	snapSet := flag.NewFlagSet("fli-docker snapshot", flag.ExitOnError)
+	stopDestroySet := flag.NewFlagSet("fli-docker stop (or) fli-docker destroy", flag.ExitOnError)
 
 	// runSet
 	runSet.StringVar(&tokenfile, "t", "", "[OPTIONAL] Flocker Hub user token, optionally set it in the manifest YAML")
@@ -37,9 +39,13 @@ func main() {
 	// snapSet
 	snapSet.StringVar(&tokenfile, "t", "", "[OPTIONAL] Flocker Hub user token, optionally set it in the manifest YAML")
 	snapSet.StringVar(&flockerhub, "e", "", "[OPTIONAL] Flocker Hub endpoint, optionally set it in the manifest YAML")
-	snapSet.StringVar(&manifest, "f", "manifest.yml", "[OPTIONAL] Stateful application manifest file")
 	snapSet.BoolVar(&push, "push", false, "[OPTIONAL] if flag is present, fli-docker will push new snapshots back to FlockerHub")
 	snapSet.BoolVar(&verbose, "verbose", false, "[OPTIONAL] verbose logging")
+
+	// stopSet
+	stopDestroySet.BoolVar(&verbose, "verbose", false, "[OPTIONAL] verbose logging")
+	stopDestroySet.StringVar(&manifest, "f", "manifest.yml", "[OPTIONAL] Stateful application manifest file")
+    stopDestroySet.StringVar(&project, "p", "fli-compose", "[OPTIONAL] project name for compose if using -c")
 
 	// Initialize logger before `verbose` is captured for
 	// log messages before that conditional
@@ -53,10 +59,32 @@ func main() {
     			os.Exit(0)
   			case "run":
     			runSet.Parse(os.Args[2:])
+    			if verbose {
+					logger.Init(os.Stdout, os.Stdout, os.Stdout, os.Stderr)
+				}else{
+					logger.Init(os.Stdout, ioutil.Discard, ioutil.Discard, os.Stderr)
+				}
     		case "snapshot":
     			snapSet.Parse(os.Args[2:])
-    			logger.Message.Println("Not Implemented Yet")
-    			os.Exit(0)
+    			if verbose {
+					logger.Init(os.Stdout, os.Stdout, os.Stdout, os.Stderr)
+				}else{
+					logger.Init(os.Stdout, ioutil.Discard, ioutil.Discard, os.Stderr)
+				}
+    		case "destroy":
+    			stopDestroySet.Parse(os.Args[2:])
+    			if verbose {
+					logger.Init(os.Stdout, os.Stdout, os.Stdout, os.Stderr)
+				}else{
+					logger.Init(os.Stdout, ioutil.Discard, ioutil.Discard, os.Stderr)
+				}
+    		case "stop":
+    			stopDestroySet.Parse(os.Args[2:])
+    			if verbose {
+					logger.Init(os.Stdout, os.Stdout, os.Stdout, os.Stderr)
+				}else{
+					logger.Init(os.Stdout, ioutil.Discard, ioutil.Discard, os.Stderr)
+				}
     		case "help":
     			snapSet.Parse(os.Args[2:])
     			logger.Message.Println(utils.FliDockerHelp)
@@ -72,10 +100,11 @@ func main() {
 
 	var composeCmd string
 	composeCmd = "docker-compose version"
-	var fliCmd string
-	// this needs `fli version` or something better
-	// to check if fli is installed / functional
-	fliCmd = "/opt/clusterhq/bin/dpcli"
+
+	var fliCmd1 string
+	var fliCmd2 string
+	fliCmd1 = "fli version"
+	fliCmd2 = utils.FliDockerCmd + "version"
 
 	// check if needed dependencies are available
 	isComposeAvail, err := utils.CheckForCmd(composeCmd)
@@ -86,22 +115,29 @@ func main() {
 		logger.Info.Println("docker-compose Ready!")
 	}
 
-	isFliAvail, err := utils.CheckForPath(fliCmd)
-	if (!isFliAvail){
+	isFliAvail1, err := utils.CheckForCmd(fliCmd1)
+	isFliAvail2, err := utils.CheckForCmd(fliCmd2)
+	var binary bool
+	var docker bool
+	var fliCmd string
+	binary = true
+	docker = false
+	if (!isFliAvail1 && !isFliAvail2){
 		logger.Info.Println(utils.FliHelpMessage)
-		logger.Error.Fatal("Could not find `fli` ", err)
+		logger.Info.Fatal("fli not detected")
 	}else{
-		logger.Info.Println("fli Ready!")
+		if (!isFliAvail1) {
+			binary = false
+			docker = true
+			fliCmd = utils.FliDockerCmd
+		}else{
+			fliCmd = utils.FliBinaryCmd
+		}
+		logger.Info.Println("using fli container: ", docker)
+		logger.Info.Println("using fli binary: ", binary)
 	}
 
 	if os.Args[1] == "run" {
-
-		if verbose {
-			logger.Init(os.Stdout, os.Stdout, os.Stdout, os.Stderr)
-		}else{
-			logger.Init(os.Stdout, ioutil.Discard, ioutil.Discard, os.Stderr)
-		}
-
 		logger.Info.Println("Running: `fli-docker run`")
 
 		if manifest == "manifest.yml" {
@@ -130,7 +166,7 @@ func main() {
 		// was it passed with `-e`?
 		if flockerhub == "" {
 			logger.Info.Println("FlockerHub endpoint not specified with -e")
-			fh, err := cli.GetFlockerHubEndpoint()
+			fh, err := cli.GetFlockerHubEndpoint(fliCmd)
 			if err != nil{
 				logger.Error.Fatal("Could not get FlockerHub config")
 			}
@@ -141,23 +177,23 @@ func main() {
 			if flockerhubFromManifest == "" {
 				// Did the user have a pre-existing fli setup? 
 				// Lets try and assume the volumes are there.
-				if fh == "" {
+				if strings.Contains(fh, "FlockerHub URL:            -") {
 					logger.Error.Fatal("Must set FlockerHub Endpoint")
 				}else{
 					logger.Info.Println("Trying existing FlockerHub configuration: ", fh)
 				}
 			}else{
 				// set endpoint from manifest
-				cli.SetFlockerHubEndpoint(flockerhubFromManifest)
+				cli.SetFlockerHubEndpoint(flockerhubFromManifest, fliCmd)
 			}
 		}else{
 			// set endpoint from fli-docker arg
-			cli.SetFlockerHubEndpoint(flockerhub)
+			cli.SetFlockerHubEndpoint(flockerhub, fliCmd)
 		}
 
 		if tokenfile == "" {
 			logger.Info.Println("token not specified with -t")
-			tf, err := cli.GetFlockerHubTokenFile()
+			tf, err := cli.GetFlockerHubTokenFile(fliCmd)
 			if err != nil{
 				logger.Error.Fatal("Could not get tokenfile config")
 			}
@@ -166,16 +202,16 @@ func main() {
 			logger.Info.Println("tokenfile " + m.Hub.AuthToken + " in manifest")
 			tokenfileFromManifest := m.Hub.AuthToken
 			if tokenfileFromManifest == "" {
-				if tf == "" {
+				if strings.Contains(tf, "Authentication Token File: -") {
 					logger.Error.Fatal("Must set tokenfile")
 				}else{
 					logger.Info.Println("Trying existing tokenfile config: ", tf)
 				}
 			}else{
-				cli.SetFlockerHubTokenFile(tokenfileFromManifest)
+				cli.SetFlockerHubTokenFile(tokenfileFromManifest, fliCmd)
 			}
 		}else{
-			cli.SetFlockerHubTokenFile(tokenfile)
+			cli.SetFlockerHubTokenFile(tokenfile, fliCmd)
 		}
 
 		// verify that the compose file exists.
@@ -186,12 +222,12 @@ func main() {
 
 		// try and pull snapshots
 		logger.Message.Println("Pulling FlockerHub volumes...")
-		cli.PullSnapshots(m.Volumes)
+		cli.PullSnapshots(m.Volumes, fliCmd)
 
 		// create volumes from snapshots and map them to 
 		// `newVolPaths = {compose_volume_name : "/chq/<vol_path>"...}`
 		logger.Message.Println("Creating volumes from snapshots...")
-		newVolPaths, err := cli.CreateVolumesFromSnapshots(m.Volumes)
+		newVolPaths, err := cli.CreateVolumesFromSnapshots(m.Volumes, fliCmd)
 
 		// create a copy of the compose file before we edit it.
 		// replace a fresh copy if we already copied before
@@ -219,19 +255,73 @@ func main() {
 		}
 
 	} else if os.Args[1] == "snapshot" {
-		// TODO this would allow users to 
-		// snapshot volumes that have been pull and placed
-		// into their compose file and run already.
-		// A user may want to "snapshot" the volumes in the compose
-		// file. Optionally with `-push` they can push them back to
-		// FlockerHub
+		logger.Info.Println("Running: `fli-docker snapshot`")
 
-		if verbose {
-			logger.Init(os.Stdout, os.Stdout, os.Stdout, os.Stderr)
+		// Does user want us to push snapshots back?
+		if push {
+			logger.Message.Println("Snapshotting and Pushing volumes to FlockerHub...")
+			cli.SnapshotAndPushWorkingVolumes(fliCmd)
 		}else{
-			logger.Init(os.Stdout, ioutil.Discard, ioutil.Discard, os.Stderr)
+			logger.Message.Println("Snapshotting volumes...")
+			cli.SnapshotWorkingVolumes(fliCmd)
 		}
 
-		logger.Info.Println("Running: `fli-docker snapshot`")
+	} else if os.Args[1] == "destroy" {
+		logger.Info.Println("Running: `fli-docker destroy`")
+
+		if manifest == "manifest.yml" {
+			logger.Warning.Println("Using default 'manifest.yml`, otherwise specify differently with -f")
+		}
+
+		// verify that the manifest exists
+		isManifestAvail, err := utils.CheckForFile(manifest)
+		if (!isManifestAvail){
+			logger.Error.Println(err.Error())
+			logger.Message.Fatal("Missing manifest, either name it 'manifest.yml' or pass in file with '-f'.")
+		}
+
+		// get the yaml file passed in the args.
+		filename, _ := filepath.Abs(manifest)
+		// read the file.
+		yamlFile, err := ioutil.ReadFile(filename)
+		if err != nil {
+			logger.Error.Fatal(err.Error())
+		}
+
+		// pass the file to the ParseManifest
+		logger.Message.Println("Parsing the fli manifest...")
+		m := utils.ParseManifest(yamlFile)
+
+		logger.Info.Println("Destroying compose application")
+		utils.DestroyCompose(m.DockerApp, project)
+
+	} else if os.Args[1] == "stop" {
+		logger.Info.Println("Running: `fli-docker stop`")
+
+		if manifest == "manifest.yml" {
+			logger.Warning.Println("Using default 'manifest.yml`, otherwise specify differently with -f")
+		}
+
+		// verify that the manifest exists
+		isManifestAvail, err := utils.CheckForFile(manifest)
+		if (!isManifestAvail){
+			logger.Error.Println(err.Error())
+			logger.Message.Fatal("Missing manifest, either name it 'manifest.yml' or pass in file with '-f'.")
+		}
+
+		// get the yaml file passed in the args.
+		filename, _ := filepath.Abs(manifest)
+		// read the file.
+		yamlFile, err := ioutil.ReadFile(filename)
+		if err != nil {
+			logger.Error.Fatal(err.Error())
+		}
+
+		// pass the file to the ParseManifest
+		logger.Message.Println("Parsing the fli manifest...")
+		m := utils.ParseManifest(yamlFile)
+
+		logger.Info.Println("Stopping compose application")
+		utils.StopCompose(m.DockerApp, project)
 	}
 }

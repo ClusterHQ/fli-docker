@@ -10,8 +10,8 @@ Example SAM
 docker_app: docker-compose.yml
 
 flocker_hub:
-    endpoint: http://<ip|dnsname>:<port>
-    tokenfile: /root/fhut.txt
+    endpoint: https://flockerhub.com
+    tokenfile: /root/fh.token
 
 volumes:
     - name: mysql-data

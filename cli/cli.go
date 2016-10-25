@@ -2,9 +2,10 @@ package cli
 
 import (
 	"os/exec"
-	"regexp"
+	"os"
 	"fmt"
 	"strings"
+	"bufio"
 
 	"github.com/ClusterHQ/fli-docker/types"
 	"github.com/ClusterHQ/fli-docker/logger"
@@ -15,82 +16,73 @@ import (
 	Bindings to the FlockerHub CLI
 */
 
-func SetFlockerHubEndpoint(endpoint string) {
+func SetFlockerHubEndpoint(endpoint string, fli string) {
 	logger.Info.Println("Setting FlockerHub Endpoint: ", endpoint)
-	out, err := exec.Command("/opt/clusterhq/bin/dpcli", "set", "volumehub", endpoint).Output()
+	var cmd = fmt.Sprintf("%s config -u %s", fli, endpoint)
+	out, err := exec.Command("sh", "-c", cmd).Output()
 	if err != nil {
-		logger.Error.Println("Could not set endpoint, reason: ", string(out))
+		logger.Error.Println("Could not set endpoint")
 		logger.Error.Fatal(err)
 	}
 	logger.Info.Println(string(out))
 }
 
-func GetFlockerHubEndpoint() (flockerhubEndpoint string, err error) {
+func GetFlockerHubEndpoint(fli string) (flockerhubEndpoint string, err error) {
 	logger.Info.Println("Getting FlockerHub Endpoint")
-	out, err := exec.Command("/opt/clusterhq/bin/dpcli", "get", "volumehub").Output()
+	var cmd = fmt.Sprintf("%s config | grep 'FlockerHub URL:' | awk '{print $3}'", fli)
+	out, err := exec.Command("sh", "-c", cmd).Output()
 	if err != nil {
-		logger.Error.Println("Could not get endpoint, reason: ", string(out))
+		logger.Error.Println("Could not get endpoint")
+		logger.Error.Println(err)
 		return "", err
 	}
 	logger.Info.Println(string(out))
-	//TODO Parse, output to get specific volumehub string
 	return string(out), nil
 }
 
-func SetFlockerHubTokenFile(tokenFile string) {
+func SetFlockerHubTokenFile(tokenFile string, fli string) {
 	logger.Info.Println("Setting FlockerHub Tokenfile: ", tokenFile)
-	out, err := exec.Command("/opt/clusterhq/bin/dpcli", "set", "tokenfile", tokenFile).Output()
+	var cmd = fmt.Sprintf("%s config -t %s", fli, tokenFile)
+	out, err := exec.Command("sh", "-c", cmd).Output()
 	if err != nil {
-		logger.Error.Println("Could not set tokenfile, reason: ", string(out))
+		logger.Error.Println("Could not set tokenfile")
 		logger.Error.Fatal(err)
 	}
 	logger.Info.Println(string(out))
 }
 
-func GetFlockerHubTokenFile() (flockerHubTokenFile string, err error) {
+func GetFlockerHubTokenFile(fli string) (flockerHubTokenFile string, err error) {
 	logger.Info.Println("Getting FlockerHub Tokenfile")
-	out, err := exec.Command("/opt/clusterhq/bin/dpcli", "get", "tokenfile").Output()
+	var cmd = fmt.Sprintf("%s config | grep 'Authentication Token File:' | awk '{print $4}'", fli)
+	out, err := exec.Command("sh", "-c", cmd).Output()
 	if err != nil {
-		logger.Error.Println("Could not get tokenfile, reason: ", string(out))
+		logger.Error.Println("Could not get tokenfile")
+		logger.Error.Println(err)
 		return "", err
 	}
 	logger.Info.Println(string(out))
-	//TODO Parse, output to get specific tokenfile string
 	return string(out), nil
 }
 
 // Run the command to sync a volumeset
-func syncVolumeset(volumeSetId string) {
+func syncVolumeset(volumeSetId string, fli string) {
 	logger.Info.Println("Syncing Volumeset: ", volumeSetId)
-	out, err := exec.Command("/opt/clusterhq/bin/dpcli", "sync",  "volumeset", volumeSetId).CombinedOutput()
+	var cmd = fmt.Sprintf("%s sync %s", fli, volumeSetId)
+	out, err := exec.Command("sh", "-c", cmd).Output()
 	if err != nil {
-		logger.Error.Println("Could not sync dataset, reason: ", string(out))
-		logger.Error.Fatal(err)
-	// sometimes errors dont get sent to STDERR?
-	// update from abhishek 10/4/16 that this will be fixed, so this will
-	// not be needed after we update fli-docker to use fli grammer/later cli.
-	}else if strings.Contains(strings.ToLower(string(out)), "error"){
-		logger.Error.Println("Could not sync dataset, reason: ", string(out))
+		logger.Error.Println("Could not sync dataset")
 		logger.Error.Fatal(err)
 	}
 	logger.Info.Println(string(out))
 }
 
 // Run the command to pull a specific snapshot
-func pullSnapshot(snapshotId string){
-	// in this dpcli version its you cannot pull by snapshot name.
-	// so this will fail if user provides the name instead of the id.
-	// should be easily fixed in later fli versions it think.
+func pullSnapshot(volumeSetId string, snapshotId string, fli string){
 	logger.Info.Println("Pulling Snapshot: ", snapshotId)
-	out, err := exec.Command("/opt/clusterhq/bin/dpcli", "pull", "snapshot", snapshotId).CombinedOutput()
+	var cmd = fmt.Sprintf("%s pull %s:%s", fli, volumeSetId, snapshotId)
+	out, err := exec.Command("sh", "-c", cmd).Output()
 	if err != nil {
-		logger.Error.Println("Could not pull dataset, reason: ", string(out))
-		logger.Error.Fatal(err)
-	// sometimes errors dont get sent to STDERR?
-	// update from abhishek 10/4/16 that this will be fixed, so this will
-	// not be needed after we update fli-docker to use fli grammer/later cli.
-	}else if strings.Contains(strings.ToLower(string(out)), "error"){
-		logger.Error.Println("Could not pull dataset, reason: ", string(out))
+		logger.Error.Println("Could not pull dataset, reason")
 		logger.Error.Fatal(err)
 	}
 	logger.Info.Println(string(out))
@@ -98,15 +90,15 @@ func pullSnapshot(snapshotId string){
 
 // Wrapper for sync and pull which takes
 // a list of type Volume
-func PullSnapshots(volumes []types.Volume) {
+func PullSnapshots(volumes []types.Volume, fli string) {
 	for _, volume := range volumes {
-		syncVolumeset(volume.VolumeSet)
-		pullSnapshot(volume.Snapshot)
+		syncVolumeset(volume.VolumeSet, fli)
+		pullSnapshot(volume.VolumeSet, volume.Snapshot, fli)
 	}
 }
 
 // Created a volume and returns it.
-func createVolumeFromSnapshot(volumeName string, snapshotId string) (vol types.NewVolume, err error){
+func createVolumeFromSnapshot(volumeName string, volumeSet string, snapshotId string, fli string) (vol types.NewVolume, err error){
 	logger.Info.Println("Creating Volume from Snapshot: ", snapshotId)
 	var attrString = fmt.Sprintf("created_by=fli-docker,from_snap=%s", snapshotId)
 	uuid, err := utils.GenUUID()
@@ -115,32 +107,127 @@ func createVolumeFromSnapshot(volumeName string, snapshotId string) (vol types.N
 	}
 
 	var volName = fmt.Sprintf("fli-%s", uuid)
-	cmd := exec.Command("/opt/clusterhq/bin/dpcli", "create", "volume", 
-		"--snapshot", snapshotId, "-a", attrString, volName)
+	var createCmd = fmt.Sprintf("%s clone %s:%s -a %s %s", fli, volumeSet, snapshotId, attrString, volName)
+	cmd := exec.Command("sh", "-c", createCmd)
 	createOut, err := cmd.Output()
 	if err != nil {
 		logger.Error.Fatal(err)
 	}
-
-	logger.Info.Println(string(createOut))
-	// This is where dpcli volume path <volume-name> would be handy.
-	r, _ := regexp.Compile("/chq/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
-	path := r.FindString(string(createOut))
+	var path = strings.TrimSpace(string(createOut))
+	logger.Info.Println(path)
 	if path == "" {
 			logger.Error.Fatal("Could not find volume path")
 	 }
-	return types.NewVolume{Name: volumeName, VolumePath: path}, nil
+	return types.NewVolume{Name: volumeName, VolumePath: path, VolumeName: volName, VolumeSet: volumeSet}, nil
 }
 
-func CreateVolumesFromSnapshots(volumes []types.Volume) (newVols []types.NewVolume, err error) {
+func saveCurrentWorkingVols(volumes []types.NewVolume) {
+	// open files r and w
+	exists, _ := utils.CheckForFile(".flidockervols")
+	if exists {
+		err := os.Remove(".flidockervols")
+		if err != nil {
+			logger.Error.Fatal("Could not delete .flidockervols")
+		}
+	}
+	_, err := os.Create(".flidockervols")
+	if err != nil {
+        logger.Error.Fatal(err)
+    }
+    file, err := os.OpenFile(".flidockervols", os.O_APPEND|os.O_WRONLY,0600)
+    if err != nil {
+        logger.Error.Fatal(err)
+    }
+    defer file.Close()
+
+    for _, newVol := range volumes {
+    	var volRecord = fmt.Sprintf("%s,%s\n", strings.TrimSpace(newVol.VolumeName), newVol.VolumeSet)
+    	if _, err = file.WriteString(volRecord); err != nil {
+     		logger.Error.Fatal(err)
+    	}
+	}
+	logger.Info.Println("Saves working vols to .flidockervols")
+}
+
+func CreateVolumesFromSnapshots(volumes []types.Volume, fli string) (newVols []types.NewVolume, err error) {
 	vols := []types.NewVolume{}
 	for _, volume := range volumes {
-		vol, err := createVolumeFromSnapshot(volume.Name, volume.Snapshot)
+		vol, err := createVolumeFromSnapshot(volume.Name, volume.VolumeSet, volume.Snapshot, fli)
 		if err != nil {
 			return nil, err
 		}else {
 			vols = append(vols, vol)
 		}
 	}
+	// Record current working volumes.
+	saveCurrentWorkingVols(vols)
 	return vols, nil
+}
+
+// Run the command to push a specific snapshot
+func pushSnapshot(volumeSetId string, snapshotId string, fli string){
+	logger.Info.Println("Pushing Snapshot: ", snapshotId)
+	var cmd = fmt.Sprintf("%s push %s:%s", fli, volumeSetId, snapshotId)
+	out, err := exec.Command("sh", "-c", cmd).Output()
+	if err != nil {
+		logger.Error.Println("Could not push snapshot, reason")
+		logger.Error.Fatal(err)
+	}
+	logger.Info.Println(string(out))
+}
+
+// Run the command to push a specific snapshot
+func createSnapshot(volumeSetId string, volumeId string, snapName string, fli string){
+	logger.Info.Println("Creating Snapshot: ", snapName)
+	var cmd = fmt.Sprintf("%s snapshot %s:%s %s", fli, volumeSetId, volumeId, snapName)
+	out, err := exec.Command("sh", "-c", cmd).Output()
+	if err != nil {
+		logger.Error.Println("Could not push snapshot, reason")
+		logger.Error.Fatal(err)
+	}
+	logger.Info.Println(string(out))
+}
+
+func SnapshotWorkingVolumes(fli string){
+	file, err := os.Open(".flidockervols")
+    if err != nil {
+        logger.Error.Fatal(err)
+    }
+    defer file.Close()
+
+    scanner := bufio.NewScanner(file)
+    for scanner.Scan() {
+        result := strings.Split(scanner.Text(), ",")
+        var uuid, _ = utils.GenUUID()
+        var snap = fmt.Sprintf("%s-%s", result[0], uuid)
+        logger.Message.Println("Snapshotting", result[0], "from Volumeset", result[1])
+        createSnapshot(result[1], result[0], snap, fli)
+    }
+
+    if err := scanner.Err(); err != nil {
+        logger.Error.Fatal(err)
+    }
+}
+
+func SnapshotAndPushWorkingVolumes(fli string){
+    file, err := os.Open(".flidockervols")
+    if err != nil {
+        logger.Error.Fatal(err)
+    }
+    defer file.Close()
+
+    scanner := bufio.NewScanner(file)
+    for scanner.Scan() {
+        result := strings.Split(scanner.Text(), ",")
+        var uuid, _ = utils.GenUUID()
+        var snap = fmt.Sprintf("%s-%s", result[0], uuid)
+        logger.Message.Println("Snapshotting and Pushing", result[0], "from Volumeset", result[1])
+        createSnapshot(result[1], result[0], snap, fli)
+        syncVolumeset(result[1], fli)
+        pushSnapshot(result[1], snap, fli)
+    }
+
+    if err := scanner.Err(); err != nil {
+        logger.Error.Fatal(err)
+    }
 }

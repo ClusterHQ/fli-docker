@@ -29,20 +29,24 @@ var FliHelpMessage = `
 -------------------------------------------------------
 fli is not installed, it is needed to use fli-docker
 fli is available at https://clusterhq.com
+Using the fli contianer? Make sure it used docker tag 'clusterhq/fli'
 -------------------------------------------------------`
 
-var FliDockerVersion = `
-Version: v0.0.1`
+var FliDockerVersion = `Version: v0.0.1-dev`
 
 var FliDockerHelp = `
 Usage:
-	fli-docker version  (Get current tool version)
-	fli-docker run      (Run with a manifest to pull and use snapshots for the compose app)
-	fli-docker snapshot (Run to snapshot existing FlockerHub volumes used by the compose app)
-	fli-docker --help   (Get this help message)
+  fli-docker version  [options]  (Get current tool version)
+  fli-docker run      [options]  (Run with a manifest to pull and use snapshots for the compose app)
+  fli-docker snapshot [options]  (Snapshot existing FlockerHub volumes used by the compose app)
+  fli-docker stop     [options]  (Just like running a docker-compose stop)
+  fli-docker destroy  [options]  (Just like running a docker-compose rm -f)
+  fli-docker --help   (Get this help message)
 
-	For help on a specific command, use: $ fli-docker <subcommand> --help`
+  For help on a specific command, use: $ fli-docker <subcommand> --help`
 
+var FliDockerCmd = "docker run --rm --privileged -v /chq/:/chq/:shared -v /root:/root -v /lib/modules:/lib/modules clusterhq/fli "
+var FliBinaryCmd = "fli "
 
 func CheckForPath(path string) (result bool, err error) {
 	isPath, errPath := exec.LookPath(path)
@@ -58,6 +62,7 @@ func CheckForPath(path string) (result bool, err error) {
 func CheckForFile(file string) (result bool, err error) {
 	_, errFile := os.Stat(file)
 	if errFile != nil {
+		logger.Info.Println(errFile)
 		return false, errFile
 	}
 	logger.Info.Println("Found file: " + file)
@@ -67,6 +72,7 @@ func CheckForFile(file string) (result bool, err error) {
 func CheckForCmd(cmd string) (result bool, err error) {
 	_, errCmd := exec.Command("sh", "-c", cmd).Output()
 	if errCmd != nil {
+		logger.Info.Println(errCmd)
 		return false, errCmd
 	}
 	logger.Info.Println("Found Command: " + cmd)
@@ -189,6 +195,46 @@ func RunCompose(composeFile string, projectName string) {
 	}
 
 	err = project.Up(context.Background(), options.Up{})
+
+    if err != nil {
+        logger.Error.Fatal(err)
+    }
+}
+
+// Run the compose file with options
+func StopCompose(composeFile string, projectName string) {
+	project, err := docker.NewProject(&ctx.Context{
+		Context: project.Context{
+			ComposeFiles: []string{composeFile},
+			ProjectName:  projectName,
+		},
+	}, nil)
+
+	if err != nil {
+		logger.Error.Fatal(err)
+	}
+
+	err = project.Stop(context.Background(), 60)
+
+    if err != nil {
+        logger.Error.Fatal(err)
+    }
+}
+
+// Run the compose file with options
+func DestroyCompose(composeFile string, projectName string) {
+	project, err := docker.NewProject(&ctx.Context{
+		Context: project.Context{
+			ComposeFiles: []string{composeFile},
+			ProjectName:  projectName,
+		},
+	}, nil)
+
+	if err != nil {
+		logger.Error.Fatal(err)
+	}
+
+	err = project.Delete(context.Background(), options.Delete{true,true})
 
     if err != nil {
         logger.Error.Fatal(err)

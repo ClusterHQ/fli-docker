@@ -200,7 +200,7 @@ func SnapshotWorkingVolumes(fli string){
         result := strings.Split(scanner.Text(), ",")
         var uuid, _ = utils.GenUUID()
         var snap = fmt.Sprintf("%s-%s", result[0], uuid)
-        logger.Message.Println("Snapshotting", result[0], " from Volumeset ", result[1])
+        logger.Message.Println("Snapshotting", result[0], "from Volumeset ", result[1])
         createSnapshot(result[1], result[0], snap, fli)
     }
 
@@ -221,7 +221,7 @@ func SnapshotAndPushWorkingVolumes(fli string){
         result := strings.Split(scanner.Text(), ",")
         var uuid, _ = utils.GenUUID()
         var snap = fmt.Sprintf("%s-%s", result[0], uuid)
-        logger.Message.Println("Snapshotting and Pushing ", result[0], " from Volumeset ", result[1])
+        logger.Message.Println("Snapshotting and Pushing", result[0], "from Volumeset ", result[1])
         createSnapshot(result[1], result[0], snap, fli)
         syncVolumeset(result[1], fli)
         pushSnapshot(result[1], snap, fli)

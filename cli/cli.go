@@ -188,7 +188,7 @@ func createSnapshot(volumeSetId string, volumeId string, snapName string, fli st
 	logger.Info.Println(string(out))
 }
 
-func SnapshotWorkingVolumes(volumes []types.Volume, fli string){
+func SnapshotWorkingVolumes(fli string){
 	file, err := os.Open(".flidockervols")
     if err != nil {
         logger.Error.Fatal(err)
@@ -208,7 +208,7 @@ func SnapshotWorkingVolumes(volumes []types.Volume, fli string){
     }
 }
 
-func SnapshotAndPushWorkingVolumes(volumes []types.Volume, fli string){
+func SnapshotAndPushWorkingVolumes(fli string){
     file, err := os.Open(".flidockervols")
     if err != nil {
         logger.Error.Fatal(err)
@@ -222,7 +222,7 @@ func SnapshotAndPushWorkingVolumes(volumes []types.Volume, fli string){
         var snap = fmt.Sprintf("%s-%s", result[0], uuid)
         createSnapshot(result[1], result[0], snap, fli)
         syncVolumeset(result[1], fli)
-        pushSnapshot(result[0], snap, fli)
+        pushSnapshot(result[1], snap, fli)
     }
 
     if err := scanner.Err(); err != nil {

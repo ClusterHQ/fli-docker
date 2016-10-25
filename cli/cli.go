@@ -16,10 +16,13 @@ import (
 
 var fli = utils.FliDockerCmd
 func init() {
-    if utils.IsBinary {
-    	fli = "fli "
-    	logger.Info.Println("Using Binary fli")
-    }
+    exists, err := utils.CheckForFile("/tmp/fliisbinary")
+	if err != nil {
+		logger.Info.Println(err)
+	}
+	if exists {
+		fli = "fli "
+	}
 }
 
 
@@ -139,4 +142,24 @@ func CreateVolumesFromSnapshots(volumes []types.Volume) (newVols []types.NewVolu
 		}
 	}
 	return vols, nil
+}
+
+// Run the command to push a specific snapshot
+func pushSnapshot(volumeSetId string, snapshotId string){
+	logger.Info.Println("Pushing Snapshot: ", snapshotId)
+	var cmd = fmt.Sprintf("%s push %s:%s", fli, volumeSetId, snapshotId)
+	out, err := exec.Command("sh", "-c", cmd).Output()
+	if err != nil {
+		logger.Error.Println("Could not push snapshot, reason")
+		logger.Error.Fatal(err)
+	}
+	logger.Info.Println(string(out))
+}
+
+func SnapshotWorkingVolumes(volumes []types.Volume){
+
+}
+
+func SnapshotAndPushWorkingVolumes(volumes []types.Volume){
+
 }

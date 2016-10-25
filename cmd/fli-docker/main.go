@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"os/exec"
 	"flag"
 	"strings"
 	"path/filepath"
@@ -10,6 +11,7 @@ import (
 	"github.com/ClusterHQ/fli-docker/cli"
 	"github.com/ClusterHQ/fli-docker/logger"
 )
+
 
 func main() {
 
@@ -71,8 +73,6 @@ func main() {
 				}else{
 					logger.Init(os.Stdout, ioutil.Discard, ioutil.Discard, os.Stderr)
 				}
-    			logger.Message.Println("snapshot Not Implemented Yet")
-    			os.Exit(0)
     		case "destroy":
     			stopDestroySet.Parse(os.Args[2:])
     			if verbose {
@@ -130,8 +130,17 @@ func main() {
 		if (!isFliAvail1) {
 			binary = false
 			docker = true
+			rmCmd := exec.Command("rm", "-f", "/tmp/fliisbinary")
+			err := rmCmd.Run()
+			if err != nil {
+				logger.Info.Println("Tried to delete /tmp/fliisbinary unsuccessfully")
+			}
 		}else{
-			utils.IsBinary = true
+			touchCmd := exec.Command("touch", "/tmp/fliisbinary")
+			err := touchCmd.Run()
+			if err != nil {
+				logger.Error.Fatal(err)
+			}
 		}
 		logger.Info.Println("using fli container: ", docker)
 		logger.Info.Println("using fli binary: ", binary)
@@ -255,13 +264,39 @@ func main() {
 		}
 
 	} else if os.Args[1] == "snapshot" {
-		// TODO this would allow users to 
-		// snapshot volumes that have been pull and placed
-		// into their compose file and run already.
-		// A user may want to "snapshot" the volumes in the compose
-		// file. Optionally with `-push` they can push them back to
-		// FlockerHub
 		logger.Info.Println("Running: `fli-docker snapshot`")
+
+		if manifest == "manifest.yml" {
+			logger.Warning.Println("Using default 'manifest.yml`, otherwise specify differently with -f")
+		}
+
+		// verify that the manifest exists
+		isManifestAvail, err := utils.CheckForFile(manifest)
+		if (!isManifestAvail){
+			logger.Error.Println(err.Error())
+			logger.Message.Fatal("Missing manifest, either name it 'manifest.yml' or pass in file with '-f'.")
+		}
+
+		// get the yaml file passed in the args.
+		filename, _ := filepath.Abs(manifest)
+		// read the file.
+		yamlFile, err := ioutil.ReadFile(filename)
+		if err != nil {
+			logger.Error.Fatal(err.Error())
+		}
+
+		// pass the file to the ParseManifest
+		logger.Message.Println("Parsing the fli manifest...")
+		m := utils.ParseManifest(yamlFile)
+
+		// Does user want us to push snapshots back?
+		if push {
+			logger.Message.Println("Snapshotting and Pushing volumes to FlockerHub...")
+			cli.SnapshotAndPushWorkingVolumes(m.Volumes)
+		}else{
+			logger.Message.Println("Snapshotting volumes...")
+			cli.SnapshotWorkingVolumes(m.Volumes)
+		}
 
 	} else if os.Args[1] == "destroy" {
 		logger.Info.Println("Running: `fli-docker destroy`")
@@ -318,7 +353,7 @@ func main() {
 		logger.Message.Println("Parsing the fli manifest...")
 		m := utils.ParseManifest(yamlFile)
 
-		logger.Info.Println("Destroying compose application")
+		logger.Info.Println("Stopping compose application")
 		utils.StopCompose(m.DockerApp, project)
 	}
 }

@@ -47,8 +47,6 @@ Usage:
 
 var FliDockerCmd = "docker run --rm --privileged -v /chq/:/chq/:shared -v /root:/root -v /lib/modules:/lib/modules clusterhq/fli "
 
-var IsBinary = false
-
 func CheckForPath(path string) (result bool, err error) {
 	isPath, errPath := exec.LookPath(path)
 	// LookPath searches for an executable binary 

@@ -122,6 +122,40 @@ $ docker inspect -f "{{.Mounts}}" redismoby_redis_1
 [{ /chq/907ee560-0110-4ab2-aaad-091ed9bb474f/94ec5b24-1f3a-4695-b172-d17b840596c5 /data  rw true rprivate} { /chq/907ee560-0110-4ab2-aaad-091ed9bb474f/c574874b-822e-4bf3-8a25-e63b4733619e /tmp/path  rw true rprivate}]
 ```
 
+#### fli-docker stop
+
+To stop your compose services you can run the following. Using the `example/redis-moby` in the below example.
+
+```
+$ cd fli-docker/examples/redis-moby
+```
+
+```
+$ fli-docker stop -f fli-manifest.yml 
+MESSAGE: 2016/10/25 17:47:25 Parsing the fli manifest...
+INFO[0000] [0/2] [web]: Stopping                        
+INFO[0000] [0/2] [redis]: Stopping                      
+INFO[0000] [0/2] [redis]: Stoppe                       
+INFO[0060] [0/2] [web]: Stopped  
+```
+
+#### fli-docker destroy
+
+To stop and force remove your containers, you can run the following. Using the `example/redis-moby` in the below example.
+
+```
+$ cd fli-docker/examples/redis-moby
+```
+
+```
+$ fli-docker destroy -f fli-manifest.yml 
+MESSAGE: 2016/10/25 17:51:58 Parsing the fli manifest...
+INFO[0000] [0/2] [web]: Deleting                        
+INFO[0000] [0/2] [redis]: Deleting                      
+INFO[0000] [0/2] [redis]: Deleted                       
+INFO[0000] [0/2] [web]: Deleted 
+```
+
 #### fli-docker snapshot
 
 Once you have a compose app running with `fli-docker`, you can snapshot and optionally push the volumes

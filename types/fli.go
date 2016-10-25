@@ -28,4 +28,5 @@ type Volume struct {
 type NewVolume struct {
 	Name string
 	VolumePath string
+	VolumeName string
 }

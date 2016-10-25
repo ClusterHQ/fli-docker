@@ -2,6 +2,7 @@ package cli
 
 import (
 	"os/exec"
+	"os"
 	"fmt"
 	"strings"
 
@@ -116,7 +117,30 @@ func createVolumeFromSnapshot(volumeName string, volumeSet string, snapshotId st
 	if path == "" {
 			logger.Error.Fatal("Could not find volume path")
 	 }
-	return types.NewVolume{Name: volumeName, VolumePath: path}, nil
+	return types.NewVolume{Name: volumeName, VolumePath: path, VolumeName: volName}, nil
+}
+
+func saveCurrentWorkingVols(volumes []types.NewVolume) {
+	// open files r and w
+	exists, _ := utils.CheckForFile(".flidockervols")
+	if exists {
+		err := os.Remove(".flidockervols")
+		if err != nil {
+			logger.Error.Fatal("Could not delete .flidockervols")
+		}
+	}
+    file, err := os.OpenFile(".flidockervols", os.O_APPEND|os.O_WRONLY,0600)
+    if err != nil {
+        logger.Error.Fatal(err)
+    }
+    defer file.Close()
+
+    for _, newVol := range volumes {
+    	if _, err = file.WriteString(newVol.VolumeName); err != nil {
+     		logger.Error.Fatal(err)
+    	}
+	}
+	logger.Info.Println("Saves working vols to .flidockervols")
 }
 
 func CreateVolumesFromSnapshots(volumes []types.Volume, fli string) (newVols []types.NewVolume, err error) {
@@ -129,6 +153,8 @@ func CreateVolumesFromSnapshots(volumes []types.Volume, fli string) (newVols []t
 			vols = append(vols, vol)
 		}
 	}
+	// Record current working volumes.
+	saveCurrentWorkingVols(vols)
 	return vols, nil
 }
 
@@ -143,7 +169,6 @@ func pushSnapshot(volumeSetId string, snapshotId string, fli string){
 	}
 	logger.Info.Println(string(out))
 }
-
 
 func SnapshotWorkingVolumes(volumes []types.Volume, fli string){
 	logger.Message.Println("Placeholder")

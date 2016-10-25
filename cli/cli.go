@@ -2,6 +2,7 @@ package cli
 
 import (
 	"os/exec"
+	"os"
 	"fmt"
 	"strings"
 
@@ -15,10 +16,9 @@ import (
 */
 
 var fli = utils.FliDockerCmd
-var fliBinaryExists bool
 func init() {
-    fliBinaryExists, _ = utils.CheckForFile("/tmp/fliisbinary")
-	if fliBinaryExists {
+    _, err := os.Stat("/tmp/fliisbinary")
+	if err == nil {
 		fli = "fli "
 	}
 }

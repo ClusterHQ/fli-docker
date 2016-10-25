@@ -141,7 +141,7 @@ func saveCurrentWorkingVols(volumes []types.NewVolume) {
     defer file.Close()
 
     for _, newVol := range volumes {
-    	var volRecord = fmt.Sprintf("%s,%s", newVol.VolumeName, newVol.VolumeSet)
+    	var volRecord = fmt.Sprintf("%s,%s\n", newVol.VolumeName, newVol.VolumeSet)
     	if _, err = file.WriteString(volRecord); err != nil {
      		logger.Error.Fatal(err)
     	}

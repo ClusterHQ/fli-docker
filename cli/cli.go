@@ -5,6 +5,7 @@ import (
 	"os"
 	"fmt"
 	"strings"
+	"bufio"
 
 	"github.com/ClusterHQ/fli-docker/types"
 	"github.com/ClusterHQ/fli-docker/logger"
@@ -117,7 +118,7 @@ func createVolumeFromSnapshot(volumeName string, volumeSet string, snapshotId st
 	if path == "" {
 			logger.Error.Fatal("Could not find volume path")
 	 }
-	return types.NewVolume{Name: volumeName, VolumePath: path, VolumeName: volName}, nil
+	return types.NewVolume{Name: volumeName, VolumePath: path, VolumeName: volName, VolumeSet: volumeSet}, nil
 }
 
 func saveCurrentWorkingVols(volumes []types.NewVolume) {
@@ -140,7 +141,8 @@ func saveCurrentWorkingVols(volumes []types.NewVolume) {
     defer file.Close()
 
     for _, newVol := range volumes {
-    	if _, err = file.WriteString(newVol.VolumeName); err != nil {
+    	var volRecord = fmt.Sprintf("%s,%s", newVol.VolumeName, newVol.VolumeSet)
+    	if _, err = file.WriteString(volRecord); err != nil {
      		logger.Error.Fatal(err)
     	}
 	}
@@ -174,10 +176,56 @@ func pushSnapshot(volumeSetId string, snapshotId string, fli string){
 	logger.Info.Println(string(out))
 }
 
+// Run the command to push a specific snapshot
+func createSnapshot(volumeSetId string, volumeId string, snapName string, fli string){
+	logger.Info.Println("Creating Snapshot: ", snapName)
+	var cmd = fmt.Sprintf("%s snapshot %s:%s %s", fli, volumeSetId, volumeId, snapName)
+	out, err := exec.Command("sh", "-c", cmd).Output()
+	if err != nil {
+		logger.Error.Println("Could not push snapshot, reason")
+		logger.Error.Fatal(err)
+	}
+	logger.Info.Println(string(out))
+}
+
 func SnapshotWorkingVolumes(volumes []types.Volume, fli string){
-	logger.Message.Println("Placeholder")
+	file, err := os.Open(".flidockervols")
+    if err != nil {
+        logger.Error.Fatal(err)
+    }
+    defer file.Close()
+
+    scanner := bufio.NewScanner(file)
+    for scanner.Scan() {
+        result := strings.Split(scanner.Text(), ",")
+        var uuid, _ = utils.GenUUID()
+        var snap = fmt.Sprintf("%s-%s", result[0], uuid)
+        createSnapshot(result[1], result[0], snap, fli)
+    }
+
+    if err := scanner.Err(); err != nil {
+        logger.Error.Fatal(err)
+    }
 }
 
 func SnapshotAndPushWorkingVolumes(volumes []types.Volume, fli string){
-    logger.Message.Println("Placeholder")
+    file, err := os.Open(".flidockervols")
+    if err != nil {
+        logger.Error.Fatal(err)
+    }
+    defer file.Close()
+
+    scanner := bufio.NewScanner(file)
+    for scanner.Scan() {
+        result := strings.Split(scanner.Text(), ",")
+        var uuid, _ = utils.GenUUID()
+        var snap = fmt.Sprintf("%s-%s", result[0], uuid)
+        createSnapshot(result[1], result[0], snap, fli)
+        syncVolumeset(result[1], fli)
+        pushSnapshot(result[0], snap, fli)
+    }
+
+    if err := scanner.Err(); err != nil {
+        logger.Error.Fatal(err)
+    }
 }

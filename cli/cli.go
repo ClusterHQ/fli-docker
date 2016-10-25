@@ -2,7 +2,6 @@ package cli
 
 import (
 	"os/exec"
-	"os"
 	"fmt"
 	"strings"
 
@@ -15,16 +14,7 @@ import (
 	Bindings to the FlockerHub CLI
 */
 
-var fli = utils.FliDockerCmd
-func init() {
-    _, err := os.Stat("/tmp/fliisbinary")
-	if err == nil {
-		fli = "fli "
-	}
-}
-
-
-func SetFlockerHubEndpoint(endpoint string) {
+func SetFlockerHubEndpoint(endpoint string, fli string) {
 	logger.Info.Println("Setting FlockerHub Endpoint: ", endpoint)
 	var cmd = fmt.Sprintf("%s config -u %s", fli, endpoint)
 	out, err := exec.Command("sh", "-c", cmd).Output()
@@ -35,7 +25,7 @@ func SetFlockerHubEndpoint(endpoint string) {
 	logger.Info.Println(string(out))
 }
 
-func GetFlockerHubEndpoint() (flockerhubEndpoint string, err error) {
+func GetFlockerHubEndpoint(fli string) (flockerhubEndpoint string, err error) {
 	logger.Info.Println("Getting FlockerHub Endpoint")
 	var cmd = fmt.Sprintf("%s config | grep 'FlockerHub URL:' | awk '{print $3}'", fli)
 	out, err := exec.Command("sh", "-c", cmd).Output()
@@ -48,7 +38,7 @@ func GetFlockerHubEndpoint() (flockerhubEndpoint string, err error) {
 	return string(out), nil
 }
 
-func SetFlockerHubTokenFile(tokenFile string) {
+func SetFlockerHubTokenFile(tokenFile string, fli string) {
 	logger.Info.Println("Setting FlockerHub Tokenfile: ", tokenFile)
 	var cmd = fmt.Sprintf("%s config -t %s", fli, tokenFile)
 	out, err := exec.Command("sh", "-c", cmd).Output()
@@ -59,7 +49,7 @@ func SetFlockerHubTokenFile(tokenFile string) {
 	logger.Info.Println(string(out))
 }
 
-func GetFlockerHubTokenFile() (flockerHubTokenFile string, err error) {
+func GetFlockerHubTokenFile(fli string) (flockerHubTokenFile string, err error) {
 	logger.Info.Println("Getting FlockerHub Tokenfile")
 	var cmd = fmt.Sprintf("%s config | grep 'Authentication Token File:' | awk '{print $4}'", fli)
 	out, err := exec.Command("sh", "-c", cmd).Output()
@@ -73,7 +63,7 @@ func GetFlockerHubTokenFile() (flockerHubTokenFile string, err error) {
 }
 
 // Run the command to sync a volumeset
-func syncVolumeset(volumeSetId string) {
+func syncVolumeset(volumeSetId string, fli string) {
 	logger.Info.Println("Syncing Volumeset: ", volumeSetId)
 	var cmd = fmt.Sprintf("%s sync %s", fli, volumeSetId)
 	out, err := exec.Command("sh", "-c", cmd).Output()
@@ -85,7 +75,7 @@ func syncVolumeset(volumeSetId string) {
 }
 
 // Run the command to pull a specific snapshot
-func pullSnapshot(volumeSetId string, snapshotId string){
+func pullSnapshot(volumeSetId string, snapshotId string, fli string){
 	logger.Info.Println("Pulling Snapshot: ", snapshotId)
 	var cmd = fmt.Sprintf("%s pull %s:%s", fli, volumeSetId, snapshotId)
 	out, err := exec.Command("sh", "-c", cmd).Output()
@@ -98,15 +88,15 @@ func pullSnapshot(volumeSetId string, snapshotId string){
 
 // Wrapper for sync and pull which takes
 // a list of type Volume
-func PullSnapshots(volumes []types.Volume) {
+func PullSnapshots(volumes []types.Volume, fli string) {
 	for _, volume := range volumes {
-		syncVolumeset(volume.VolumeSet)
-		pullSnapshot(volume.VolumeSet, volume.Snapshot)
+		syncVolumeset(volume.VolumeSet, fli)
+		pullSnapshot(volume.VolumeSet, volume.Snapshot, fli)
 	}
 }
 
 // Created a volume and returns it.
-func createVolumeFromSnapshot(volumeName string, volumeSet string, snapshotId string) (vol types.NewVolume, err error){
+func createVolumeFromSnapshot(volumeName string, volumeSet string, snapshotId string, fli string) (vol types.NewVolume, err error){
 	logger.Info.Println("Creating Volume from Snapshot: ", snapshotId)
 	var attrString = fmt.Sprintf("created_by=fli-docker,from_snap=%s", snapshotId)
 	uuid, err := utils.GenUUID()
@@ -129,10 +119,10 @@ func createVolumeFromSnapshot(volumeName string, volumeSet string, snapshotId st
 	return types.NewVolume{Name: volumeName, VolumePath: path}, nil
 }
 
-func CreateVolumesFromSnapshots(volumes []types.Volume) (newVols []types.NewVolume, err error) {
+func CreateVolumesFromSnapshots(volumes []types.Volume, fli string) (newVols []types.NewVolume, err error) {
 	vols := []types.NewVolume{}
 	for _, volume := range volumes {
-		vol, err := createVolumeFromSnapshot(volume.Name, volume.VolumeSet, volume.Snapshot)
+		vol, err := createVolumeFromSnapshot(volume.Name, volume.VolumeSet, volume.Snapshot, fli)
 		if err != nil {
 			return nil, err
 		}else {
@@ -143,7 +133,7 @@ func CreateVolumesFromSnapshots(volumes []types.Volume) (newVols []types.NewVolu
 }
 
 // Run the command to push a specific snapshot
-func pushSnapshot(volumeSetId string, snapshotId string){
+func pushSnapshot(volumeSetId string, snapshotId string, fli string){
 	logger.Info.Println("Pushing Snapshot: ", snapshotId)
 	var cmd = fmt.Sprintf("%s push %s:%s", fli, volumeSetId, snapshotId)
 	out, err := exec.Command("sh", "-c", cmd).Output()
@@ -155,10 +145,10 @@ func pushSnapshot(volumeSetId string, snapshotId string){
 }
 
 
-func SnapshotWorkingVolumes(volumes []types.Volume){
+func SnapshotWorkingVolumes(volumes []types.Volume, fli string){
 	logger.Message.Println("Placeholder")
 }
 
-func SnapshotAndPushWorkingVolumes(volumes []types.Volume){
+func SnapshotAndPushWorkingVolumes(volumes []types.Volume, fli string){
     logger.Message.Println("Placeholder")
 }

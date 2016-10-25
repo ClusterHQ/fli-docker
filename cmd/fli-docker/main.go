@@ -2,7 +2,6 @@ package main
 
 import (
 	"os"
-	"os/exec"
 	"flag"
 	"strings"
 	"path/filepath"
@@ -121,6 +120,7 @@ func main() {
 	isFliAvail2, err := utils.CheckForCmd(fliCmd2)
 	var binary bool
 	var docker bool
+	var fliCmd string
 	binary = true
 	docker = false
 	if (!isFliAvail1 && !isFliAvail2){
@@ -130,17 +130,9 @@ func main() {
 		if (!isFliAvail1) {
 			binary = false
 			docker = true
-			rmCmd := exec.Command("rm", "-f", "/tmp/fliisbinary")
-			err := rmCmd.Run()
-			if err != nil {
-				logger.Info.Println("Tried to delete /tmp/fliisbinary unsuccessfully")
-			}
+			fliCmd = utils.FliDockerCmd
 		}else{
-			touchCmd := exec.Command("touch", "/tmp/fliisbinary")
-			err := touchCmd.Run()
-			if err != nil {
-				logger.Error.Fatal(err)
-			}
+			fliCmd = utils.FliBinaryCmd
 		}
 		logger.Info.Println("using fli container: ", docker)
 		logger.Info.Println("using fli binary: ", binary)
@@ -175,7 +167,7 @@ func main() {
 		// was it passed with `-e`?
 		if flockerhub == "" {
 			logger.Info.Println("FlockerHub endpoint not specified with -e")
-			fh, err := cli.GetFlockerHubEndpoint()
+			fh, err := cli.GetFlockerHubEndpoint(fliCmd)
 			if err != nil{
 				logger.Error.Fatal("Could not get FlockerHub config")
 			}
@@ -193,16 +185,16 @@ func main() {
 				}
 			}else{
 				// set endpoint from manifest
-				cli.SetFlockerHubEndpoint(flockerhubFromManifest)
+				cli.SetFlockerHubEndpoint(flockerhubFromManifest, fliCmd)
 			}
 		}else{
 			// set endpoint from fli-docker arg
-			cli.SetFlockerHubEndpoint(flockerhub)
+			cli.SetFlockerHubEndpoint(flockerhub, fliCmd)
 		}
 
 		if tokenfile == "" {
 			logger.Info.Println("token not specified with -t")
-			tf, err := cli.GetFlockerHubTokenFile()
+			tf, err := cli.GetFlockerHubTokenFile(fliCmd)
 			if err != nil{
 				logger.Error.Fatal("Could not get tokenfile config")
 			}
@@ -217,10 +209,10 @@ func main() {
 					logger.Info.Println("Trying existing tokenfile config: ", tf)
 				}
 			}else{
-				cli.SetFlockerHubTokenFile(tokenfileFromManifest)
+				cli.SetFlockerHubTokenFile(tokenfileFromManifest, fliCmd)
 			}
 		}else{
-			cli.SetFlockerHubTokenFile(tokenfile)
+			cli.SetFlockerHubTokenFile(tokenfile, fliCmd)
 		}
 
 		// verify that the compose file exists.
@@ -231,12 +223,12 @@ func main() {
 
 		// try and pull snapshots
 		logger.Message.Println("Pulling FlockerHub volumes...")
-		cli.PullSnapshots(m.Volumes)
+		cli.PullSnapshots(m.Volumes, fliCmd)
 
 		// create volumes from snapshots and map them to 
 		// `newVolPaths = {compose_volume_name : "/chq/<vol_path>"...}`
 		logger.Message.Println("Creating volumes from snapshots...")
-		newVolPaths, err := cli.CreateVolumesFromSnapshots(m.Volumes)
+		newVolPaths, err := cli.CreateVolumesFromSnapshots(m.Volumes, fliCmd)
 
 		// create a copy of the compose file before we edit it.
 		// replace a fresh copy if we already copied before
@@ -292,10 +284,10 @@ func main() {
 		// Does user want us to push snapshots back?
 		if push {
 			logger.Message.Println("Snapshotting and Pushing volumes to FlockerHub...")
-			cli.SnapshotAndPushWorkingVolumes(m.Volumes)
+			cli.SnapshotAndPushWorkingVolumes(m.Volumes, fliCmd)
 		}else{
 			logger.Message.Println("Snapshotting volumes...")
-			cli.SnapshotWorkingVolumes(m.Volumes)
+			cli.SnapshotWorkingVolumes(m.Volumes, fliCmd)
 		}
 
 	} else if os.Args[1] == "destroy" {

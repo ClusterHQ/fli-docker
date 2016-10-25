@@ -27,9 +27,15 @@ You can use the example here in this repository. Follow the below instructions.
 
 #### Install `fli-docker`
 
-- Install `fli` (TODO)
 - Install `docker` and `docker-compose`, see [here](https://docs.docker.com/compose/install/)
-- Install the fli-docker binary. (TODO)
+
+- Install `fli`
+
+You can do this by running `docker pull clusterhq/fli` or but getting the binary from https://clusterhq.com/docs
+
+- Install the fli-docker binary.
+
+You can get the `fli-docker` binary by running `curl -sSL https://someurl.com/get-fli-docker.sh | sh`
 
 #### fli-docker run
 
@@ -43,6 +49,8 @@ $ cd fli-docker/examples/redis-moby
 Run the example
 
 > Note: you will need to set the `tokenfile` in the `fli-manifest.yml` or provide them as plags to `fli-docker run` using `-e https://flocker.com -t /root/your.token`.
+
+> Note: you will need to create three snapshots and a volumeset to do this. See [this README](examples/redis-moby/README.md)
 
 ```
 $ fli-docker run -f fli-manifest.yml -c -p myproject
@@ -158,19 +166,25 @@ INFO[0000] [0/2] [web]: Deleted
 
 #### fli-docker snapshot
 
-Once you have a compose app running with `fli-docker`, you can snapshot and optionally push the volumes
-back to FlockerHub.
-
-> Note: This is not implemented yet.
+Once you have a compose app running with `fli-docker`, you can snapshot and optionally push the volumes back to FlockerHub.
 
 Snapshot the volumes and push them to FlockerHub
 ```
-$ fli-docker snapshot -f manifest.yml --push
+$ fli-docker snapshot -push
+MESSAGE: 2016/10/25 20:07:03 Snapshotting and Pushing volumes to FlockerHub...
+MESSAGE: 2016/10/25 20:07:03 Snapshotting and Pushing fli-1517ade4-502c-4781-b1e7-292b1cf329e7 from Volumeset  docker-app-example
+MESSAGE: 2016/10/25 20:07:10 Snapshotting and Pushing fli-5abb45f7-0fe6-4644-9042-3abda6a2b3a2 from Volumeset  docker-app-example
+MESSAGE: 2016/10/25 20:07:18 Snapshotting and Pushing fli-eef1035a-4105-4b92-902d-f33aa1dfa069 from Volumeset  docker-app-example
+
 ```
 
 Snapshot the volumes, but do not push them to FlockerHub
 ```
-$ fli-docker snapshot -f manifest.yml
+$ fli-docker snapshot
+MESSAGE: 2016/10/25 20:06:57 Snapshotting volumes...
+MESSAGE: 2016/10/25 20:06:57 Snapshotting fli-1517ade4-502c-4781-b1e7-292b1cf329e7 from Volumeset  docker-app-example
+MESSAGE: 2016/10/25 20:06:57 Snapshotting fli-5abb45f7-0fe6-4644-9042-3abda6a2b3a2 from Volumeset  docker-app-example
+MESSAGE: 2016/10/25 20:06:58 Snapshotting fli-eef1035a-4105-4b92-902d-f33aa1dfa069 from Volumeset  docker-app-example
 ```
 
 ## Stateful Application Manifest (SAM)

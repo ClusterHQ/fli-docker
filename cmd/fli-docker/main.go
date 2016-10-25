@@ -45,7 +45,7 @@ func main() {
 	// stopSet
 	stopDestroySet.BoolVar(&verbose, "verbose", false, "[OPTIONAL] verbose logging")
 	stopDestroySet.StringVar(&manifest, "f", "manifest.yml", "[OPTIONAL] Stateful application manifest file")
-    stopDestroySet.StringVar(&project, "p", "fli-compose", "[OPTIONAL] project name for compose if using -c")
+	stopDestroySet.StringVar(&project, "p", "fli-compose", "[OPTIONAL] project name for compose if using -c")
 
 	// Initialize logger before `verbose` is captured for
 	// log messages before that conditional

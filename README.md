@@ -27,14 +27,14 @@ Usage:
 
 `fli-docker` relies on `fli` and FlockerHub to push and pull snapshots of data around and itself is only an integration point with `docker-compose` so that managing volumes and snapshots with `docker-compose` and `fli` is even easier.
 
-Like `docker-compose` `fli-docker` relies on a YAML file, called the SAM (Stateful Application Manifest.)
+Like `docker-compose`, `fli-docker` relies on a YAML file, called the SAM (Stateful Application Manifest.)
 
 ## Stateful Application Manifest (SAM)
 
 The Stateful Application Manifest (SAM) looks similar to a Docker Compose file, with a few key changes.
 
 - The `flocker_hub` node references an `endpoint` and a valid `tokenfile` for FlockerHub authentication.
-- The volumes are defined by name, same same names in the docker compose YAML fiel, and each references a `snapshot` or `branch` and a `volumeset` which the `snapshot` or `branch` belongs to.
+- The volumes are defined by name, same names in the docker compose YAML file, and each references a `snapshot` or `branch` and a `volumeset` which the `snapshot` or `branch` belongs to.
 
 The `fli-docker` utility takes a `docker-compose.yml` file as input, and translates
 volumes in the Docker Compose file to volumes backed by FlockerHub snapshots.
@@ -52,7 +52,7 @@ volumes in the Docker Compose file to volumes backed by FlockerHub snapshots.
 An example of a Stateful App Manifest (SAM) YAML file could be `dev-manifest.yml` below. Notice, under the `volumes:` section of the manifest, that each named volume references a `volumeset` and a `snapshot`.
 
 You can obtain these identifiers from the FlockerHub user interface, or the `fli` command line utility.
-Documentation about FlockerHub and `fli` itself can be found at [ClusterHQ Documentation](https://clusterhq.com).
+Documentation about FlockerHub and `fli` itself can be found at [ClusterHQ Documentationn](https://clusterhq.com).
 
 ```yaml
 docker_app: docker-compose-app.yml

@@ -156,10 +156,11 @@ func pushSnapshot(volumeSetId string, snapshotId string){
 	logger.Info.Println(string(out))
 }
 
-func SnapshotWorkingVolumes(volumes []types.Volume){
 
+func SnapshotWorkingVolumes(volumes []types.Volume){
+	logger.Message.Println("Placeholder")
 }
 
 func SnapshotAndPushWorkingVolumes(volumes []types.Volume){
-
+    logger.Message.Println("Placeholder")
 }

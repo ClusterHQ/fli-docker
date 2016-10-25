@@ -15,12 +15,10 @@ import (
 */
 
 var fli = utils.FliDockerCmd
+var fliBinaryExists bool
 func init() {
-    exists, err := utils.CheckForFile("/tmp/fliisbinary")
-	if err != nil {
-		logger.Info.Println(err)
-	}
-	if exists {
+    fliBinaryExists, _ := utils.CheckForFile("/tmp/fliisbinary")
+	if fliBinaryExists {
 		fli = "fli "
 	}
 }

@@ -3,6 +3,7 @@ package cli
 import (
 	"os/exec"
 	"fmt"
+	"strings"
 
 	"github.com/ClusterHQ/fli-docker/types"
 	"github.com/ClusterHQ/fli-docker/logger"
@@ -119,7 +120,7 @@ func createVolumeFromSnapshot(volumeName string, volumeSet string, snapshotId st
 	if err != nil {
 		logger.Error.Fatal(err)
 	}
-	var path = string(createOut)
+	var path = strings.TrimSpace(string(createOut))
 	logger.Info.Println(path)
 	if path == "" {
 			logger.Error.Fatal("Could not find volume path")

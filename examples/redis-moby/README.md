@@ -11,16 +11,16 @@ docker_app: docker-compose-app1.yml
 
 flocker_hub:
     endpoint: http://<ip|dnsname>:<port>
-    tokenfile: /root/vhut.txt
+    tokenfile: /root/fhut.txt
 
 volumes:
     - name: redis-data
-      snapshot: snapshotOf_first_volume
+      snapshot: example-snapshot-1
       volumeset: docker-app-example
     - name: artifacts
-      snapshot: snapshotOf_first_volume_2
+      snapshot: example-snapshot-2
       volumeset: docker-app-example
     - name: /my/path
-      snapshot: snapshotOf_first_volume_3
+      snapshot: example-snapshot-3
       volumeset: docker-app-example
 ```

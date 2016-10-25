@@ -6,5 +6,5 @@ flocker_hub:
 
 volumes:
     - name: mysql-data
-      snapshot: e6bfe755-6423-48cb-bf22-d9e4b799c305
+      snapshot: docker-app-example-snapshot
       volumeset: docker-app-example

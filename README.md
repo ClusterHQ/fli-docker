@@ -170,13 +170,13 @@ flocker_hub:
 
 volumes:
     - name: redis-data
-      snapshot: e6bfe755-6423-48cb-bf22-d9e4b799c305
+      snapshot: example-snapshot-1
       volumeset: docker-app-example
     - name: artifacts
-      snapshot: 17ba9c95-dacf-4341-b434-58bb88186562
+      snapshot: example-snapshot-2
       volumeset: docker-app-example
     - name: /my/path
-      snapshot: fa838c3a-4647-4bd9-951b-d56ba5a0ce12
+      snapshot: example-snapshot-3
       volumeset: docker-app-example
 ```
 

@@ -110,7 +110,7 @@ func main() {
 	var fliCmd1 string
 	var fliCmd2 string
 	fliCmd1 = "fli version"
-	fliCmd2 = utils.FliDockerCmd
+	fliCmd2 = utils.FliDockerCmd + "version"
 
 	// check if needed dependencies are available
 	isComposeAvail, err := utils.CheckForCmd(composeCmd)
@@ -134,6 +134,8 @@ func main() {
 		if (!isFliAvail1) {
 			binary = false
 			docker = true
+		}else{
+			utils.IsBinary = true
 		}
 		logger.Info.Println("using fli container: ", docker)
 		logger.Info.Println("using fli binary: ", binary)
@@ -168,7 +170,7 @@ func main() {
 		// was it passed with `-e`?
 		if flockerhub == "" {
 			logger.Info.Println("FlockerHub endpoint not specified with -e")
-			fh, err := cli.GetFlockerHubEndpoint(binary)
+			fh, err := cli.GetFlockerHubEndpoint()
 			if err != nil{
 				logger.Error.Fatal("Could not get FlockerHub config")
 			}
@@ -186,16 +188,16 @@ func main() {
 				}
 			}else{
 				// set endpoint from manifest
-				cli.SetFlockerHubEndpoint(flockerhubFromManifest, binary)
+				cli.SetFlockerHubEndpoint(flockerhubFromManifest)
 			}
 		}else{
 			// set endpoint from fli-docker arg
-			cli.SetFlockerHubEndpoint(flockerhub, binary)
+			cli.SetFlockerHubEndpoint(flockerhub)
 		}
 
 		if tokenfile == "" {
 			logger.Info.Println("token not specified with -t")
-			tf, err := cli.GetFlockerHubTokenFile(binary)
+			tf, err := cli.GetFlockerHubTokenFile()
 			if err != nil{
 				logger.Error.Fatal("Could not get tokenfile config")
 			}
@@ -210,10 +212,10 @@ func main() {
 					logger.Info.Println("Trying existing tokenfile config: ", tf)
 				}
 			}else{
-				cli.SetFlockerHubTokenFile(tokenfileFromManifest, binary)
+				cli.SetFlockerHubTokenFile(tokenfileFromManifest)
 			}
 		}else{
-			cli.SetFlockerHubTokenFile(tokenfile, binary)
+			cli.SetFlockerHubTokenFile(tokenfile)
 		}
 
 		// verify that the compose file exists.
@@ -224,12 +226,12 @@ func main() {
 
 		// try and pull snapshots
 		logger.Message.Println("Pulling FlockerHub volumes...")
-		cli.PullSnapshots(m.Volumes, binary)
+		cli.PullSnapshots(m.Volumes)
 
 		// create volumes from snapshots and map them to 
 		// `newVolPaths = {compose_volume_name : "/chq/<vol_path>"...}`
 		logger.Message.Println("Creating volumes from snapshots...")
-		newVolPaths, err := cli.CreateVolumesFromSnapshots(m.Volumes, binary)
+		newVolPaths, err := cli.CreateVolumesFromSnapshots(m.Volumes)
 
 		// create a copy of the compose file before we edit it.
 		// replace a fresh copy if we already copied before

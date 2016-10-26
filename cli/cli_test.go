@@ -3,4 +3,4 @@
  *
  */
 
-package utils
+package cli

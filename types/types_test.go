@@ -2,5 +2,5 @@
  *Copyright ClusterHQ Inc.  See LICENSE file for details.
  *
  */
-
-package utils
+ 
+package types

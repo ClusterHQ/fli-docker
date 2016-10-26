@@ -2,4 +2,4 @@ language: go
 go: 
  - 1.7.1
 script:
- - go test -v ./...
+ - ./build_test.sh

@@ -1,3 +1,8 @@
+/*
+ *Copyright ClusterHQ Inc.  See LICENSE file for details.
+ *
+ */
+
 package logger
 
 import (
@@ -19,7 +24,7 @@ func Init(
 	errorHandle io.Writer) {
 
 	Message = log.New(messageHandle,
-		"MESSAGE: ", log.Ldate|log.Ltime)
+		"MESSAGE: ", 0)
 
 	Info = log.New(infoHandle,
 		"INFO: ", log.Ldate|log.Ltime|log.Lshortfile)

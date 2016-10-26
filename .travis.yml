@@ -1,9 +1,5 @@
 language: go
 go: 
  - 1.7.1
-addons:
-  apt:
-    packages:
-    - uuid-runtime
 script:
- - go test -v ./...
+ - ./build_test.sh

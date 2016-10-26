@@ -1,0 +1,9 @@
+version: '2'
+services:
+  srvdata:
+    build: .
+    image: srvdata
+    ports:
+      - "8000"
+    volumes:
+      - tmp-data:/tmp/data

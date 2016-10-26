@@ -3,7 +3,3 @@ go:
  - 1.7.1
 script:
  - ./build_test.sh
-addons:
-  apt:
-    packages:
-      - uuid-runtime

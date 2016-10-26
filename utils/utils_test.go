@@ -149,6 +149,10 @@ func isValidUUID(uuid string) bool {
 }
 
 func TestGenUUID(t *testing.T) {
+	exists, _ := CheckForCmd("uuidgen")
+	if ! exists {
+    	t.Skip("skipping test; uuidgen not available")
+  	}
 	uuid, err := GenUUID()
 	if err != nil {
 		t.Error(err)

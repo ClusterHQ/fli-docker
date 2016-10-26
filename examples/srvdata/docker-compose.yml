@@ -7,3 +7,7 @@ services:
       - "8000"
     volumes:
       - tmp-data:/tmp/data
+      
+volumes:
+  tmp-data:
+    driver: local

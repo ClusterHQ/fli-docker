@@ -93,12 +93,32 @@ func pullSnapshot(volumeSetId string, snapshotId string, fli string){
 	logger.Info.Println(string(out))
 }
 
+// Run the command to pull a specific volumeset
+func pullVolumeset(volumeSetId string, fli string){
+	logger.Info.Println("Pulling Volumeset: ", volumeSetId)
+	var cmd = fmt.Sprintf("%s pull %s", fli, volumeSetId)
+	out, err := exec.Command("sh", "-c", cmd).Output()
+	if err != nil {
+		logger.Error.Println("Could not pull volumeset, reason")
+		logger.Error.Fatal(err)
+	}
+	logger.Info.Println(string(out))
+}
+
 // Wrapper for sync and pull which takes
 // a list of type Volume
 func PullSnapshots(volumes []types.Volume, fli string) {
 	for _, volume := range volumes {
 		syncVolumeset(volume.VolumeSet, fli)
-		pullSnapshot(volume.VolumeSet, volume.Snapshot, fli)
+		if volume.Branch == "" && volume.Snapshot != "" {
+			pullSnapshot(volume.VolumeSet, volume.Snapshot, fli)
+		}else if volume.Branch != "" && volume.Snapshot == "" {
+			// there is no fli pull vs:branch
+			pullVolumeset(volume.VolumeSet, fli)
+		}else{
+			// default to use the more specific is `branch:` and `snapshot:` exist.
+			pullSnapshot(volume.VolumeSet, volume.Snapshot, fli)
+		}
 	}
 }
 
@@ -157,7 +177,16 @@ func saveCurrentWorkingVols(volumes []types.NewVolume) {
 func CreateVolumesFromSnapshots(volumes []types.Volume, fli string) (newVols []types.NewVolume, err error) {
 	vols := []types.NewVolume{}
 	for _, volume := range volumes {
-		vol, err := createVolumeFromSnapshot(volume.Name, volume.VolumeSet, volume.Snapshot, fli)
+		var vol types.NewVolume
+		if volume.Branch == "" && volume.Snapshot != "" {
+			vol, err = createVolumeFromSnapshot(volume.Name, volume.VolumeSet, volume.Snapshot, fli)
+		}else if volume.Branch != "" && volume.Snapshot == "" {
+			// fli clone vs:branch is same as fli clone vs:snap
+			vol, err = createVolumeFromSnapshot(volume.Name, volume.VolumeSet, volume.Branch, fli)
+		}else{
+			// default to use the more specific is `branch:` and `snapshot:` exist.
+			vol, err = createVolumeFromSnapshot(volume.Name, volume.VolumeSet, volume.Snapshot, fli)
+		}
 		if err != nil {
 			return nil, err
 		}else {

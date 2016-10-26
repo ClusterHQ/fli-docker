@@ -52,7 +52,7 @@ func init(){
 func TestCheckForPath(t *testing.T) {
 	// Most Linux distros will have this binary
 	// CheckForPath needs binary
-	found, err := CheckForPath("/usr/bin/cd")
+	found, err := CheckForPath("/usr/bin/less")
     if ! found {
     	t.Error(err)
     }

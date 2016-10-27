@@ -67,7 +67,7 @@ Vagrant.configure(2) do |config|
      sudo fallocate -l 3G $HOME/zfs.disk && zpool create -f chq $HOME/zfs.disk
      echo "Getting fli ready"
      sudo docker login -e="." -u="clusterhq_prod+pull_fli" -p="99E32PIAJQB83WB3YWBD0XW2X6EJMC7CRK1ZVVNQRN27JLLMF2DPJ035SG4O1QKV" quay.io
-     sudo echo "alias fli='docker run --rm --privileged -v /chq/:/chq/:shared -v /root:/root -v /lib/modules:/lib/modules quay.io/clusterhq_prod/fli:638f390c51781344a65f4318363cf57e15cabe33'" >> /root/.bashrc
+     sudo echo "alias fli='docker run --rm --privileged -v /chq/:/chq/:shared -v /root:/root -v /lib/modules:/lib/modules quay.io/clusterhq_prod/fli:e69e1424e3f2793f5c4c8f1683c9771839d7752e'" >> /root/.bashrc
      sudo curl -o docker-compose -L "https://github.com/docker/compose/releases/download/1.8.1/docker-compose-$(uname -s)-$(uname -m)"
      sudo mv docker-compose /usr/local/bin/docker-compose
      sudo chmod +x /usr/local/bin/docker-compose

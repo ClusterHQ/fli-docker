@@ -121,6 +121,17 @@ volumes:
       volumeset: docker-app-example
 ```
 
+What is looks like when using `fli-docker run`
+```
+$ fli-docker run -f fli-manifest.yml -c
+MESSAGE: Parsing the fli manifest...
+MESSAGE: Pulling FlockerHub volumes...
+MESSAGE: Creating volume from branch...
+MESSAGE: Mapping new volumes in compose file...
+INFO[0034] [0/1] [appname]: Starting                    
+INFO[0034] [1/1] [appname]: Started
+```
+
 ## Example
 
 You can use the example here in this repository. Follow the below instructions.

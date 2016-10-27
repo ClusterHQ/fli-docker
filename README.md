@@ -107,9 +107,10 @@ commands with fli and manipulate the docker-compose file so that when the applic
 ### Using Branches
 
 FlockerHub allows a user to create a volume from the tip of a branch which is
-comprised of many volumes.
+comprised of many volumes. This way, by referencing a branch instead of a volume
+you will always get the tip snapshot of that branch.
 
-#### To use a branch (Not implemented yet)
+#### To use a branch
 
 Use `branch` instead of `snapshot` to get to latest snapshot in that branch.
 
@@ -118,6 +119,17 @@ volumes:
     - name: redis-data
       branch: branch-name
       volumeset: docker-app-example
+```
+
+What is looks like when using `fli-docker run`
+```
+$ fli-docker run -f fli-manifest.yml -c
+MESSAGE: Parsing the fli manifest...
+MESSAGE: Pulling FlockerHub volumes...
+MESSAGE: Creating volume from branch...
+MESSAGE: Mapping new volumes in compose file...
+INFO[0034] [0/1] [appname]: Starting                    
+INFO[0034] [1/1] [appname]: Started
 ```
 
 ## Example

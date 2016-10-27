@@ -107,9 +107,10 @@ commands with fli and manipulate the docker-compose file so that when the applic
 ### Using Branches
 
 FlockerHub allows a user to create a volume from the tip of a branch which is
-comprised of many volumes.
+comprised of many volumes. This way, by referencing a branch instead of a volume
+you will always get the tip snapshot of that branch.
 
-#### To use a branch (Not implemented yet)
+#### To use a branch
 
 Use `branch` instead of `snapshot` to get to latest snapshot in that branch.
 

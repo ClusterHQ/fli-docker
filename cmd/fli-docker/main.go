@@ -231,7 +231,6 @@ func main() {
 
 		// create volumes from snapshots and map them to 
 		// `newVolPaths = {compose_volume_name : "/chq/<vol_path>"...}`
-		logger.Message.Println("Creating volumes from snapshots...")
 		newVolPaths, err := cli.CreateVolumesFromSnapshots(m.Volumes, fliCmd)
 
 		// create a copy of the compose file before we edit it.

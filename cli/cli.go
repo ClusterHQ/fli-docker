@@ -179,12 +179,15 @@ func CreateVolumesFromSnapshots(volumes []types.Volume, fli string) (newVols []t
 	for _, volume := range volumes {
 		var vol types.NewVolume
 		if volume.Branch == "" && volume.Snapshot != "" {
+			logger.Message.Println("Creating volume from snapshot...")
 			vol, err = createVolumeFromSnapshot(volume.Name, volume.VolumeSet, volume.Snapshot, fli)
 		}else if volume.Branch != "" && volume.Snapshot == "" {
 			// fli clone vs:branch is same as fli clone vs:snap
+			logger.Message.Println("Creating volume from branch...")
 			vol, err = createVolumeFromSnapshot(volume.Name, volume.VolumeSet, volume.Branch, fli)
 		}else{
 			// default to use the more specific is `branch:` and `snapshot:` exist.
+			logger.Message.Println("Creating volume from snapshot...")
 			vol, err = createVolumeFromSnapshot(volume.Name, volume.VolumeSet, volume.Snapshot, fli)
 		}
 		if err != nil {

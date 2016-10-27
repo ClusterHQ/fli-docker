@@ -68,7 +68,7 @@ volumes:
       snapshot: example-snapshot-1
       volumeset: docker-app-example
     - name: artifacts
-      snapshot: example-snapshot-2
+      branch: example-artifacts-branch
       volumeset: docker-app-example
     - name: /my/path
       snapshot: example-snapshot-3

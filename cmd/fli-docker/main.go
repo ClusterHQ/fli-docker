@@ -115,7 +115,7 @@ func main() {
 	isComposeAvail, err := utils.CheckForCmd(composeCmd)
 	if (!isComposeAvail){
 		logger.Info.Println(utils.ComposeHelpMessage)
-		logger.Error.Fatal("Could not find `docker-compose` ", err)
+		logger.Error.Fatal("Could not find docker-compose, please install docker-compose. ", err)
 	}else{
 		logger.Info.Println("docker-compose Ready!")
 	}
@@ -129,7 +129,7 @@ func main() {
 	docker = false
 	if (!isFliAvail1 && !isFliAvail2){
 		logger.Info.Println(utils.FliHelpMessage)
-		logger.Info.Fatal("fli not detected")
+		logger.Error.Fatal("Fli not detected, please install / configure Fli.")
 	}else{
 		if (!isFliAvail1) {
 			binary = false

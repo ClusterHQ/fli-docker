@@ -156,7 +156,7 @@ func ParseManifest(yamlFile []byte) (*types.Manifest){
 	// Validate manifest.
 	valErr := verifyManifest(manifest)
 	if valErr != nil {
-		logger.Error.Fatal(err)
+		logger.Message.Fatal(valErr)
 	}
 	return &manifest
 }

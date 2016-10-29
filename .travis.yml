@@ -7,11 +7,6 @@ before_install:
 - go get golang.org/x/net/context
 script:
 - "./build_test.sh"
-deploy:
-  provider: bintray
-  file: fli-docker.json
-  on:
-    all_branches: true
 env:
   global:
   - secure: c8Ovw6BdQ7MOLLSs+d5lZuBMMJoegyS2S91wIDRdyTr6sk06L2QbCS5K+cmN/iciMh3FQYW7JInJExrAnzD/ddYe4TDcOTmS36mvia7QSg+/FfxgtQ9dD/vd8Xm1EpleA8OrtWI1U50pcDJ5TclPII+p/ZtemXGHquTLbdXX4OFbEZS8lKtMePr3lxpTPysdmVu8s+wEp8lvuBh2rnkGnggttVW4LOJ9fVOt7W3l4gzD/MfWenO7JULHkV8fiXgnsdgBr/5HNYkrB1yckr2PSiO95tsF8+gyxYY0rOzdzB8hkJLRv/qyMt5bvJXeNGodXIfjabwgL3sC6uIwewzfaMCUd/jBW5aCC2fJwzWPjMaFgdAKPfxp3A4aKTfeYohpzO669xA8NEGZqxDpJoJXHp90SsiLSsD6mYGHiSqZaUn8pmgAhRn4LM0H0ZrF0IEufm5b/fg4q7uCAF7Y6tnzNgKReybfd2VBpVbNdEj+UREaPtmkhsu6t4GT+i5s4Bf5J/y7sOnqJexlmB1+nI4cPhE1bKoTS0kqCj66UsAja1SsHE4JfYDrTH7LFnpWvssgryZh4U3jh1bHYB/VAMkG9QkBLZtOJsMj8cyW3sZ4T508r5FUeWZQCtb7ja8pfhseqU4M3AchjDS/LuYC16wiMmeSeOVU6NYDEsTLRq/8Vng=

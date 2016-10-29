@@ -29,7 +29,45 @@ volumes:
       snapshot: example-snapshot
       volumeset: example-vs
 `
+
+var fliBadManifestDataCompose = `docker_app: 
+
+flocker_hub:
+    endpoint: https://flockerhub.com
+    tokenfile: /root/some.token
+
+volumes:
+    - name: some-name
+      snapshot: example-snapshot
+      volumeset: example-vs
+`
+
+var fliBadManifestDataVSet = `docker_app: some-compose.yml
+
+flocker_hub:
+    endpoint: https://flockerhub.com
+    tokenfile: /root/some.token
+
+volumes:
+    - name: some-name
+      snapshot: example-snapshot
+`
+
+var fliBadManifestDataSnapBranch = `docker_app: some-compose.yml
+
+flocker_hub:
+    endpoint: https://flockerhub.com
+    tokenfile: /root/some.token
+
+volumes:
+    - name: some-name
+      volumeset: example-vs
+`
+
 var fliManifestDataBytes = []byte(fliManifestData)
+var fliBadManifestDataBytesCompose = []byte(fliBadManifestDataCompose)
+var fliBadManifestDataBytesVSet = []byte(fliBadManifestDataVSet)
+var fliBadManifestDataBytesSnapBranch = []byte(fliBadManifestDataSnapBranch)
 
 var composeManifestData = `version: '2'
 services:
@@ -118,6 +156,48 @@ func TestParseManifest(t *testing.T) {
     if ! reflect.DeepEqual(m, &mCompare){
     	t.Error("Got ", m, "Expected ", &mCompare)
     }
+}
+
+func TestBadManifestCompose(t *testing.T) {
+    var manifest types.Manifest
+	err := yaml.Unmarshal(fliBadManifestDataBytesCompose, &manifest)
+	if err != nil {
+		logger.Error.Fatal(err)
+	}
+	// Validate manifest.
+	valErr := verifyManifest(manifest)
+	t.Log(valErr)
+	if valErr == nil {
+		t.Error("Got nil, expecting, Missing Docker Compose file error")
+	}
+}
+
+func TestBadManifestVSet(t *testing.T) {
+    var manifest types.Manifest
+	err := yaml.Unmarshal(fliBadManifestDataBytesVSet, &manifest)
+	if err != nil {
+		logger.Error.Fatal(err)
+	}
+	// Validate manifest.
+	valErr := verifyManifest(manifest)
+	t.Log(valErr)
+	if valErr == nil {
+		t.Error("Got nil, expecting, Missing volumeset: for volume")
+	}
+}
+
+func TestBadManifestSnapBranch(t *testing.T) {
+    var manifest types.Manifest
+	err := yaml.Unmarshal(fliBadManifestDataBytesSnapBranch, &manifest)
+	if err != nil {
+		logger.Error.Fatal(err)
+	}
+	// Validate manifest.
+	valErr := verifyManifest(manifest)
+	t.Log(valErr)
+	if valErr == nil {
+		t.Error("Got nil, expecting, Need snapshot: or branch: for volume")
+	}
 }
 
 func TestMapVolumeToCompose(t *testing.T) {

@@ -11,6 +11,8 @@ import (
 	"io/ioutil"
 	"bytes"
 	"strings"
+	"fmt"
+	"errors"
 
 	"gopkg.in/yaml.v2"
 	"golang.org/x/net/context"
@@ -127,6 +129,23 @@ func CheckForCopy(composeFile string) {
 	}
 }
 
+// Verify the manifest has the needed information
+func verifyManifest(m types.Manifest) (err error) {
+	if m.DockerApp == "" {
+		return errors.New("Missing Docker Compose file from manifest. docker_app:")
+	}
+	for _, volume := range m.Volumes {
+		if volume.VolumeSet == "" {
+			return fmt.Errorf("Missing volumeset: for volume %s", volume.Name)
+		}
+		if volume.Branch == "" && volume.Snapshot == "" {
+			return fmt.Errorf("Need snapshot: or branch: for volume %s", volume.Name)
+		}
+	}
+	// Manifest is OK.
+	return nil
+}
+
 // Parse a raw yaml file.
 func ParseManifest(yamlFile []byte) (*types.Manifest){
 	var manifest types.Manifest
@@ -134,15 +153,15 @@ func ParseManifest(yamlFile []byte) (*types.Manifest){
 	if err != nil {
 		logger.Error.Fatal(err)
 	}
+	// Validate manifest.
+	valErr := verifyManifest(manifest)
+	if valErr != nil {
+		logger.Message.Fatal(valErr)
+	}
 	return &manifest
 }
 
 // Replace volume names with associated volume paths
-// Ultimately we should be able to support multiple types of volumes
-// https://docs.docker.com/compose/compose-file/#/volumes-volume-driver
-// where we can detect if it has a "named" volume, a path, or no "<inside>:"
-// and we should modify the file accordingly, for now we only support
-// "named volumes" in the form of `-[space]<volume_name>:`
 func MapVolumeToCompose(volume string, path string, composeFile string) {
 	input, err := ioutil.ReadFile(composeFile)
 		if err != nil {

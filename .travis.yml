@@ -15,3 +15,8 @@ deploy:
   user: wallnerryan
   on:
     all_branches: true
+'':
+  '':
+    "/deploy":
+      key:
+        secure: xlUOEQmAKrH/4z3Fm1flQvmegYC7rGovkE55w4zw1kMKYeBTfThOaAB4gI4NlWud9uGQjFjnvX6/JOtt2e3hfYAsnKMi7W6+aSdPkJSYr4B/XQ/hZ52u60mReGeDz4Ejj5FZj4ooLCP76OG4RaFVMogxqASaORkeck+uB5Z3eKEC8+tYVE1dGvnmDmFiSRvgoF6Sgv5rMsRkjejsdOoAKwIez47ck6rXQi7D7CW8SEVPQOHaG4MYUVcazH/b51u/OrPztx/vpY8cQNE6+ncPTTpRz8aUeZ4fUKKCTc9pP+lFcaSZa6074MTaC1BEBR35rUdJUXbKJKVZV2pxLtBR46JyprLlml+MEtzq11+zMMR8btZrKIBZSCpB7EbE/SVda1PBGfRnP/EO5GoplU/6uOGXghW8mhn4t3GYn1cSvBGv0LQKe5ObwgFToGmWBhSqQOiTB/IpqpmbjcVwTJGV9tMfReOdQrMorkx3/L2jC+CRtE8spo64fVk6jtZ2XFAVJ9rSSeN7opjHfcm0BaCUgqOjNBAS4xRLZoCDiVCBVNT5EVZCPVM0xyhH3t/3bwGcjjC2wuEUnV4+Msr6YkA5Wia0LWDW3jXayT7E1Pt/Jo44OTHeoYukXtWylNIqvFSVvjw/LiHV3Yp/0UAYBH/0pNrCkvWpRebP7xG+idofvsI=

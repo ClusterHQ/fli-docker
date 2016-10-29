@@ -23,7 +23,7 @@
 
     "files":
         [
-        {"includePattern": "build/fli-docker", "uploadPattern": "build/fli-docker"}
+        {"includePattern": "$GOPATH/bin/fli-docker", "uploadPattern": "$GOPATH/bin/fli-docker"}
         ],
     "publish": true
 }

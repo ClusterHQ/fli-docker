@@ -1,6 +1,10 @@
 language: go
 go:
 - 1.7.1
+before_install:
+  - go get gopkg.in/yaml.v2
+  - go get github.com/docker/libcompose
+  - go get golang.org/x/net/context
 script:
 - "./build_test.sh"
 deploy:

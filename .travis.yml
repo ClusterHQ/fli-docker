@@ -6,7 +6,8 @@ before_install:
 - go get github.com/docker/libcompose
 - go get golang.org/x/net/context
 - sudo apt-get -qq update
-- sudo apt-get install -y python3
+- sudo apt-get install python3-setuptools
+- sudo easy_install3 pip
 script:
 - "./build_test.sh"
 env:

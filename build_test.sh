@@ -2,7 +2,7 @@
 
 BUCKET_NAME="clusterhq-fli-docker"
 VERSION="0.0.2-dev"
-UPLOAD_ON_BRANCH="s3"
+UPLOAD_ON_BRANCH="0.0.2-dev"
 
 function PreflightUbuntu
 {
@@ -45,7 +45,7 @@ function Main
     exit 1
   fi
 
-  if ! $TRAVIS_PULL_REQUEST && [ $TRAVIS_BRANCH == "$UPLOAD_ON_BRANCH" ]; then
+  if ! "$TRAVIS_PULL_REQUEST" && [ $TRAVIS_BRANCH == "$UPLOAD_ON_BRANCH" ]; then
       # make sure UPLOAD_ON_BRANCH and VERSION are set above.
 	  UploadToS3
   else

@@ -6,7 +6,7 @@ UPLOAD_ON_BRANCH="s3"
 
 function PreflightUbuntu
 {
-  pip install awscli
+  pip install awscli --user travis
 }
 
 function SetupAWSCredentials

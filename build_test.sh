@@ -52,5 +52,6 @@ function Main
   else
 	  echo "Skipping push of version $VERSION, not master branch"
   fi
+}
 
 Main

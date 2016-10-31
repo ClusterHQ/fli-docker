@@ -6,7 +6,7 @@ before_install:
 - go get github.com/docker/libcompose
 - go get golang.org/x/net/context
 - sudo apt-get -qq update
-- sudo apt-get install python2.7
+- sudo apt-get install -y python2.7 python-pip
 script:
 - "./build_test.sh"
 env:

@@ -5,10 +5,7 @@ VERSION="0.0.2-dev"
 
 function PreflightUbuntu
 {
-  apt-get update -y
-  apt-get install -y python3
   pip3 install awscli
-
 }
 
 function SetupAWSCredentials

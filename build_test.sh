@@ -1,8 +1,8 @@
 #!/bin/bash
 
 BUCKET_NAME="clusterhq-fli-docker"
-VERSION="0.0.2-dev"
-UPLOAD_ON_BRANCH="0.0.2-dev"
+VERSION="0.0.3-dev"
+UPLOAD_ON_BRANCH="0.0.3-dev"
 
 function PreflightUbuntu
 {
@@ -49,7 +49,7 @@ function Main
       # make sure UPLOAD_ON_BRANCH and VERSION are set above.
 	  UploadToS3
   else
-	  echo "Skipping push of version $VERSION, not master branch"
+	  echo "Skipping push of version $VERSION for branch $TRAVIS_BRANCH, not a release branch"
   fi
 }
 

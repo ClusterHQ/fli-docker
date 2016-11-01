@@ -64,6 +64,9 @@ volumes:
       volumeset: example-vs
 `
 
+var fliDockerVols = `fli-somevolume, some-vs`
+
+var fliDockerVolsBytes = []byte(fliDockerVols)
 var fliManifestDataBytes = []byte(fliManifestData)
 var fliBadManifestDataBytesCompose = []byte(fliBadManifestDataCompose)
 var fliBadManifestDataBytesVSet = []byte(fliBadManifestDataVSet)
@@ -239,6 +242,33 @@ func TestGenUUID(t *testing.T) {
 	}
 	if ! isValidUUID(uuid) {
 		t.Error("Not a valid UUIDv4: ", uuid)
+	}
+}
+
+func TestCleanEnv(t *testing.T) {
+	w1rerr := ioutil.WriteFile("flitest-compose.yml", composeManifestDataBytes, 0644)
+    if w1rerr != nil {
+    	t.Error(w1rerr)
+	}
+	w2rerr := ioutil.WriteFile("flitest-compose.yml-fli.copy", composeManifestDataBytes, 0644)
+    if w2rerr != nil {
+    	t.Error(w2rerr)
+	}
+	w3rerr := ioutil.WriteFile(".flidockervols", fliDockerVolsBytes, 0644)
+    if w3rerr != nil {
+    	t.Error(w3rerr)
+	}
+
+	defer os.Remove("flitest-compose.yml")
+
+	CleanEnv("flitest-compose.yml")
+
+	if _, err := os.Stat("flitest-compose.yml-fli.copy"); err == nil {
+		t.Error("Expecting flitest-compose.yml-fli.copy to be deleted")
+	}
+
+	if _, err := os.Stat(".flidockervols"); err == nil {
+		t.Error("Expecting .flidockervols to be deleted")
 	}
 }
 

@@ -1,8 +1,8 @@
 #!/bin/bash
 
 BUCKET_NAME="clusterhq-fli-docker"
-VERSION="0.0.2-dev"
-UPLOAD_ON_BRANCH="0.0.2-dev"
+VERSION="0.0.3-dev"
+UPLOAD_ON_BRANCH="updates-01"
 
 function PreflightUbuntu
 {

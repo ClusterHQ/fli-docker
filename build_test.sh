@@ -1,8 +1,10 @@
 #!/bin/bash
 
+# Release information
+# Remember to update ``var FliDockerVersion`` in utils.go
 BUCKET_NAME="clusterhq-fli-docker"
-VERSION="0.0.3-dev"
-UPLOAD_ON_BRANCH="0.0.3-dev"
+VERSION="0.0.4-dev"
+UPLOAD_ON_BRANCH="0.0.4-dev"
 
 function PreflightUbuntu
 {

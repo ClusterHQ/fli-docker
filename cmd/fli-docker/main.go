@@ -27,11 +27,13 @@ func main() {
 	var verbose bool
 	var project string
 	var push bool
+	var clean bool
 
 	// FlagSets for SubCommands
 	runSet := flag.NewFlagSet("fli-docker run", flag.ExitOnError)
 	snapSet := flag.NewFlagSet("fli-docker snapshot", flag.ExitOnError)
-	stopDestroySet := flag.NewFlagSet("fli-docker stop (or) fli-docker destroy", flag.ExitOnError)
+	stopSet := flag.NewFlagSet("fli-docker stop", flag.ExitOnError)
+	destroySet := flag.NewFlagSet("fli-docker destroy", flag.ExitOnError)
 
 	// runSet
 	runSet.StringVar(&tokenfile, "t", "", "[OPTIONAL] Flocker Hub user token, optionally set it in the manifest YAML")
@@ -48,9 +50,15 @@ func main() {
 	snapSet.BoolVar(&verbose, "verbose", false, "[OPTIONAL] verbose logging")
 
 	// stopSet
-	stopDestroySet.BoolVar(&verbose, "verbose", false, "[OPTIONAL] verbose logging")
-	stopDestroySet.StringVar(&manifest, "f", "manifest.yml", "[OPTIONAL] Stateful application manifest file")
-	stopDestroySet.StringVar(&project, "p", "fli-compose", "[OPTIONAL] project name for compose if using -c")
+	stopSet.BoolVar(&verbose, "verbose", false, "[OPTIONAL] verbose logging")
+	stopSet.StringVar(&manifest, "f", "manifest.yml", "[OPTIONAL] Stateful application manifest file")
+	stopSet.StringVar(&project, "p", "fli-compose", "[OPTIONAL] project name for compose if using -c")
+
+	// destroySet
+	destroySet.BoolVar(&verbose, "verbose", false, "[OPTIONAL] verbose logging")
+	destroySet.StringVar(&manifest, "f", "manifest.yml", "[OPTIONAL] Stateful application manifest file")
+	destroySet.StringVar(&project, "p", "fli-compose", "[OPTIONAL] project name for compose if using -c")
+	destroySet.BoolVar(&clean, "clean", false, "[OPTIONAL] places docker-compose file back to original state")
 
 	// Initialize logger before `verbose` is captured for
 	// log messages before that conditional
@@ -77,14 +85,14 @@ func main() {
 					logger.Init(os.Stdout, ioutil.Discard, ioutil.Discard, os.Stderr)
 				}
     		case "destroy":
-    			stopDestroySet.Parse(os.Args[2:])
+    			destroySet.Parse(os.Args[2:])
     			if verbose {
 					logger.Init(os.Stdout, os.Stdout, os.Stdout, os.Stderr)
 				}else{
 					logger.Init(os.Stdout, ioutil.Discard, ioutil.Discard, os.Stderr)
 				}
     		case "stop":
-    			stopDestroySet.Parse(os.Args[2:])
+    			stopSet.Parse(os.Args[2:])
     			if verbose {
 					logger.Init(os.Stdout, os.Stdout, os.Stdout, os.Stderr)
 				}else{
@@ -298,6 +306,11 @@ func main() {
 
 		logger.Info.Println("Destroying compose application")
 		utils.DestroyCompose(m.DockerApp, project)
+
+		if clean {
+			logger.Message.Println("Cleaning files...")
+			utils.CleanEnv(m.DockerApp)
+		}
 
 	} else if os.Args[1] == "stop" {
 		logger.Info.Println("Running: `fli-docker stop`")

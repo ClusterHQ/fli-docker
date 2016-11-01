@@ -265,6 +265,24 @@ func DestroyCompose(composeFile string, projectName string) {
     }
 }
 
+// Clean up files fli-docker touches.
+func CleanEnv(composeFile string) {
+	// Copy orignal compose file back
+	CheckForCopy(composeFile)
+
+	logger.Info.Println("Trying to remove compose file copy.")
+	copy := composeFile + "-fli.copy"
+	err1 := os.Remove(copy)
+    if err1 != nil {
+    	logger.Info.Println(err1)
+    }
+    logger.Info.Println("Trying to remove .flidockervols.")
+    err2 := os.Remove(".flidockervols")
+    if err2 != nil {
+    	logger.Info.Println(err2)
+    }
+}
+
 //Generate UUIDs
 func GenUUID() (uuid string, err error){
 	out, err := exec.Command("uuidgen").Output()

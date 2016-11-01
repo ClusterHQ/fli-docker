@@ -39,7 +39,7 @@ fli is available at https://clusterhq.com
 Using the fli contianer? Make sure it used docker tag 'clusterhq/fli'
 -------------------------------------------------------`
 
-var FliDockerVersion = `Version: v0.0.1-dev`
+var FliDockerVersion = `Version: v0.0.4-dev`
 
 var FliDockerHelp = `
 Usage:

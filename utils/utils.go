@@ -26,16 +26,16 @@ import (
 	"github.com/ClusterHQ/fli-docker/logger"
 )
 
-var ComposeHelpMessage = `
+var DockerHelpMessage = `
 -----------------------------------------------------------------------
-docker-compose is not installed, it is needed to use fli-docker\n")
-docker-compose is available at https://docs.docker.com/compose/install/
+docker is not installed, it is needed to use fli-docker\n")
+docker is available at https://docs.docker.com/engine/installation/
 -----------------------------------------------------------------------`
 
 var FliHelpMessage = `
 -------------------------------------------------------
-fli is not installed, it is needed to use fli-docker
-fli is available at https://clusterhq.com
+Fli is not installed, it is needed to use fli-docker
+Fli is available at https://clusterhq.com
 Using the fli contianer? Make sure it used docker tag 'clusterhq/fli'
 -------------------------------------------------------`
 

@@ -8,6 +8,28 @@ This is achieved through creation of a Flocker Hub Stateful Application Manifest
 The SAM file is a YAML file that defines data volumes from [ClusterHQ](https://clusterhq.com)'s Flocker Hub,
 synchronizes data snapshots locally, and maps them to Docker volumes in the Docker Compose file.
 
+## How to install
+
+1. Visit the [Releases](https://github.com/ClusterHQ/fli-docker/releases) page on github to download the binary.
+
+2. Place the binary in your path, example `/usr/local/bin/fli-docker`.
+
+3. Make the binary executable, `chmod +x /usr/local/bin/fli-docker`
+
+4. Make sure dependecies such as Docker and [Fli](https://clusterhq.com/fli/introduction/g) are intalled.
+
+### Pre-reqs
+
+- Install `docker` see [here](https://docs.docker.com/engine/installation/)
+- Install `fli`
+  - You can do this by running `docker pull clusterhq/fli` or by learning how to install the binary from https://fli-doc.clusterhq.com/
+
+### Optional
+
+`fli-docker` uses [LibCompose](https://github.com/docker/libcompose), so it doesnt need the `docker-compose` cli tool directly, but you can install Docker Compose cli if you want to be able to use the `docker-compose` cli for manipulating your containers with that tool.
+
+  - https://docs.docker.com/compose/install/
+
 ## Usage
 
 To utilize the ClusterHQ `fli-docker` utility, examine the following command line arguments.
@@ -27,7 +49,7 @@ Usage:
 
 ## How it works
 
-`fli-docker` relies on `fli` and FlockerHub to push and pull snapshots of data around and itself is only an integration point with `docker-compose` so that managing volumes and snapshots with `docker-compose` and `fli` is even easier.
+`fli-docker` relies on `fli` and FlockerHub to push and pull snapshots of data around and itself is only an integration point with Docker Compose so that managing volumes and snapshots with Docker Compose and `fli` is even easier.
 
 Like `docker-compose`, `fli-docker` relies on a YAML file, called the SAM (Stateful Application Manifest.)
 
@@ -135,14 +157,6 @@ INFO[0034] [1/1] [appname]: Started
 ## Example
 
 You can use the example here in this repository. Follow the below instructions.
-
-### Install `fli-docker`
-
-- Install `docker` and `docker-compose`, see [here](https://docs.docker.com/compose/install/)
-- Install `fli`
-  - You can do this by running `docker pull clusterhq/fli` or but getting the binary from https://clusterhq.com/docs
-- Install the fli-docker binary.
-  - You can get the `fli-docker` binary by running `curl -sSL https://someurl.com/get-fli-docker.sh | sh`
 
 ### fli-docker run
 
@@ -298,5 +312,5 @@ MESSAGE: Snapshotting fli-eef1035a-4105-4b92-902d-f33aa1dfa069 from Volumeset do
 
 ### Notes
 
-- You may run this from anywhere `docker-compose`, `docker` and `fli` are installed.
+- You may run this from anywhere `docker` and `fli` are installed.
 - Snapshots would need to be pushed to volumesets in ClusterHQ Flocker Hub using a manifest that references them, otherwise `pull` will fail.

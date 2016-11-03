@@ -111,8 +111,8 @@ func main() {
     	os.Exit(0)
 	}
 
-	var composeCmd string
-	composeCmd = "docker-compose version"
+	var dockerCmd string
+	dockerCmd = "docker version"
 
 	var fliCmd1 string
 	var fliCmd2 string
@@ -120,12 +120,12 @@ func main() {
 	fliCmd2 = utils.FliDockerCmd + "version"
 
 	// check if needed dependencies are available
-	isComposeAvail, err := utils.CheckForCmd(composeCmd)
-	if (!isComposeAvail){
-		logger.Info.Println(utils.ComposeHelpMessage)
-		logger.Error.Fatal("Could not find docker-compose, please install docker-compose. ", err)
+	isDockerAvail, err := utils.CheckForCmd(dockerCmd)
+	if (!isDockerAvail){
+		logger.Info.Println(utils.DockerHelpMessage)
+		logger.Error.Fatal("Could not find docker, please install docker. ", err)
 	}else{
-		logger.Info.Println("docker-compose Ready!")
+		logger.Info.Println("Docker Ready!")
 	}
 
 	isFliAvail1, err := utils.CheckForCmd(fliCmd1)

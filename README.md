@@ -82,7 +82,7 @@ Documentation about FlockerHub and `fli` itself can be found at [ClusterHQ Docum
 docker_app: docker-compose-app.yml
 
 flocker_hub:
-    endpoint: https://flockerhub.clusterhq.com
+    endpoint: https://data.flockerhub.clusterhq.com
     tokenfile: /root/fh.token
 
 volumes:

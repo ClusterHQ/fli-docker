@@ -10,7 +10,7 @@ Example SAM
 docker_app: docker-compose-app1.yml
 
 flocker_hub:
-    endpoint: https://flockerhub.clusterhq.com
+    endpoint: https://data.flockerhub.clusterhq.com
     tokenfile: /root/fhut.txt
 
 volumes:

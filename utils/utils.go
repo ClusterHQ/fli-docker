@@ -28,7 +28,7 @@ import (
 
 var DockerHelpMessage = `
 -----------------------------------------------------------------------
-docker is not installed, it is needed to use fli-docker\n")
+docker is not installed, it is needed to use fli-docker
 docker is available at https://docs.docker.com/engine/installation/
 -----------------------------------------------------------------------`
 

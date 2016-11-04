@@ -67,4 +67,4 @@ PrepSnapshot
 
 ### Invoke Fli-Docker
 echo "Invoking Fli-Docker ..."
-${flidocker_path} run -verbose -e https://ui.dev.voluminous.io -f fli-manifest.yml -c -t /root/vhut.txt
+${flidocker_path} run -verbose -e https://dp.dev.voluminous.io -f fli-manifest.yml -c -t /root/vhut.txt

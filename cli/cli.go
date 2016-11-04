@@ -34,7 +34,7 @@ func SetFlockerHubEndpoint(endpoint string, fli string) {
 
 func GetFlockerHubEndpoint(fli string) (flockerhubEndpoint string, err error) {
 	logger.Info.Println("Getting FlockerHub Endpoint")
-	var cmd = fmt.Sprintf("%s config | grep 'FlockerHub URL:' | awk '{print $3}'", fli)
+	var cmd = fmt.Sprintf("%s info | grep 'FlockerHub URL:' | awk '{print $3}'", fli)
 	out, err := exec.Command("sh", "-c", cmd).Output()
 	if err != nil {
 		logger.Error.Println("Could not get endpoint")
@@ -58,7 +58,7 @@ func SetFlockerHubTokenFile(tokenFile string, fli string) {
 
 func GetFlockerHubTokenFile(fli string) (flockerHubTokenFile string, err error) {
 	logger.Info.Println("Getting FlockerHub Tokenfile")
-	var cmd = fmt.Sprintf("%s config | grep 'Authentication Token File:' | awk '{print $4}'", fli)
+	var cmd = fmt.Sprintf("%s info | grep 'Auth Token File:' | awk '{print $4}'", fli)
 	out, err := exec.Command("sh", "-c", cmd).Output()
 	if err != nil {
 		logger.Error.Println("Could not get tokenfile")

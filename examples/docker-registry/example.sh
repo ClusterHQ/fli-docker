@@ -4,14 +4,14 @@ set -e
 
 function fli () {
   local zpool_name='denverimaging'
-  docker run --rm -it --privileged -v /etc/hosts:/etc/hosts -v /root:/root -v /${zpool_name}:/${zpool_name}:shared -v /var/log/fli:/var/log/fli -v /lib/modules:/lib/modules clusterhq/fli "$@"
+  docker run --rm -it --privileged -v /etc/hosts:/etc/hosts -v /root:/root -v /${zpool_name}:/${zpool_name}:shared -v /var/log/fli:/var/log/fli -v /lib/modules:/lib/modules quay.io/clusterhq_prod/fli:52f36fd37d6862cb4d65c5c76ae3d88ea3dfaf3d "$@"
 }
 
 ### Set a unique VOlumeSet and Volume name
 volumeset_name='flidocker-example'
 volume_name='dockerregistry'
 snapshot_name='docker-images-1'
-flidocker_path='/tmp/fli-docker'
+flidocker_path='/tmp/fli-docker-0.0.4'
 flockerhub_token_path='/root/vhut.txt'
 
 if test ! -e $flockerhub_token_path
@@ -67,4 +67,4 @@ PrepSnapshot
 
 ### Invoke Fli-Docker
 echo "Invoking Fli-Docker ..."
-${flidocker_path} run -e https://ui.dev.voluminous.io -f fli-manifest.yml -c -t /root/vhut.txt
+${flidocker_path} run -verbose -e https://ui.dev.voluminous.io -f fli-manifest.yml -c -t /root/vhut.txt

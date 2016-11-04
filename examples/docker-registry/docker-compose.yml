@@ -1,0 +1,11 @@
+version: '2'
+
+services:
+  registry:
+    name: fli-docker-registry
+    image: registry
+    ports:
+      - 5000
+    volumes:
+      - registry-mount:/var/lib/registry
+ 

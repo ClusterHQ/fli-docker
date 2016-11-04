@@ -1,0 +1,10 @@
+docker_app: docker-compose.yml
+
+flocker_hub:
+    endpoint: https://dp.dev.voluminous.io
+    tokenfile: /root/vhut.txt
+
+volumes:
+    - name: registry-data
+      snapshot: tmp-data-snap
+      volumeset: srvdata-vs

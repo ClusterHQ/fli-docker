@@ -11,7 +11,7 @@ function fli () {
 volumeset_name='flidocker-example'
 volume_name='dockerregistry'
 snapshot_name='docker-images-1'
-flidocker_path='/tmp/fli-docker-0.0.4'
+flidocker_path='/tmp/fli-docker-0.0.5'
 flockerhub_token_path='/root/vhut.txt'
 
 if test ! -e $flockerhub_token_path

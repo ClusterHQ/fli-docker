@@ -5,6 +5,6 @@ flocker_hub:
     tokenfile: /root/vhut.txt
 
 volumes:
-    - name: registry-data
-      snapshot: tmp-data-snap
-      volumeset: srvdata-vs
+    - name: registry-mount 
+      snapshot: docker-images-1 
+      volumeset: flidocker-example-registry

@@ -24,7 +24,7 @@ func Init(
 	errorHandle io.Writer) {
 
 	Message = log.New(messageHandle,
-		"MESSAGE: ", 0)
+		"", 0)
 
 	Info = log.New(infoHandle,
 		"INFO: ", log.Ldate|log.Ltime|log.Lshortfile)
@@ -33,6 +33,6 @@ func Init(
 		"WARNING: ", log.Ldate|log.Ltime|log.Lshortfile)
 
 	Error = log.New(errorHandle,
-		"ERROR: ", log.Ldate|log.Ltime|log.Lshortfile)
+		"[error] ", 0)
 }
 

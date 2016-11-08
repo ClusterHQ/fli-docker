@@ -73,7 +73,7 @@ Vagrant.configure(2) do |config|
      sudo curl -o docker-compose -L "https://github.com/docker/compose/releases/download/1.8.1/docker-compose-$(uname -s)-$(uname -m)"
      sudo mv docker-compose /usr/local/bin/docker-compose
      sudo chmod +x /usr/local/bin/docker-compose
-     sudo wget wget https://s3.amazonaws.com/clusterhq-fli-docker/0.0.4-dev/fli-docker
+     sudo wget https://s3.amazonaws.com/clusterhq-fli-docker/0.0.5-dev/fli-docker
      sudo chmod +x fli-docker
      sudo mv fli-docker /usr/local/bin/
      sudo wget https://storage.googleapis.com/golang/go1.7.3.linux-amd64.tar.gz

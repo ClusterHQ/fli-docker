@@ -122,8 +122,9 @@ func main() {
 	// check if needed dependencies are available
 	isDockerAvail, err := utils.CheckForCmd(dockerCmd)
 	if (!isDockerAvail){
+		logger.Info.Println(err)
 		logger.Info.Println(utils.DockerHelpMessage)
-		logger.Error.Fatal("Could not find docker, please install docker. ", err)
+		logger.Error.Fatal("Could not find docker, please install docker. ")
 	}else{
 		logger.Info.Println("Docker Ready!")
 	}
@@ -160,7 +161,7 @@ func main() {
 		// verify that the manifest exists
 		isManifestAvail, err := utils.CheckForFile(manifest)
 		if (!isManifestAvail){
-			logger.Error.Println(err.Error())
+			logger.Info.Println(err.Error())
 			logger.Message.Fatal("Missing manifest, either name it 'manifest.yml' or pass in file with '-f'.")
 		}
 
@@ -176,6 +177,29 @@ func main() {
 		logger.Message.Println("Parsing the fli manifest...")
 		m := utils.ParseManifest(yamlFile)
 
+		if tokenfile == "" {
+			logger.Info.Println("token not specified with -t")
+			tf, err := cli.GetFlockerHubTokenFile(fliCmd)
+			if err != nil{
+				logger.Message.Fatal("Could not get tokenfile config")
+			}
+			logger.Info.Println("Existing tokenfile config: ", tf)
+			// Was is placed in the manifest?
+			logger.Info.Println("tokenfile " + m.Hub.AuthToken + " in manifest")
+			tokenfileFromManifest := m.Hub.AuthToken
+			if tokenfileFromManifest == "" {
+				if strings.Contains(tf, "Authentication Token File: -") {
+					logger.Message.Fatal("Must set tokenfile")
+				}else{
+					logger.Info.Println("Trying existing tokenfile config: ", tf)
+				}
+			}else{
+				cli.SetFlockerHubTokenFile(tokenfileFromManifest, fliCmd)
+			}
+		}else{
+			cli.SetFlockerHubTokenFile(tokenfile, fliCmd)
+		}
+		
 		// was it passed with `-e`?
 		if flockerhub == "" {
 			logger.Info.Println("FlockerHub endpoint not specified with -e")
@@ -191,7 +215,7 @@ func main() {
 				// Did the user have a pre-existing fli setup? 
 				// Lets try and assume the volumes are there.
 				if strings.Contains(fh, "FlockerHub URL:            -") {
-					logger.Error.Fatal("Must set FlockerHub Endpoint")
+					logger.Message.Fatal("Must set FlockerHub Endpoint")
 				}else{
 					logger.Info.Println("Trying existing FlockerHub configuration: ", fh)
 				}
@@ -204,33 +228,11 @@ func main() {
 			cli.SetFlockerHubEndpoint(flockerhub, fliCmd)
 		}
 
-		if tokenfile == "" {
-			logger.Info.Println("token not specified with -t")
-			tf, err := cli.GetFlockerHubTokenFile(fliCmd)
-			if err != nil{
-				logger.Error.Fatal("Could not get tokenfile config")
-			}
-			logger.Info.Println("Existing tokenfile config: ", tf)
-			// Was is placed in the manifest?
-			logger.Info.Println("tokenfile " + m.Hub.AuthToken + " in manifest")
-			tokenfileFromManifest := m.Hub.AuthToken
-			if tokenfileFromManifest == "" {
-				if strings.Contains(tf, "Authentication Token File: -") {
-					logger.Error.Fatal("Must set tokenfile")
-				}else{
-					logger.Info.Println("Trying existing tokenfile config: ", tf)
-				}
-			}else{
-				cli.SetFlockerHubTokenFile(tokenfileFromManifest, fliCmd)
-			}
-		}else{
-			cli.SetFlockerHubTokenFile(tokenfile, fliCmd)
-		}
-
 		// verify that the compose file exists.
 		isComposeFileAvail, err := utils.CheckForFile(m.DockerApp)
 		if (!isComposeFileAvail){
-			logger.Error.Fatal(err.Error())
+			logger.Info.Println(err.Error())
+			logger.Message.Fatal("Docker Compose file doesnt exist.")
 		}
 
 		// try and pull snapshots
@@ -288,7 +290,7 @@ func main() {
 		// verify that the manifest exists
 		isManifestAvail, err := utils.CheckForFile(manifest)
 		if (!isManifestAvail){
-			logger.Error.Println(err.Error())
+			logger.Info.Println(err.Error())
 			logger.Message.Fatal("Missing manifest, either name it 'manifest.yml' or pass in file with '-f'.")
 		}
 
@@ -297,7 +299,8 @@ func main() {
 		// read the file.
 		yamlFile, err := ioutil.ReadFile(filename)
 		if err != nil {
-			logger.Error.Fatal(err.Error())
+			logger.Info.Println(err.Error())
+			logger.Message.Fatal("Docker Compose file doesnt exist.")
 		}
 
 		// pass the file to the ParseManifest
@@ -322,7 +325,7 @@ func main() {
 		// verify that the manifest exists
 		isManifestAvail, err := utils.CheckForFile(manifest)
 		if (!isManifestAvail){
-			logger.Error.Println(err.Error())
+			logger.Info.Println(err.Error())
 			logger.Message.Fatal("Missing manifest, either name it 'manifest.yml' or pass in file with '-f'.")
 		}
 
@@ -331,7 +334,8 @@ func main() {
 		// read the file.
 		yamlFile, err := ioutil.ReadFile(filename)
 		if err != nil {
-			logger.Error.Fatal(err.Error())
+			logger.Info.Println(err.Error())
+			logger.Message.Fatal("Docker Compose file doesnt exist.")
 		}
 
 		// pass the file to the ParseManifest

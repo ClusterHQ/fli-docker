@@ -22,7 +22,7 @@ synchronizes data snapshots locally, and maps them to Docker volumes in the Dock
 
 - Install `docker` see [here](https://docs.docker.com/engine/installation/)
 - Install `fli`
-  - You can do this by running `docker pull clusterhq/fli` or by learning how to install the binary from https://fli-doc.clusterhq.com/
+  - You can do this by running `docker pull clusterhq/fli` or by learning how to install the binary from https://fli-docs.clusterhq.com/
 
 ### Optional
 

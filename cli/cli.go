@@ -26,7 +26,8 @@ func SetFlockerHubEndpoint(endpoint string, fli string) {
 	var cmd = fmt.Sprintf("%s config -u %s", fli, endpoint)
 	out, err := exec.Command("sh", "-c", cmd).Output()
 	if err != nil {
-		logger.Message.Println("Could not set endpoint: ", endpoint)
+		logger.Message.Println("Could not set endpoint:", endpoint)
+		logger.Message.Println(string(out))
 		logger.Error.Fatal(err)
 	}
 	logger.Info.Println(string(out))
@@ -51,6 +52,7 @@ func SetFlockerHubTokenFile(tokenFile string, fli string) {
 	out, err := exec.Command("sh", "-c", cmd).Output()
 	if err != nil {
 		logger.Message.Println("Could not set tokenfile: ", tokenFile)
+		logger.Message.Println(string(out))
 		logger.Error.Fatal(err)
 	}
 	logger.Info.Println(string(out))

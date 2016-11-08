@@ -177,6 +177,29 @@ func main() {
 		logger.Message.Println("Parsing the fli manifest...")
 		m := utils.ParseManifest(yamlFile)
 
+		if tokenfile == "" {
+			logger.Info.Println("token not specified with -t")
+			tf, err := cli.GetFlockerHubTokenFile(fliCmd)
+			if err != nil{
+				logger.Message.Fatal("Could not get tokenfile config")
+			}
+			logger.Info.Println("Existing tokenfile config: ", tf)
+			// Was is placed in the manifest?
+			logger.Info.Println("tokenfile " + m.Hub.AuthToken + " in manifest")
+			tokenfileFromManifest := m.Hub.AuthToken
+			if tokenfileFromManifest == "" {
+				if strings.Contains(tf, "Authentication Token File: -") {
+					logger.Message.Fatal("Must set tokenfile")
+				}else{
+					logger.Info.Println("Trying existing tokenfile config: ", tf)
+				}
+			}else{
+				cli.SetFlockerHubTokenFile(tokenfileFromManifest, fliCmd)
+			}
+		}else{
+			cli.SetFlockerHubTokenFile(tokenfile, fliCmd)
+		}
+		
 		// was it passed with `-e`?
 		if flockerhub == "" {
 			logger.Info.Println("FlockerHub endpoint not specified with -e")
@@ -203,29 +226,6 @@ func main() {
 		}else{
 			// set endpoint from fli-docker arg
 			cli.SetFlockerHubEndpoint(flockerhub, fliCmd)
-		}
-
-		if tokenfile == "" {
-			logger.Info.Println("token not specified with -t")
-			tf, err := cli.GetFlockerHubTokenFile(fliCmd)
-			if err != nil{
-				logger.Message.Fatal("Could not get tokenfile config")
-			}
-			logger.Info.Println("Existing tokenfile config: ", tf)
-			// Was is placed in the manifest?
-			logger.Info.Println("tokenfile " + m.Hub.AuthToken + " in manifest")
-			tokenfileFromManifest := m.Hub.AuthToken
-			if tokenfileFromManifest == "" {
-				if strings.Contains(tf, "Authentication Token File: -") {
-					logger.Message.Fatal("Must set tokenfile")
-				}else{
-					logger.Info.Println("Trying existing tokenfile config: ", tf)
-				}
-			}else{
-				cli.SetFlockerHubTokenFile(tokenfileFromManifest, fliCmd)
-			}
-		}else{
-			cli.SetFlockerHubTokenFile(tokenfile, fliCmd)
 		}
 
 		// verify that the compose file exists.

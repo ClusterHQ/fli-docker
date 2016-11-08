@@ -165,7 +165,7 @@ func ParseManifest(yamlFile []byte) (*types.Manifest){
 func MapVolumeToCompose(volume string, path string, composeFile string) {
 	input, err := ioutil.ReadFile(composeFile)
 		if err != nil {
-			logger.Error.Print("Trouble reading docker-compose file.")
+			logger.Message.Println("Trouble reading docker-compose file.")
 			logger.Error.Fatal(err)
 		}
 	prefixQuote := "- '"
@@ -182,7 +182,7 @@ func MapVolumeToCompose(volume string, path string, composeFile string) {
 
 	//re-write
 	if err = ioutil.WriteFile(composeFile, finalOutput, 0644); err != nil {
-			logger.Error.Print("Error writing docker-compose file.")
+			logger.Message.Println("Error writing docker-compose file.")
 			logger.Error.Fatal(err)
 		 }
 }

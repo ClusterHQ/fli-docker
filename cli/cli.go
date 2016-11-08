@@ -78,6 +78,7 @@ func syncVolumeset(volumeSetId string, fli string) {
 	out, err := exec.Command("sh", "-c", cmd).Output()
 	if err != nil {
 		logger.Message.Println("Could not sync dataset")
+		logger.Message.Println(string(out))
 		logger.Error.Fatal(err)
 	}
 	logger.Info.Println(string(out))
@@ -90,6 +91,7 @@ func pullSnapshot(volumeSetId string, snapshotId string, fli string){
 	out, err := exec.Command("sh", "-c", cmd).Output()
 	if err != nil {
 		logger.Message.Println("Could not pull dataset, reason")
+		logger.Message.Println(string(out))
 		logger.Error.Fatal(err)
 	}
 	logger.Info.Println(string(out))
@@ -102,6 +104,7 @@ func pullVolumeset(volumeSetId string, fli string){
 	out, err := exec.Command("sh", "-c", cmd).Output()
 	if err != nil {
 		logger.Message.Println("Could not pull volumeset, reason")
+		logger.Message.Println(string(out))
 		logger.Error.Fatal(err)
 	}
 	logger.Info.Println(string(out))
@@ -210,6 +213,7 @@ func pushSnapshot(volumeSetId string, snapshotId string, fli string){
 	out, err := exec.Command("sh", "-c", cmd).Output()
 	if err != nil {
 		logger.Message.Println("Could not push snapshot, reason")
+		logger.Message.Println(string(out))
 		logger.Error.Fatal(err)
 	}
 	logger.Info.Println(string(out))
@@ -221,7 +225,8 @@ func createSnapshot(volumeSetId string, volumeId string, snapName string, fli st
 	var cmd = fmt.Sprintf("%s snapshot %s:%s %s", fli, volumeSetId, volumeId, snapName)
 	out, err := exec.Command("sh", "-c", cmd).Output()
 	if err != nil {
-		logger.Message.Println("Could not push snapshot, reason")
+		logger.Message.Println("Could create snapshot, reason")
+		logger.Message.Println(string(out))
 		logger.Error.Fatal(err)
 	}
 	logger.Info.Println(string(out))

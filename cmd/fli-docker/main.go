@@ -160,7 +160,7 @@ func main() {
 		// docker needs certain paths to work.
 		if (os.Args[1] == "run" || os.Args[1] == "snapshot") {
 
-			if  os.Args[1] == "run" {
+			if os.Args[1] == "run" {
 				if tokenfile == "" {
 					logger.Info.Println("token not specified with -t")
 					logger.Message.Fatal("Need to set '-tokenfile'")
@@ -171,7 +171,6 @@ func main() {
 				if zpool != "chq" {
 					if strings.Contains(tokenfile, "/root/"){
 						cmd := fmt.Sprintf("docker run --rm --privileged -v /%s/:/%s/:shared -v /var/log/:/var/log/ -v /root:/root -v /lib/modules:/lib/modules clusterhq/fli ", zpool, zpool)
-						logger.Info.Println("Using docker command: ", cmd)
 						fliCmd = cmd
 					}else {
 						path, err := utils.GetBasePath(tokenfile)
@@ -179,12 +178,22 @@ func main() {
 	    					logger.Message.Fatal("Could not get path of auth token")
 	    				}
 						cmd := fmt.Sprintf("docker run --rm --privileged -v /%s/:/%s/:shared -v /var/log/:/var/log/ -v /root:/root -v %s:%s -v /lib/modules:/lib/modules clusterhq/fli ", zpool, zpool, path, path)
-						logger.Info.Println("Using docker command: ", cmd)
+						fliCmd = cmd
+					}
+				}else
+					if !(strings.Contains(tokenfile, "/root/")){
+						path, err := utils.GetBasePath(tokenfile)
+						if err != nil {
+	    					logger.Message.Fatal("Could not get path of auth token")
+	    				}
+						cmd := fmt.Sprintf("docker run --rm --privileged -v /chq/:/chq/:shared -v /var/log/:/var/log/ -v /root:/root -v %s:%s -v /lib/modules:/lib/modules clusterhq/fli ", path, path)
 						fliCmd = cmd
 					}
 				}
+				logger.Info.Println("Using docker command: ", fliCmd)
 			}
-			if  os.Args[1] == "snapshot" {
+
+			if os.Args[1] == "snapshot" {
 				if push {
 					if tokenfile == "" {
 						logger.Info.Println("token not specified with -t")
@@ -207,16 +216,34 @@ func main() {
 							logger.Info.Println("Using docker command: ", cmd)
 							fliCmd = cmd
 						}
+					}else {
+						if !(strings.Contains(tokenfile, "/root/")){
+							path, err := utils.GetBasePath(tokenfile)
+							if err != nil {
+	    						logger.Message.Fatal("Could not get path of auth token")
+	    					}
+							cmd := fmt.Sprintf("docker run --rm --privileged -v /chq/:/chq/:shared -v /var/log/:/var/log/ -v /root:/root -v %s:%s -v /lib/modules:/lib/modules clusterhq/fli ", path, path)
+							fliCmd = cmd
+						}
 					}
 				}else {
 					//only need to check zpool as token doesnt matter if not pushing.
 					if zpool != "chq" {
 						cmd := fmt.Sprintf("docker run --rm --privileged -v /%s/:/%s/:shared -v /var/log/:/var/log/ -v /root:/root -v /lib/modules:/lib/modules clusterhq/fli ", zpool, zpool)
 						fliCmd = cmd
+					}else {
+						if !(strings.Contains(tokenfile, "/root/")){
+							path, err := utils.GetBasePath(tokenfile)
+							if err != nil {
+	    						logger.Message.Fatal("Could not get path of auth token")
+	    					}
+							cmd := fmt.Sprintf("docker run --rm --privileged -v /chq/:/chq/:shared -v /var/log/:/var/log/ -v /root:/root -v %s:%s -v /lib/modules:/lib/modules clusterhq/fli ", path, path)
+							fliCmd = cmd
+						}
 					}
 				}
 			}
-		}
+		logger.Info.Println("Using docker command: ", fliCmd)
 	}
 
 	if binary {

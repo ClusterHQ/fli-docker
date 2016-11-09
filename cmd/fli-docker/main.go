@@ -44,7 +44,7 @@ func main() {
 	runSet.BoolVar(&compose, "c", false, "[OPTIONAL] if flag is present, fli-docker will start the compose services")
 	runSet.BoolVar(&verbose, "verbose", false, "[OPTIONAL] verbose logging")
 	runSet.StringVar(&project, "p", "fli-compose", "[OPTIONAL] project name for compose if using -c")
-	runSet.StringVar(&zpool, "z", "chq", "[OPTIONAL] The name of the zpool, Default: 'chq'")
+	runSet.StringVar(&zpool, "z", "chq", "[OPTIONAL] The name of the zpool")
 
 
 	// snapSet
@@ -52,7 +52,7 @@ func main() {
 	snapSet.StringVar(&flockerhub, "e", "", "[OPTIONAL] Flocker Hub endpoint, optionally set it in the manifest YAML")
 	snapSet.BoolVar(&push, "push", false, "[OPTIONAL] if flag is present, fli-docker will push new snapshots back to FlockerHub")
 	snapSet.BoolVar(&verbose, "verbose", false, "[OPTIONAL] verbose logging")
-	snapSet.StringVar(&zpool, "z", "chq", "[OPTIONAL] The name of the zpool, Default: 'chq'")
+	snapSet.StringVar(&zpool, "z", "chq", "[OPTIONAL] The name of the zpool")
 
 	// stopSet
 	stopSet.BoolVar(&verbose, "verbose", false, "[OPTIONAL] verbose logging")
@@ -104,7 +104,6 @@ func main() {
 					logger.Init(os.Stdout, ioutil.Discard, ioutil.Discard, os.Stderr)
 				}
     		case "help":
-    			snapSet.Parse(os.Args[2:])
     			logger.Message.Println(utils.FliDockerHelp)
     			os.Exit(0)
     		default:
@@ -156,34 +155,12 @@ func main() {
 		logger.Info.Println("using fli binary: ", binary)
 	}
 
-	// Figure out what the appropriate docker command is is using docker
-	// docker needs certain paths to work.
-	if os.Args[1] == "run" || os.Args[1] == "snapshot" && docker{
+	if docker {
+		// Figure out what the appropriate docker command is is using docker
+		// docker needs certain paths to work.
+		if (os.Args[1] == "run" || os.Args[1] == "snapshot") {
 
-		if  os.Args[1] == "run" {
-			if tokenfile == "" {
-				logger.Info.Println("token not specified with -t")
-				logger.Message.Fatal("Need to set '-tokenfile'")
-			}else{
-				cli.SetFlockerHubTokenFile(tokenfile, fliCmd)
-			}
-
-			if zpool != "chq" {
-				if strings.Contains(tokenfile, "/root/"){
-					cmd := fmt.Sprintf("docker run --rm --privileged -v /%s/:/%s/:shared -v /var/log/:/var/log/ -v /root:/root -v /lib/modules:/lib/modules clusterhq/fli ", zpool, zpool)
-					fliCmd = cmd
-				}else {
-					path, err := utils.GetBasePath(tokenfile)
-					if err != nil {
-    					logger.Message.Fatal("Could not get path of auth token")
-    				}
-					cmd := fmt.Sprintf("docker run --rm --privileged -v /%s/:/%s/:shared -v /var/log/:/var/log/ -v /root:/root -v %s:%s -v /lib/modules:/lib/modules clusterhq/fli ", zpool, zpool, path, path)
-					fliCmd = cmd
-				}
-			}
-		}
-		if  os.Args[1] == "snapshot" {
-			if push {
+			if  os.Args[1] == "run" {
 				if tokenfile == "" {
 					logger.Info.Println("token not specified with -t")
 					logger.Message.Fatal("Need to set '-tokenfile'")
@@ -194,39 +171,69 @@ func main() {
 				if zpool != "chq" {
 					if strings.Contains(tokenfile, "/root/"){
 						cmd := fmt.Sprintf("docker run --rm --privileged -v /%s/:/%s/:shared -v /var/log/:/var/log/ -v /root:/root -v /lib/modules:/lib/modules clusterhq/fli ", zpool, zpool)
+						logger.Info.Println("Using docker command: ", cmd)
 						fliCmd = cmd
 					}else {
 						path, err := utils.GetBasePath(tokenfile)
 						if err != nil {
-    						logger.Message.Fatal("Could not get path of auth token")
-    					}
+	    					logger.Message.Fatal("Could not get path of auth token")
+	    				}
 						cmd := fmt.Sprintf("docker run --rm --privileged -v /%s/:/%s/:shared -v /var/log/:/var/log/ -v /root:/root -v %s:%s -v /lib/modules:/lib/modules clusterhq/fli ", zpool, zpool, path, path)
+						logger.Info.Println("Using docker command: ", cmd)
 						fliCmd = cmd
 					}
 				}
-			}else {
-				//only need to check zpool as token doesnt matter if not pushing.
-				if zpool != "chq" {
-					cmd := fmt.Sprintf("docker run --rm --privileged -v /%s/:/%s/:shared -v /var/log/:/var/log/ -v /root:/root -v /lib/modules:/lib/modules clusterhq/fli ", zpool, zpool)
-					fliCmd = cmd
+			}
+			if  os.Args[1] == "snapshot" {
+				if push {
+					if tokenfile == "" {
+						logger.Info.Println("token not specified with -t")
+						logger.Message.Fatal("Need to set '-tokenfile'")
+					}else{
+						cli.SetFlockerHubTokenFile(tokenfile, fliCmd)
+					}
+
+					if zpool != "chq" {
+						if strings.Contains(tokenfile, "/root/"){
+							cmd := fmt.Sprintf("docker run --rm --privileged -v /%s/:/%s/:shared -v /var/log/:/var/log/ -v /root:/root -v /lib/modules:/lib/modules clusterhq/fli ", zpool, zpool)
+							logger.Info.Println("Using docker command: ", cmd)
+							fliCmd = cmd
+						}else {
+							path, err := utils.GetBasePath(tokenfile)
+							if err != nil {
+	    						logger.Message.Fatal("Could not get path of auth token")
+	    					}
+							cmd := fmt.Sprintf("docker run --rm --privileged -v /%s/:/%s/:shared -v /var/log/:/var/log/ -v /root:/root -v %s:%s -v /lib/modules:/lib/modules clusterhq/fli ", zpool, zpool, path, path)
+							logger.Info.Println("Using docker command: ", cmd)
+							fliCmd = cmd
+						}
+					}
+				}else {
+					//only need to check zpool as token doesnt matter if not pushing.
+					if zpool != "chq" {
+						cmd := fmt.Sprintf("docker run --rm --privileged -v /%s/:/%s/:shared -v /var/log/:/var/log/ -v /root:/root -v /lib/modules:/lib/modules clusterhq/fli ", zpool, zpool)
+						fliCmd = cmd
+					}
 				}
 			}
 		}
 	}
 
-	// Check that tokenfile is in use if using binary, or need to set one.
-	if os.Args[1] == "run" || os.Args[1] == "snapshot" && binary {
-		tf, err := cli.GetFlockerHubTokenFile(fliCmd)
-		if err != nil {
-			logger.Info.Println("Could not get tokenfile config")
-			if tokenfile == "" {
-				logger.Info.Println("token not specified with -t")
-				logger.Message.Fatal("Need to set '-tokenfile'")
+	if binary {
+		// Check that tokenfile is in use if using binary, or need to set one.
+		if (os.Args[1] == "run" || os.Args[1] == "snapshot") {
+			tf, err := cli.GetFlockerHubTokenFile(fliCmd)
+			if err != nil {
+				logger.Info.Println("Could not get tokenfile config")
+				if tokenfile == "" {
+					logger.Info.Println("token not specified with -t")
+					logger.Message.Fatal("Need to set '-tokenfile'")
+				}else{
+					cli.SetFlockerHubTokenFile(tokenfile, fliCmd)
+				}
 			}else{
-				cli.SetFlockerHubTokenFile(tokenfile, fliCmd)
+				logger.Info.Println("Using existing token: ", tf)
 			}
-		}else{
-			logger.Info.Println("Using existing token: ", tf)
 		}
 	}
 

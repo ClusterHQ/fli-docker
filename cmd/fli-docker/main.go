@@ -164,8 +164,6 @@ func main() {
 				if tokenfile == "" {
 					logger.Info.Println("token not specified with -t")
 					logger.Message.Fatal("Need to set '-tokenfile'")
-				}else{
-					cli.SetFlockerHubTokenFile(tokenfile, fliCmd)
 				}
 
 				if zpool != "chq" {
@@ -191,6 +189,7 @@ func main() {
 					}
 				}
 				logger.Info.Println("Using docker command: ", fliCmd)
+				cli.SetFlockerHubTokenFile(tokenfile, fliCmd)
 			}
 
 			if os.Args[1] == "snapshot" {
@@ -198,8 +197,6 @@ func main() {
 					if tokenfile == "" {
 						logger.Info.Println("token not specified with -t")
 						logger.Message.Fatal("Need to set '-tokenfile'")
-					}else{
-						cli.SetFlockerHubTokenFile(tokenfile, fliCmd)
 					}
 
 					if zpool != "chq" {
@@ -243,6 +240,7 @@ func main() {
 					}
 				}
 				logger.Info.Println("Using docker command: ", fliCmd)
+				cli.SetFlockerHubTokenFile(tokenfile, fliCmd)
 			}
 		}
 	}

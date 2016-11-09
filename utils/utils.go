@@ -53,7 +53,8 @@ Usage:
   For help on a specific command, use: $ fli-docker <subcommand> --help`
 
 func GetFliDockerAlias() (result string, err error) {
-	out, err := exec.Command("sh", "-c", "alias fli").Output()
+	logger.Info.Println("Trying `alias fli`")
+	out, err := exec.Command("bash", "-c", "alias fli").Output()
 	if err != nil {
 		logger.Info.Println(err)
 		return "", err

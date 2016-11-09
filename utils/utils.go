@@ -53,6 +53,15 @@ Usage:
 
   For help on a specific command, use: $ fli-docker <subcommand> --help`
 
+func GetZPool(zpool string) (response string, err error){
+	out, err := exec.Command("bash", "-c", "zpool", "list", zpool).Output()
+	if err != nil {
+		logger.Info.Println(err)
+		return string(out), err
+	}
+	logger.Info.Println("ZPool Found: ", zpool)
+	return string(out), err
+}
 
 func GetBasePath(file string) (dir string, err error){
 	dir, errPath := filepath.Abs(filepath.Dir(file))

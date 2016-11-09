@@ -160,6 +160,12 @@ func main() {
 		// docker needs certain paths to work.
 		if (os.Args[1] == "run" || os.Args[1] == "snapshot") {
 
+			resp, err := utils.GetZPool(zpool)
+			if err != nil {
+				logger.Info.Println(resp)
+	    		logger.Message.Fatal("ZPool doesnt not exist: ", zpool)
+	    	}
+
 			if os.Args[1] == "run" {
 				if tokenfile == "" {
 					logger.Info.Println("token not specified with -t")

@@ -52,9 +52,18 @@ Usage:
 
   For help on a specific command, use: $ fli-docker <subcommand> --help`
 
-//var FliDockerCmd = "docker run --rm --privileged -v /chq/:/chq/:shared -v /root:/root -v /lib/modules:/lib/modules clusterhq/fli "
-var FliDockerCmd = "fli "
-var FliBinaryCmd = "fli "
+func GetFliDockerAlias() (result string, err error) {
+	out, err := exec.Command("sh", "-c", "alias fli").Output()
+	if err != nil {
+		logger.Info.Println(err)
+		return "", err
+	}
+	// Trim fli out of alias.
+	fli := strings.TrimLeft(strings.TrimRight(string(out),"'"),"alias fli='")
+	fli = fli + " "
+	logger.Info.Println("Found Alias:", fli)
+	return fli, err
+}
 
 func CheckForPath(path string) (result bool, err error) {
 	isPath, errPath := exec.LookPath(path)
@@ -78,6 +87,7 @@ func CheckForFile(file string) (result bool, err error) {
 }
 
 func CheckForCmd(cmd string) (result bool, err error) {
+	logger.Info.Println(cmd)
 	_, errCmd := exec.Command("sh", "-c", cmd).Output()
 	if errCmd != nil {
 		logger.Info.Println(errCmd)

@@ -117,7 +117,8 @@ func main() {
 	var fliCmd1 string
 	var fliCmd2 string
 	fliCmd1 = "fli version"
-	fliCmd2 = utils.FliDockerCmd + "version"
+	fli, _ := utils.GetFliDockerAlias()
+	fliCmd2 = fli + "version"
 
 	// check if needed dependencies are available
 	isDockerAvail, err := utils.CheckForCmd(dockerCmd)
@@ -129,8 +130,8 @@ func main() {
 		logger.Info.Println("Docker Ready!")
 	}
 
-	isFliAvail1, err := utils.CheckForCmd(fliCmd1)
-	isFliAvail2, err := utils.CheckForCmd(fliCmd2)
+	isFliAvail1, _ := utils.CheckForCmd(fliCmd1)
+	isFliAvail2, _ := utils.CheckForCmd(fliCmd2)
 	var binary bool
 	var docker bool
 	var fliCmd string
@@ -143,9 +144,9 @@ func main() {
 		if (!isFliAvail1) {
 			binary = false
 			docker = true
-			fliCmd = utils.FliDockerCmd
+			fliCmd = fli
 		}else{
-			fliCmd = utils.FliBinaryCmd
+			fliCmd = "fli "
 		}
 		logger.Info.Println("using fli container: ", docker)
 		logger.Info.Println("using fli binary: ", binary)

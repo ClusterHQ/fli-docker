@@ -180,7 +180,7 @@ func main() {
 						cmd := fmt.Sprintf("docker run --rm --privileged -v /%s/:/%s/:shared -v /var/log/:/var/log/ -v /root:/root -v %s:%s -v /lib/modules:/lib/modules clusterhq/fli ", zpool, zpool, path, path)
 						fliCmd = cmd
 					}
-				}else
+				}else {
 					if !(strings.Contains(tokenfile, "/root/")){
 						path, err := utils.GetBasePath(tokenfile)
 						if err != nil {
@@ -190,7 +190,6 @@ func main() {
 						fliCmd = cmd
 					}
 				}
-				logger.Info.Println("Using docker command: ", fliCmd)
 			}
 
 			if os.Args[1] == "snapshot" {
@@ -242,8 +241,9 @@ func main() {
 						}
 					}
 				}
+				logger.Info.Println("Using docker command: ", fliCmd)
 			}
-		logger.Info.Println("Using docker command: ", fliCmd)
+		}
 	}
 
 	if binary {

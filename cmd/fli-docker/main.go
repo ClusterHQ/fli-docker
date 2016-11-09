@@ -190,6 +190,7 @@ func main() {
 						fliCmd = cmd
 					}
 				}
+				logger.Info.Println("Using docker command: ", fliCmd)
 			}
 
 			if os.Args[1] == "snapshot" {

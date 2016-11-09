@@ -13,6 +13,7 @@ import (
 	"strings"
 	"fmt"
 	"errors"
+	"path/filepath"
 
 	"gopkg.in/yaml.v2"
 	"golang.org/x/net/context"
@@ -39,7 +40,7 @@ Fli is available at https://clusterhq.com
 Using the fli contianer? Make sure it used docker tag 'clusterhq/fli'
 -------------------------------------------------------`
 
-var FliDockerVersion = `Version: 0.1.0`
+var FliDockerVersion = `Version: 0.2.0`
 
 var FliDockerHelp = `
 Usage:
@@ -52,7 +53,18 @@ Usage:
 
   For help on a specific command, use: $ fli-docker <subcommand> --help`
 
-func GetFliDockerAlias() (result string, err error) {
+
+func GetBasePath(file string) (dir string, err error){
+	dir, errPath := filepath.Abs(filepath.Dir(file))
+    if errPath != nil {
+    	logger.Info.Println("Could not get basepath of auth token")
+        logger.Info.Println(errPath)
+        return "", errPath
+    }
+    return dir, nil
+}
+
+func GetFliDockerCmd() (result string, err error) {
 	logger.Info.Println("Trying `alias fli`")
 	out, err := exec.Command("bash", "-c", "alias fli").Output()
 	if err != nil {

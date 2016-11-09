@@ -52,7 +52,8 @@ Usage:
 
   For help on a specific command, use: $ fli-docker <subcommand> --help`
 
-var FliDockerCmd = "docker run --rm --privileged -v /chq/:/chq/:shared -v /root:/root -v /lib/modules:/lib/modules clusterhq/fli "
+//var FliDockerCmd = "docker run --rm --privileged -v /chq/:/chq/:shared -v /root:/root -v /lib/modules:/lib/modules clusterhq/fli "
+var FliDockerCmd = "fli "
 var FliBinaryCmd = "fli "
 
 func CheckForPath(path string) (result bool, err error) {

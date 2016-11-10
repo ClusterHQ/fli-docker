@@ -83,7 +83,6 @@ docker_app: docker-compose-app.yml
 
 flocker_hub:
     endpoint: https://data.flockerhub.clusterhq.com
-    tokenfile: /root/fh.token
 
 volumes:
     - name: redis-data
@@ -174,7 +173,7 @@ Run the example
 > Note: you will need to create three snapshots and a volumeset to do this. See [this README](examples/redis-moby/README.md)
 
 ```
-$ fli-docker run -f fli-manifest.yml -c -p myproject
+$ fli-docker run -f fli-manifest.yml -c -p myproject -t /home/ubuntu/token.txt
 MESSAGE: Parsing the fli manifest...
 MESSAGE: Pulling FlockerHub volumes...
 MESSAGE: Creating volumes from snapshots...
@@ -201,7 +200,7 @@ Optionally you dont have to specify `-c` or  `-p` so you can start the compose a
 `fli-docker` will just modify the docker compose file and let you manage bring the services up.
 
 ```
-$ fli-docker run -f fli-manifest.yml
+$ fli-docker run -f fli-manifest.yml -t /home/ubuntu/token.txt
 MESSAGE: Parsing the fli manifest...
 MESSAGE: Pulling FlockerHub volumes...
 MESSAGE: Creating volumes from snapshots...
@@ -293,7 +292,7 @@ Once you have a compose app running with `fli-docker`, you can snapshot and opti
 
 Snapshot the volumes and push them to FlockerHub
 ```
-$ fli-docker snapshot -push
+$ fli-docker snapshot -push -t /home/ubuntu/token.txt
 MESSAGE: Snapshotting and Pushing volumes to FlockerHub...
 MESSAGE: Snapshotting and Pushing fli-1517ade4-502c-4781-b1e7-292b1cf329e7 from Volumeset docker-app-example
 MESSAGE: Snapshotting and Pushing fli-5abb45f7-0fe6-4644-9042-3abda6a2b3a2 from Volumeset docker-app-example

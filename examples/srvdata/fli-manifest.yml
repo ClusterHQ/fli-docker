@@ -2,7 +2,6 @@ docker_app: docker-compose.yml
 
 flocker_hub:
     endpoint: https://data.flockerhub.clusterhq.com
-    tokenfile: /root/fh.token
 
 volumes:
     - name: tmp-data

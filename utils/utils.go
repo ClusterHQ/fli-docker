@@ -74,20 +74,6 @@ func GetBasePath(file string) (dir string, err error){
     return dir, nil
 }
 
-func GetFliDockerCmd() (result string, err error) {
-	logger.Info.Println("Trying `alias fli`")
-	out, err := exec.Command("bash", "-c", "alias fli").Output()
-	if err != nil {
-		logger.Info.Println(err)
-		return "", err
-	}
-	// Trim fli out of alias.
-	fli := strings.TrimLeft(strings.TrimRight(string(out),"'"),"alias fli='")
-	fli = fli + " "
-	logger.Info.Println("Found Alias:", fli)
-	return fli, err
-}
-
 func CheckForPath(path string) (result bool, err error) {
 	isPath, errPath := exec.LookPath(path)
 	// LookPath searches for an executable binary 

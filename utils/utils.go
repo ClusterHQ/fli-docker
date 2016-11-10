@@ -54,7 +54,8 @@ Usage:
   For help on a specific command, use: $ fli-docker <subcommand> --help`
 
 func GetZPool(zpool string) (response string, err error){
-	out, err := exec.Command("sh", "-c", "zpool", "list", zpool).Output()
+	var cmd = fmt.Sprintf("zpool list %s", zpool)
+	out, err := exec.Command("sh", "-c", cmd).Output()
 	if err != nil {
 		logger.Info.Println(err)
 		return string(out), err

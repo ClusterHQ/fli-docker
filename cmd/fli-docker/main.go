@@ -44,7 +44,7 @@ func main() {
 	runSet.BoolVar(&compose, "c", false, "[OPTIONAL] if flag is present, fli-docker will start the compose services")
 	runSet.BoolVar(&verbose, "verbose", false, "[OPTIONAL] verbose logging")
 	runSet.StringVar(&project, "p", "fli-compose", "[OPTIONAL] project name for compose if using -c")
-	runSet.StringVar(&zpool, "z", "chq", "[OPTIONAL is using binary] Name of the zpool, must proivide if using fli docker image & zpool other than 'chq'")
+	runSet.StringVar(&zpool, "z", "chq", "[OPTIONAL if using binary] Name of the zpool, must proivide if using fli docker image & zpool other than 'chq'")
 
 
 	// snapSet
@@ -52,7 +52,7 @@ func main() {
 	snapSet.StringVar(&flockerhub, "e", "", "[OPTIONAL] Flocker Hub endpoint, optionally set it in the manifest YAML")
 	snapSet.BoolVar(&push, "push", false, "[OPTIONAL] if flag is present, fli-docker will push new snapshots back to FlockerHub")
 	snapSet.BoolVar(&verbose, "verbose", false, "[OPTIONAL] verbose logging")
-	snapSet.StringVar(&zpool, "z", "chq", "[OPTIONAL is using binary] Name of the zpool, must proivide if using fli docker image & zpool other than 'chq'")
+	snapSet.StringVar(&zpool, "z", "chq", "[OPTIONAL if using binary] Name of the zpool, must proivide if using fli docker image & zpool other than 'chq'")
 
 	// stopSet
 	stopSet.BoolVar(&verbose, "verbose", false, "[OPTIONAL] verbose logging")

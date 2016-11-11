@@ -17,7 +17,6 @@ docker_app: some-compose.yml
 
 flocker_hub:
     endpoint: https://flockerhub.com
-    tokenfile: /root/some.token
 
 volumes:
     - name: some-name
@@ -45,8 +44,8 @@ func TestFlockerHub(t *testing.T) {
         t.Error("error: %v", err)
     }
   	t.Log("Testing FlockerHub, Got", m.Hub)
-  	if m.Hub != (FlockerHub{"https://flockerhub.com", "/root/some.token"}) {
-  		t.Error("Expected FlockerHub{https://flockerhub.com, /root/some.token}, got ", m.Hub)
+  	if m.Hub != (FlockerHub{"https://flockerhub.com"}) {
+  		t.Error("Expected FlockerHub{https://flockerhub.com}, got ", m.Hub)
   	}
 }
 

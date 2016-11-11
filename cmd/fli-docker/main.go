@@ -120,7 +120,9 @@ func main() {
 
 	var fliCmd1 string
 	var fliCmd2 string
+	// If binary is on the system, this works, aliases arent detected.
 	fliCmd1 = "fli version"
+	// This tests if image exists without pulling the image.
 	fliCmd2 = "docker inspect clusterhq/fli"
 
 	// check if needed dependencies are available
@@ -147,7 +149,8 @@ func main() {
 		if (!isFliAvail1) {
 			binary = false
 			docker = true
-			fliCmd = "docker run --rm --privileged -v /chq/:/chq/:shared -v /var/log/:/var/log/ -v /root:/root -v /lib/modules:/lib/modules clusterhq/fli "
+			fliCmd = "docker run --rm --privileged -v /chq/:/chq/:shared " +
+			"-v /var/log/:/var/log/ -v /root:/root -v /lib/modules:/lib/modules clusterhq/fli "
 		}else{
 			fliCmd = "fli "
 		}
@@ -156,10 +159,10 @@ func main() {
 	}
 
 	if docker {
-		// Figure out what the appropriate docker command is is using docker
-		// docker needs certain paths to work.
+		// Figure out what the appropriate docker command is.
+		// docker needs certain paths for token and zpool to work properly.
+		// run and snapshot need to make sure these are correct.
 		if (os.Args[1] == "run" || os.Args[1] == "snapshot") {
-
 			resp, err := utils.GetZPool(zpool)
 			if err != nil {
 				logger.Info.Println(resp)
@@ -174,78 +177,107 @@ func main() {
 
 				if zpool != "chq" {
 					if strings.Contains(tokenfile, "/root/"){
-						cmd := fmt.Sprintf("docker run --rm --privileged -v /%s/:/%s/:shared -v /var/log/:/var/log/ -v /root:/root -v /lib/modules:/lib/modules clusterhq/fli ", zpool, zpool)
+						// If non-standard zpool but standard token location.
+						cmd := fmt.Sprintf("docker run --rm --privileged -v /%s/:/%s/:shared " +
+							"-v /var/log/:/var/log/ -v /root:/root " +
+							"-v /lib/modules:/lib/modules clusterhq/fli ", zpool, zpool)
 						fliCmd = cmd
 					}else {
+						// If non-standard zpool and non-standard token location.
 						path, err := utils.GetBasePath(tokenfile)
 						if err != nil {
 	    					logger.Message.Fatal("Could not get path of auth token")
 	    				}
-						cmd := fmt.Sprintf("docker run --rm --privileged -v /%s/:/%s/:shared -v /var/log/:/var/log/ -v /root:/root -v %s:%s -v /lib/modules:/lib/modules clusterhq/fli ", zpool, zpool, path, path)
+						cmd := fmt.Sprintf("docker run --rm --privileged -v /%s/:/%s/:shared " +
+							"-v /var/log/:/var/log/ -v /root:/root " +
+							"-v %s:%s -v /lib/modules:/lib/modules clusterhq/fli ", zpool, zpool, path, path)
 						fliCmd = cmd
 					}
 				}else {
+					// If standard zpool and non-standard token location.
 					if !(strings.Contains(tokenfile, "/root/")){
 						path, err := utils.GetBasePath(tokenfile)
 						if err != nil {
 	    					logger.Message.Fatal("Could not get path of auth token")
 	    				}
-						cmd := fmt.Sprintf("docker run --rm --privileged -v /chq/:/chq/:shared -v /var/log/:/var/log/ -v /root:/root -v %s:%s -v /lib/modules:/lib/modules clusterhq/fli ", path, path)
+						cmd := fmt.Sprintf("docker run --rm --privileged -v /chq/:/chq/:shared " +
+							"-v /var/log/:/var/log/ -v /root:/root -v %s:%s " +
+							"-v /lib/modules:/lib/modules clusterhq/fli ", path, path)
 						fliCmd = cmd
 					}
 				}
+				// If no conditions above, fliCmd is fine with standard locations
 				logger.Info.Println("Using docker command: ", fliCmd)
+				// Finally use the right docker command to run the cli.
 				cli.SetFlockerHubTokenFile(tokenfile, fliCmd)
 			}
 
 			if os.Args[1] == "snapshot" {
 				if push {
+					// If we are pushing snapshots, we need tokenfile location.
 					if tokenfile == "" {
 						logger.Info.Println("token not specified with -t")
 						logger.Message.Fatal("Need to set '-tokenfile'")
 					}
 
 					if zpool != "chq" {
+						// Using non-standard zpool but standard token location.
 						if strings.Contains(tokenfile, "/root/"){
-							cmd := fmt.Sprintf("docker run --rm --privileged -v /%s/:/%s/:shared -v /var/log/:/var/log/ -v /root:/root -v /lib/modules:/lib/modules clusterhq/fli ", zpool, zpool)
+							cmd := fmt.Sprintf("docker run --rm --privileged -v /%s/:/%s/:shared " +
+								"-v /var/log/:/var/log/ -v /root:/root " +
+								"-v /lib/modules:/lib/modules clusterhq/fli ", zpool, zpool)
 							logger.Info.Println("Using docker command: ", cmd)
 							fliCmd = cmd
 						}else {
+							// Using non-standard zpool and non-standard token location.
 							path, err := utils.GetBasePath(tokenfile)
 							if err != nil {
 	    						logger.Message.Fatal("Could not get path of auth token")
 	    					}
-							cmd := fmt.Sprintf("docker run --rm --privileged -v /%s/:/%s/:shared -v /var/log/:/var/log/ -v /root:/root -v %s:%s -v /lib/modules:/lib/modules clusterhq/fli ", zpool, zpool, path, path)
+							cmd := fmt.Sprintf("docker run --rm --privileged -v /%s/:/%s/:shared " +
+								"-v /var/log/:/var/log/ -v /root:/root -v %s:%s " +
+								"-v /lib/modules:/lib/modules clusterhq/fli ", zpool, zpool, path, path)
 							logger.Info.Println("Using docker command: ", cmd)
 							fliCmd = cmd
 						}
 					}else {
+						// Standard chq zpool location and non-standard auth token location.
 						if !(strings.Contains(tokenfile, "/root/")){
 							path, err := utils.GetBasePath(tokenfile)
 							if err != nil {
 	    						logger.Message.Fatal("Could not get path of auth token")
 	    					}
-							cmd := fmt.Sprintf("docker run --rm --privileged -v /chq/:/chq/:shared -v /var/log/:/var/log/ -v /root:/root -v %s:%s -v /lib/modules:/lib/modules clusterhq/fli ", path, path)
+							cmd := fmt.Sprintf("docker run --rm --privileged -v /chq/:/chq/:shared " +
+								"-v /var/log/:/var/log/ -v /root:/root -v %s:%s " +
+								"-v /lib/modules:/lib/modules clusterhq/fli ", path, path)
 							fliCmd = cmd
 						}
 					}
 				}else {
-					//only need to check zpool as token doesnt matter if not pushing.
+					//only need to check zpool as token doesnt matter if not pushing snapshots
 					if zpool != "chq" {
-						cmd := fmt.Sprintf("docker run --rm --privileged -v /%s/:/%s/:shared -v /var/log/:/var/log/ -v /root:/root -v /lib/modules:/lib/modules clusterhq/fli ", zpool, zpool)
+						// Non-standard zpool location
+						cmd := fmt.Sprintf("docker run --rm --privileged -v /%s/:/%s/:shared " +
+							"-v /var/log/:/var/log/ -v /root:/root " +
+							"-v /lib/modules:/lib/modules clusterhq/fli ", zpool, zpool)
 						fliCmd = cmd
 					}else {
+						// Non-standard zpool location and non-standard token.
 						if !(strings.Contains(tokenfile, "/root/")){
 							path, err := utils.GetBasePath(tokenfile)
 							if err != nil {
 	    						logger.Message.Fatal("Could not get path of auth token")
 	    					}
-							cmd := fmt.Sprintf("docker run --rm --privileged -v /chq/:/chq/:shared -v /var/log/:/var/log/ -v /root:/root -v %s:%s -v /lib/modules:/lib/modules clusterhq/fli ", path, path)
+							cmd := fmt.Sprintf("docker run --rm --privileged -v /chq/:/chq/:shared " +
+								"-v /var/log/:/var/log/ -v /root:/root -v %s:%s " +
+								"-v /lib/modules:/lib/modules clusterhq/fli ", path, path)
 							fliCmd = cmd
 						}
 					}
 				}
+				// If no conditions above, fliCmd is fine with standard locations
 				logger.Info.Println("Using docker command: ", fliCmd)
+				// Finally use the right docker command to run the cli.
 				cli.SetFlockerHubTokenFile(tokenfile, fliCmd)
 			}
 		}
@@ -254,16 +286,21 @@ func main() {
 	if binary {
 		// Check that tokenfile is in use if using binary, or need to set one.
 		if (os.Args[1] == "run" || os.Args[1] == "snapshot") {
+			// Get the current tokenfile setting if there is one.
 			tf, err := cli.GetFlockerHubTokenFile(fliCmd)
-			if err != nil {
-				logger.Info.Println("Could not get tokenfile config")
+			if err != nil || tf == "" {
+				logger.Info.Println("Could not get tokenfile config or tokenfile not set")
+				// Was it passed with ``-t`` ?
 				if tokenfile == "" {
+					// Need a tokenfile if its empty.
 					logger.Info.Println("token not specified with -t")
 					logger.Message.Fatal("Need to set '-tokenfile'")
 				}else{
+					// If it was passed with -t, great, set it.
 					cli.SetFlockerHubTokenFile(tokenfile, fliCmd)
 				}
 			}else{
+				// If tokenfile already set in fli using binary, use it. -t is ignored.
 				logger.Info.Println("Using existing token: ", tf)
 			}
 		}

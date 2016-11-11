@@ -4,6 +4,8 @@
 
 The `fli-docker` utility is designed to simplify the deployment of stateful applications inside Docker containers.
 
+> Note: this is experimental software and is not fully supported by ClusterHQ
+
 This is achieved through creation of a Flocker Hub Stateful Application Manifest (SAM) file (aka. "manifest"), which is used side by side with the Docker Compose file.
 The SAM file is a YAML file that defines data volumes from [ClusterHQ](https://clusterhq.com)'s Flocker Hub,
 synchronizes data snapshots locally, and maps them to Docker volumes in the Docker Compose file.

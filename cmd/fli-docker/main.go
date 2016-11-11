@@ -112,7 +112,8 @@ func main() {
     			os.Exit(0)
 		}
 	} else {
-		logger.Message.Println("Unrecognized Command. Use fli-docker --help.")
+		logger.Message.Println("Unrecognized Command.")
+		logger.Message.Println(utils.FliDockerHelp)
     	os.Exit(0)
 	}
 

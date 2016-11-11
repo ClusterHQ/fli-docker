@@ -155,17 +155,15 @@ volumes:
 What is looks like when using `fli-docker run`
 ```
 $ fli-docker run -f fli-manifest.yml -c
-MESSAGE: Parsing the fli manifest...
-MESSAGE: Pulling FlockerHub volumes...
-MESSAGE: Creating volume from branch...
-MESSAGE: Mapping new volumes in compose file...
-INFO[0034] [0/1] [appname]: Starting                    
-INFO[0034] [1/1] [appname]: Started
+Parsing the fli manifest...
+Pulling FlockerHub volumes...
+Creating volume from branch...
+Mapping new volumes in compose file...
 ```
 
 ## Example
 
-You can use the example here in this repository. Follow the below instructions.
+You can use the examples [here](examples/) in this repository. Follow the below instructions.
 
 ### fli-docker run
 
@@ -228,11 +226,7 @@ redismoby_web_1     node index.js                    Up      0.0.0.0:80->80/tcp
 
 ### fli-docker stop
 
-To stop your compose services you can run the following. Using the `example/redis-moby` in the below example.
-
-```
-$ cd fli-docker/examples/redis-moby
-```
+To stop your compose services you can run the following. Using the [examples/redis-moby](examples/redis-moby/) in the below example.
 
 ```
 $ fli-docker stop -f fli-manifest.yml 
@@ -245,11 +239,7 @@ INFO[0060] [0/2] [web]: Stopped
 
 ### fli-docker destroy
 
-To stop and force remove your containers, you can run the following. Using the `example/redis-moby` in the below example.
-
-```
-$ cd fli-docker/examples/redis-moby
-```
+To stop and force remove your containers, you can run the following. Using the examples/redis-moby](examples/redis-moby/) in the below example.
 
 ```
 $ fli-docker destroy -f fli-manifest.yml 

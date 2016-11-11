@@ -5,8 +5,8 @@ set -e
 # Release information
 # Remember to update ``var FliDockerVersion`` in utils.go
 BUCKET_NAME="clusterhq-fli-docker"
-VERSION="0.0.5-dev"
-UPLOAD_ON_BRANCH="0.0.5-dev"
+VERSION="0.2.1"
+UPLOAD_ON_BRANCH="0.2.1-release"
 
 function PreflightUbuntu
 {
@@ -26,6 +26,8 @@ function UploadToS3
 {
   SetupAWSCredentials
   aws s3 sync build/bin/ s3://$BUCKET_NAME/$VERSION
+  ### Also, update the `latest`
+  aws s3 sync build/bin/ s3://$BUCKET_NAME/latest
 }
 
 

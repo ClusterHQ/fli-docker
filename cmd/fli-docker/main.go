@@ -193,6 +193,10 @@ func main() {
 							"-v %s:%s -v /lib/modules:/lib/modules clusterhq/fli ", zpool, zpool, path, path)
 						fliCmd = cmd
 					}
+					configPool, _ := cli.GetConfiguredZPool(fliCmd)
+					if configPool != zpool {
+						logger.Message.Fatal("ZPOOL ", zpool, " not configued, stopping. Use `fli config -z`")
+					}
 				}else {
 					// If standard zpool and non-standard token location.
 					if !(strings.Contains(tokenfile, "/root/")){
@@ -206,9 +210,9 @@ func main() {
 						fliCmd = cmd
 					}
 					// If zpool not give, we assume `chq` but we dont want to go on without verifying
-					zpool, _ := cli.GetConfiguredZPool(fliCmd)
-					if zpool != "chq" {
-						logger.Message.Fatal("`chq` ZPOOL not configued, stopping.")
+					configPool, _ := cli.GetConfiguredZPool(fliCmd)
+					if configPool != "chq" {
+						logger.Message.Fatal("`chq` ZPOOL not configued, stopping. Use `fli config -z`")
 					}
 				}
 				// If no conditions above, fliCmd is fine with standard locations
@@ -245,6 +249,10 @@ func main() {
 							logger.Info.Println("Using docker command: ", cmd)
 							fliCmd = cmd
 						}
+						configPool, _ := cli.GetConfiguredZPool(fliCmd)
+						if configPool != zpool {
+							logger.Message.Fatal("ZPOOL ", zpool, " not configued, stopping. Use `fli config -z`")
+						}
 					}else {
 						// Standard chq zpool location and non-standard auth token location.
 						if !(strings.Contains(tokenfile, "/root/")){
@@ -258,9 +266,9 @@ func main() {
 							fliCmd = cmd
 						}
 						// If zpool not give, we assume `chq` but we dont want to go on without verifying
-						zpool, _ := cli.GetConfiguredZPool(fliCmd)
-						if zpool != "chq" {
-							logger.Message.Fatal("`chq` ZPOOL not configued, stopping.")
+						configPool, _ := cli.GetConfiguredZPool(fliCmd)
+						if configPool != "chq" {
+							logger.Message.Fatal("`chq` ZPOOL not configued, stopping. Use `fli config -z`")
 						}
 					}
 				}else {
@@ -271,6 +279,10 @@ func main() {
 							"-v /var/log/:/var/log/ -v /root:/root " +
 							"-v /lib/modules:/lib/modules clusterhq/fli ", zpool, zpool)
 						fliCmd = cmd
+						configPool, _ := cli.GetConfiguredZPool(fliCmd)
+						if configPool != zpool {
+							logger.Message.Fatal("ZPOOL ", zpool, " not configued, stopping. Use `fli config -z`")
+						}
 					}else {
 						// Non-standard zpool location and non-standard token.
 						if !(strings.Contains(tokenfile, "/root/")){
@@ -284,9 +296,9 @@ func main() {
 							fliCmd = cmd
 						}
 						// If zpool not give, we assume `chq` but we dont want to go on without verifying
-						zpool, _ := cli.GetConfiguredZPool(fliCmd)
-						if zpool != "chq" {
-							logger.Message.Fatal("`chq` ZPOOL not configued, stopping.")
+						configPool, _ := cli.GetConfiguredZPool(fliCmd)
+						if configPool != "chq" {
+							logger.Message.Fatal("`chq` ZPOOL not configued, stopping. Use `fli config -z`")
 						}
 					}
 				}

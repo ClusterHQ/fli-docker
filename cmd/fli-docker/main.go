@@ -271,6 +271,10 @@ func main() {
 							logger.Message.Fatal("`chq` ZPOOL not configured, stopping. Use `fli config -z`")
 						}
 					}
+					// If no conditions above, fliCmd is fine with standard locations
+					logger.Info.Println("Using docker command: ", fliCmd)
+					// Finally use the right docker command to run the cli.
+					cli.SetFlockerHubTokenFile(tokenfile, fliCmd)
 				}else {
 					//only need to check zpool as token doesnt matter if not pushing snapshots
 					if zpool != "chq" {
@@ -284,7 +288,7 @@ func main() {
 							logger.Message.Fatal("ZPOOL ", zpool, " not configured, stopping. Use `fli config -z`")
 						}
 					}else {
-						// Non-standard zpool location and non-standard token.
+						// standard zpool location and non-standard token.
 						if !(strings.Contains(tokenfile, "/root/")){
 							path, err := utils.GetBasePath(tokenfile)
 							if err != nil {
@@ -304,8 +308,7 @@ func main() {
 				}
 				// If no conditions above, fliCmd is fine with standard locations
 				logger.Info.Println("Using docker command: ", fliCmd)
-				// Finally use the right docker command to run the cli.
-				cli.SetFlockerHubTokenFile(tokenfile, fliCmd)
+				// No need to set tokenfile even if passed if we are not using -push
 			}
 		}
 	}

@@ -61,7 +61,7 @@ func GetFlockerHubEndpoint(fli string) (flockerhubEndpoint string, err error) {
 
 func SetFlockerHubTokenFile(tokenFile string, fli string) {
 	logger.Info.Println("Setting FlockerHub Tokenfile: ", tokenFile)
-	var cmd = fmt.Sprintf("%s config -t %s", fli, tokenFile)
+	var cmd = fmt.Sprintf("%s config --offline -t %s", fli, tokenFile)
 	out, err := exec.Command("sh", "-c", cmd).Output()
 	if err != nil {
 		logger.Message.Println("Could not set tokenfile: ", tokenFile)

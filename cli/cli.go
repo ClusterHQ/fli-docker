@@ -235,7 +235,8 @@ func pushSnapshot(volumeSetId string, snapshotId string, fli string){
 // Run the command to push a specific snapshot
 func createSnapshot(volumeSetId string, volumeId string, snapName string, fli string){
 	logger.Info.Println("Creating Snapshot: ", snapName)
-	var cmd = fmt.Sprintf("%s snapshot %s:%s %s", fli, volumeSetId, volumeId, snapName)
+	var branchName = fmt.Sprintf("branch-%s-%s", volumeSetId, volumeId)
+	var cmd = fmt.Sprintf("%s snapshot %s:%s %s -b %s", fli, volumeSetId, volumeId, snapName, branchName)
 	out, err := exec.Command("sh", "-c", cmd).Output()
 	if err != nil {
 		logger.Message.Println("Could create snapshot, reason")

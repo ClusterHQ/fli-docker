@@ -13,6 +13,7 @@ import (
 	"strings"
 	"fmt"
 	"errors"
+	"path/filepath"
 
 	"gopkg.in/yaml.v2"
 	"golang.org/x/net/context"
@@ -39,7 +40,7 @@ Fli is available at https://clusterhq.com
 Using the fli contianer? Make sure it used docker tag 'clusterhq/fli'
 -------------------------------------------------------`
 
-var FliDockerVersion = `Version: 0.1.0`
+var FliDockerVersion = `Version: 0.2.0`
 
 var FliDockerHelp = `
 Usage:
@@ -52,8 +53,26 @@ Usage:
 
   For help on a specific command, use: $ fli-docker <subcommand> --help`
 
-var FliDockerCmd = "docker run --rm --privileged -v /chq/:/chq/:shared -v /root:/root -v /lib/modules:/lib/modules clusterhq/fli "
-var FliBinaryCmd = "fli "
+func GetZPool(zpool string) (response string, err error){
+	var cmd = fmt.Sprintf("zpool list %s", zpool)
+	out, err := exec.Command("sh", "-c", cmd).Output()
+	if err != nil {
+		logger.Info.Println(err)
+		return string(out), err
+	}
+	logger.Info.Println("ZPOOL Found: ", zpool)
+	return string(out), err
+}
+
+func GetBasePath(file string) (dir string, err error){
+	dir, errPath := filepath.Abs(filepath.Dir(file))
+    if errPath != nil {
+    	logger.Info.Println("Could not get basepath of auth token")
+        logger.Info.Println(errPath)
+        return "", errPath
+    }
+    return dir, nil
+}
 
 func CheckForPath(path string) (result bool, err error) {
 	isPath, errPath := exec.LookPath(path)
@@ -77,6 +96,7 @@ func CheckForFile(file string) (result bool, err error) {
 }
 
 func CheckForCmd(cmd string) (result bool, err error) {
+	logger.Info.Println(cmd)
 	_, errCmd := exec.Command("sh", "-c", cmd).Output()
 	if errCmd != nil {
 		logger.Info.Println(errCmd)

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # Release information
 # Remember to update ``var FliDockerVersion`` in utils.go
 BUCKET_NAME="clusterhq-fli-docker"

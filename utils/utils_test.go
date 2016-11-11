@@ -22,7 +22,6 @@ var fliManifestData = `docker_app: some-compose.yml
 
 flocker_hub:
     endpoint: https://flockerhub.com
-    tokenfile: /root/some.token
 
 volumes:
     - name: some-name
@@ -34,7 +33,6 @@ var fliBadManifestDataCompose = `docker_app:
 
 flocker_hub:
     endpoint: https://flockerhub.com
-    tokenfile: /root/some.token
 
 volumes:
     - name: some-name
@@ -46,7 +44,6 @@ var fliBadManifestDataVSet = `docker_app: some-compose.yml
 
 flocker_hub:
     endpoint: https://flockerhub.com
-    tokenfile: /root/some.token
 
 volumes:
     - name: some-name
@@ -57,7 +54,6 @@ var fliBadManifestDataSnapBranch = `docker_app: some-compose.yml
 
 flocker_hub:
     endpoint: https://flockerhub.com
-    tokenfile: /root/some.token
 
 volumes:
     - name: some-name
@@ -269,6 +265,17 @@ func TestCleanEnv(t *testing.T) {
 
 	if _, err := os.Stat(".flidockervols"); err == nil {
 		t.Error("Expecting .flidockervols to be deleted")
+	}
+}
+
+func TestGetBasePath(t *testing.T) {
+	path, err := GetBasePath("/usr/bin/less")
+	if err != nil {
+		t.Log(err)
+    	t.Error("Basepath could not be found")
+  	}
+	if path != "/usr/bin"{
+		t.Error("Expected /usr/bin, got", path)
 	}
 }
 

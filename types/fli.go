@@ -13,7 +13,6 @@ type Manifest struct {
 
 type FlockerHub struct { 
 	Endpoint string   `yaml:"endpoint"`
-	AuthToken string  `yaml:"tokenfile"`
 }
 
 // The idea is that we could use the manifest

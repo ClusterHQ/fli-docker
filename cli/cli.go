@@ -21,6 +21,19 @@ import (
 	Bindings to the FlockerHub CLI
 */
 
+func GetConfiguredZPool(fli string) (flockerhubEndpoint string, err error) {
+	logger.Info.Println("Getting ZPool Config")
+	var cmd = fmt.Sprintf("%s info | grep 'ZPOOL:' | awk '{print $2}'", fli)
+	out, err := exec.Command("sh", "-c", cmd).Output()
+	if err != nil {
+		logger.Info.Println("Could not get ZPOOL")
+		logger.Error.Println(err)
+		return "", err
+	}
+	logger.Info.Println(string(out))
+	return string(out), nil
+}
+
 func SetFlockerHubEndpoint(endpoint string, fli string) {
 	logger.Info.Println("Setting FlockerHub Endpoint: ", endpoint)
 	var cmd = fmt.Sprintf("%s config -u %s", fli, endpoint)

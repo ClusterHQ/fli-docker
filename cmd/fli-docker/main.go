@@ -205,6 +205,11 @@ func main() {
 							"-v /lib/modules:/lib/modules clusterhq/fli ", path, path)
 						fliCmd = cmd
 					}
+					// If zpool not give, we assume `chq` but we dont want to go on without verifying
+					zpool, _ := cli.GetConfiguredZPool(fliCmd)
+					if zpool != "chq" {
+						logger.Message.Fatal("`chq` ZPOOL not configued, stopping.")
+					}
 				}
 				// If no conditions above, fliCmd is fine with standard locations
 				logger.Info.Println("Using docker command: ", fliCmd)
@@ -252,6 +257,11 @@ func main() {
 								"-v /lib/modules:/lib/modules clusterhq/fli ", path, path)
 							fliCmd = cmd
 						}
+						// If zpool not give, we assume `chq` but we dont want to go on without verifying
+						zpool, _ := cli.GetConfiguredZPool(fliCmd)
+						if zpool != "chq" {
+							logger.Message.Fatal("`chq` ZPOOL not configued, stopping.")
+						}
 					}
 				}else {
 					//only need to check zpool as token doesnt matter if not pushing snapshots
@@ -272,6 +282,11 @@ func main() {
 								"-v /var/log/:/var/log/ -v /root:/root -v %s:%s " +
 								"-v /lib/modules:/lib/modules clusterhq/fli ", path, path)
 							fliCmd = cmd
+						}
+						// If zpool not give, we assume `chq` but we dont want to go on without verifying
+						zpool, _ := cli.GetConfiguredZPool(fliCmd)
+						if zpool != "chq" {
+							logger.Message.Fatal("`chq` ZPOOL not configued, stopping.")
 						}
 					}
 				}

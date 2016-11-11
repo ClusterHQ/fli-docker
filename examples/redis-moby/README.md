@@ -11,7 +11,6 @@ docker_app: docker-compose-app1.yml
 
 flocker_hub:
     endpoint: https://data.flockerhub.clusterhq.com
-    tokenfile: /root/fhut.txt
 
 volumes:
     - name: redis-data

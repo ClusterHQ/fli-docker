@@ -18,7 +18,7 @@ On the node with `fli-docker`,`docker-compose`, and `docker`
 
 ```
 $ cd fli-docker/examples/srvdata
-$ fli-docker run -f fli-manifest.yml -c -t /root/your.token
+$ fli-docker run -f fli-manifest.yml -c -t /path/to/your.token
 INFO[0005] [0/1] [srvdata]: Starting                    
 INFO[0005] Building srvdata...                          
 INFO[0006] [1/1] [srvdata]: Started 
@@ -65,7 +65,7 @@ $ <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2 Final//EN"><html>
 
 Snapshot and push data back to FlockerHub
 ```
-$ fli-docker snapshot -push
+$ fli-docker snapshot -push -t /path/to/your.token
 MESSAGE: Snapshotting and Pushing volumes to FlockerHub...
 MESSAGE: Snapshotting and Pushing fli-ade3fdfb-1607-4d40-b501-fe2206969b00 from Volumeset srvdata-vs
 ```

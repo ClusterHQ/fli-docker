@@ -166,7 +166,7 @@ func main() {
 			resp, err := utils.GetZPool(zpool)
 			if err != nil {
 				logger.Info.Println(resp)
-	    		logger.Message.Fatal("ZPool does not exist: ", zpool)
+	    		logger.Message.Fatal("ZPOOL does not exist: ", zpool)
 	    	}
 
 			if os.Args[1] == "run" {

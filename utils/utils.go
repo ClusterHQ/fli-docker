@@ -60,7 +60,7 @@ func GetZPool(zpool string) (response string, err error){
 		logger.Info.Println(err)
 		return string(out), err
 	}
-	logger.Info.Println("ZPool Found: ", zpool)
+	logger.Info.Println("ZPOOL Found: ", zpool)
 	return string(out), err
 }
 

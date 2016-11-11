@@ -316,6 +316,7 @@ func main() {
 	if binary {
 		// Check that tokenfile is in use if using binary, or need to set one.
 		if (os.Args[1] == "run" || os.Args[1] == "snapshot") {
+			logger.Message.Println("Using Binary, using existing fli config, ignoring token and zpool flags.")
 			// Get the current tokenfile setting if there is one.
 			tf, err := cli.GetFlockerHubTokenFile(fliCmd)
 			if err != nil || tf == "" {

@@ -195,7 +195,7 @@ func main() {
 					}
 					configPool, _ := cli.GetConfiguredZPool(fliCmd)
 					if configPool != zpool {
-						logger.Message.Fatal("ZPOOL ", zpool, " not configued, stopping. Use `fli config -z`")
+						logger.Message.Fatal("ZPOOL ", zpool, " not configured, stopping. Use `fli config -z`")
 					}
 				}else {
 					// If standard zpool and non-standard token location.
@@ -212,7 +212,7 @@ func main() {
 					// If zpool not give, we assume `chq` but we dont want to go on without verifying
 					configPool, _ := cli.GetConfiguredZPool(fliCmd)
 					if configPool != "chq" {
-						logger.Message.Fatal("`chq` ZPOOL not configued, stopping. Use `fli config -z`")
+						logger.Message.Fatal("`chq` ZPOOL not configured, stopping. Use `fli config -z`")
 					}
 				}
 				// If no conditions above, fliCmd is fine with standard locations
@@ -251,7 +251,7 @@ func main() {
 						}
 						configPool, _ := cli.GetConfiguredZPool(fliCmd)
 						if configPool != zpool {
-							logger.Message.Fatal("ZPOOL ", zpool, " not configued, stopping. Use `fli config -z`")
+							logger.Message.Fatal("ZPOOL ", zpool, " not configured, stopping. Use `fli config -z`")
 						}
 					}else {
 						// Standard chq zpool location and non-standard auth token location.
@@ -268,7 +268,7 @@ func main() {
 						// If zpool not give, we assume `chq` but we dont want to go on without verifying
 						configPool, _ := cli.GetConfiguredZPool(fliCmd)
 						if configPool != "chq" {
-							logger.Message.Fatal("`chq` ZPOOL not configued, stopping. Use `fli config -z`")
+							logger.Message.Fatal("`chq` ZPOOL not configured, stopping. Use `fli config -z`")
 						}
 					}
 				}else {
@@ -281,7 +281,7 @@ func main() {
 						fliCmd = cmd
 						configPool, _ := cli.GetConfiguredZPool(fliCmd)
 						if configPool != zpool {
-							logger.Message.Fatal("ZPOOL ", zpool, " not configued, stopping. Use `fli config -z`")
+							logger.Message.Fatal("ZPOOL ", zpool, " not configured, stopping. Use `fli config -z`")
 						}
 					}else {
 						// Non-standard zpool location and non-standard token.
@@ -298,7 +298,7 @@ func main() {
 						// If zpool not give, we assume `chq` but we dont want to go on without verifying
 						configPool, _ := cli.GetConfiguredZPool(fliCmd)
 						if configPool != "chq" {
-							logger.Message.Fatal("`chq` ZPOOL not configued, stopping. Use `fli config -z`")
+							logger.Message.Fatal("`chq` ZPOOL not configured, stopping. Use `fli config -z`")
 						}
 					}
 				}

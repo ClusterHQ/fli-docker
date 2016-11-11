@@ -275,7 +275,9 @@ Snapshotting fli-5abb45f7-0fe6-4644-9042-3abda6a2b3a2 from Volumeset docker-app-
 Snapshotting fli-eef1035a-4105-4b92-902d-f33aa1dfa069 from Volumeset docker-app-example
 ```
 
-### Notes
+### Notes / Caveats / Known Issues
 
 - You may run this from anywhere `docker` and `fli` are installed.
-- Snapshots and Branches need in ClusterHQ FlockerHub before references them in a manifest and running `fli-docker`, otherwise `pull` will fail.
+- Snapshots and Branches need to be `push`ed to ClusterHQ FlockerHub before referencing them in a manifest and running `fli-docker`, otherwise `pull` will fail because they do not exist.
+- You cannot store your Authentication Token in the root of your host if using the Fli Docker Image. This is because a token at `/token.txt` would effectively try and mount `-v /:/` inside the container, which does not work.
+- Version 0.1.0 does not set the URL before the auth token and therefore it may fail if your URL is not configured to the correct FlockerHub URL, which by default is `https://data.clusterhq.flockerhub.com` so this should rarely be an issue.

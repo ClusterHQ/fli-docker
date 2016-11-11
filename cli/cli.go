@@ -22,7 +22,7 @@ import (
 */
 
 func GetConfiguredZPool(fli string) (flockerhubEndpoint string, err error) {
-	logger.Info.Println("Getting ZPool Config")
+	logger.Info.Println("Getting ZPOOL Config")
 	var cmd = fmt.Sprintf("%s info | grep 'ZPOOL:' | awk '{print $2}'", fli)
 	out, err := exec.Command("sh", "-c", cmd).Output()
 	if err != nil {

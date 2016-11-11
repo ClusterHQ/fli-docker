@@ -194,7 +194,7 @@ func main() {
 						fliCmd = cmd
 					}
 					configPool, _ := cli.GetConfiguredZPool(fliCmd)
-					if configPool != zpool {
+					if strings.TrimSpace(configPool) != strings.TrimSpace(zpool) {
 						logger.Message.Fatal("ZPOOL ", zpool, " not configured, stopping. Use `fli config -z`")
 					}
 				}else {
@@ -211,7 +211,7 @@ func main() {
 					}
 					// If zpool not give, we assume `chq` but we dont want to go on without verifying
 					configPool, _ := cli.GetConfiguredZPool(fliCmd)
-					if configPool != "chq" {
+					if strings.TrimSpace(configPool) != "chq" {
 						logger.Message.Fatal("`chq` ZPOOL not configured, stopping. Use `fli config -z`")
 					}
 				}
@@ -250,7 +250,7 @@ func main() {
 							fliCmd = cmd
 						}
 						configPool, _ := cli.GetConfiguredZPool(fliCmd)
-						if configPool != zpool {
+						if strings.TrimSpace(configPool) != strings.TrimSpace(zpool) {
 							logger.Message.Fatal("ZPOOL ", zpool, " not configured, stopping. Use `fli config -z`")
 						}
 					}else {
@@ -267,7 +267,7 @@ func main() {
 						}
 						// If zpool not give, we assume `chq` but we dont want to go on without verifying
 						configPool, _ := cli.GetConfiguredZPool(fliCmd)
-						if configPool != "chq" {
+						if strings.TrimSpace(configPool) != "chq" {
 							logger.Message.Fatal("`chq` ZPOOL not configured, stopping. Use `fli config -z`")
 						}
 					}
@@ -280,7 +280,7 @@ func main() {
 							"-v /lib/modules:/lib/modules clusterhq/fli ", zpool, zpool)
 						fliCmd = cmd
 						configPool, _ := cli.GetConfiguredZPool(fliCmd)
-						if configPool != zpool {
+						if strings.TrimSpace(configPool) != strings.TrimSpace(zpool) {
 							logger.Message.Fatal("ZPOOL ", zpool, " not configured, stopping. Use `fli config -z`")
 						}
 					}else {
@@ -297,7 +297,7 @@ func main() {
 						}
 						// If zpool not give, we assume `chq` but we dont want to go on without verifying
 						configPool, _ := cli.GetConfiguredZPool(fliCmd)
-						if configPool != "chq" {
+						if strings.TrimSpace(configPool) != "chq" {
 							logger.Message.Fatal("`chq` ZPOOL not configured, stopping. Use `fli config -z`")
 						}
 					}

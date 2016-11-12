@@ -2,10 +2,9 @@ version: '2'
 
 services:
   registry:
-    name: fli-docker-registry
     image: registry
     ports:
       - 5000
     volumes:
-      - registry-mount:/var/lib/registry
+      - /denverimaging/e3ebf132-c720-4d33-afe0-7b858eb88cdd/3dc9dd9a-802f-4dee-83dc-955f32165f08:/var/lib/registry
  

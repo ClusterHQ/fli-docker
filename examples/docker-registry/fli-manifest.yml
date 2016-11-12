@@ -1,10 +1,10 @@
 docker_app: docker-compose.yml
 
 flocker_hub:
-    endpoint: https://dp.dev.voluminous.io
+    endpoint: https://data.flockerhub.clusterhq.com
     tokenfile: /root/vhut.txt
 
 volumes:
     - name: registry-mount 
-      snapshot: docker-images-1 
-      volumeset: flidocker-example-registry
+      snapshot: docker-images 
+      volumeset: flidocker-example-registry-6

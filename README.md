@@ -26,7 +26,7 @@ synchronizes data snapshots locally, and maps them to Docker volumes in the Dock
 - Install `fli`
   - You can do this by running `docker pull clusterhq/fli` or by learning how to install the binary from https://fli-docs.clusterhq.com/en/latest/Installation.html#using-the-fli-binary
 
-### `docker-compose` cli is Optional
+### docker-compose cli is optional
 
 `fli-docker` uses [LibCompose](https://github.com/docker/libcompose), so it doesnt need the `docker-compose` cli tool directly, but you can install Docker Compose cli if you want to be able to use the `docker-compose` cli for manipulating your containers with that tool.
 
@@ -69,26 +69,37 @@ Like `docker-compose`, `fli-docker` relies on a YAML file, called the SAM (State
 
 The Stateful Application Manifest (SAM) looks similar to a Docker Compose file, with a few key changes.
 
-- The `flocker_hub` section references an `endpoint` which defaultis `https://data.clusterhq.flockerhub.com` and will likely not have to be changed.
+```yaml
+docker_app:
+
+flocker_hub:
+  endpoint:
+
+volumes:
+  - name:
+    snapshot:
+    volumeset:
+  - name:
+    branch:
+    volumeset:
+```
+- The `flocker_hub` section references an `endpoint` which default is `https://data.clusterhq.flockerhub.com` and will likely not have to be changed.
 - The volumes are defined by name, same names in the docker compose YAML file, and each references a `snapshot` or `branch` and a `volumeset` which the `snapshot` or `branch` belongs to.
 
-The `fli-docker` utility takes a `docker-compose.yml` file as input, and translates
-volumes in the Docker Compose file to volumes backed by FlockerHub snapshots.
+The `fli-docker` utility takes a `docker-compose.yml` at the [volumes in the docker-compose.yml](https://docs.docker.com/compose/compose-file/#/volumes-volume-driver) and translates volumes in the [Docker Compose file to volumes backed by FlockerHub snapshots.
 
-[Compose File Reference Link](https://docs.docker.com/compose/compose-file/#/volumes-volume-driver)
-
+Valid volume names that `fli-docker` can reconize are:
 ```
-# Named volume
   - datavolume1:/var/lib/mysql
   - 'datavolume2:/var/lib/mysql'
   - /my/path1:/tmp/path1
   - '/my/path2':/tmp/path2
 ```
 
-An example of a Stateful App Manifest (SAM) YAML file could be `dev-manifest.yml` below. Notice, under the `volumes:` section of the manifest, that each named volume references a `volumeset` and a `snapshot` or `branch`.
+An example of a Stateful App Manifest (SAM) YAML file is seen below. Notice, under the `volumes:` section of the manifest, that each named volume references a `volumeset` and a `snapshot` or `branch`.
 
 You can obtain these identifiers from the FlockerHub user interface, or the `fli` command line utility.
-Documentation about FlockerHub and `fli` itself can be found at [ClusterHQ Documentationn](https://clusterhq.com).
+Documentation about FlockerHub and `fli` itself can be found at [ClusterHQ Fli Documentationn](https://fli-docs.clusterhq.com) and the [ClusterHQ FlockerHub Documentationn](https://flockerhub-docs.clusterhq.com) 
 
 ```yaml
 docker_app: docker-compose-app.yml
@@ -244,12 +255,13 @@ INFO[0060] [0/2] [web]: Stopped
 To stop and force remove your containers, you can run the following. Using the examples/redis-moby](examples/redis-moby/) in the below example.
 
 ```
-$ fli-docker destroy -f fli-manifest.yml 
+$ fli-docker destroy -f fli-manifest.yml -clean
 Parsing the fli manifest...
 INFO[0000] [0/2] [web]: Deleting                        
 INFO[0000] [0/2] [redis]: Deleting                      
 INFO[0000] [0/2] [redis]: Deleted                       
 INFO[0000] [0/2] [web]: Deleted 
+Cleaning files...
 ```
 
 ### fli-docker snapshot

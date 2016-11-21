@@ -10,7 +10,7 @@ UPLOAD_ON_BRANCH="0.2.1-release"
 
 function PreflightUbuntu
 {
-  pip install awscli --user travis
+  pip install --user travis awscli
 }
 
 function SetupAWSCredentials

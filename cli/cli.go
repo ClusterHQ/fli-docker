@@ -97,7 +97,7 @@ func syncVolumeset(volumeSetId string, fli string) {
 	// Check for ambigous output
 	if strings.Contains(string(out), "Ambigous"){
 		logger.Message.Println(string(out))
-		logger.Message.Fatal("Found ambigous match while syncing volumeset: " volumeSetId)
+		logger.Message.Fatal("Found ambigous match while syncing volumeset: ", volumeSetId)
 	}
 	logger.Info.Println(string(out))
 }
@@ -115,7 +115,7 @@ func pullSnapshot(volumeSetId string, snapshotId string, fli string){
 	// Check for ambigous output
 	if strings.Contains(string(out), "Ambigous"){
 		logger.Message.Println(string(out))
-		logger.Message.Fatal("Found ambigous match while pulling snapshot " snapshotId)
+		logger.Message.Fatal("Found ambigous match while pulling snapshot: ", snapshotId)
 	}
 	logger.Info.Println(string(out))
 }

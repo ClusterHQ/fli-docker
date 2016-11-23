@@ -94,6 +94,11 @@ func syncVolumeset(volumeSetId string, fli string) {
 		logger.Message.Println(string(out))
 		logger.Error.Fatal(err)
 	}
+	// Check for ambigous output
+	if strings.Contains(string(out), "Ambigous"){
+		logger.Message.Println("Found ambigous match while syncing volumeset: ", volumeSetId)
+		logger.Message.Fatal(string(out))
+	}
 	logger.Info.Println(string(out))
 }
 
@@ -106,6 +111,11 @@ func pullSnapshot(volumeSetId string, snapshotId string, fli string){
 		logger.Message.Println("Could not pull dataset, reason")
 		logger.Message.Println(string(out))
 		logger.Error.Fatal(err)
+	}
+	// Check for ambigous output
+	if strings.Contains(string(out), "Ambigous"){
+		logger.Message.Println("Found ambigous match while pulling snapshot: ", snapshotId)
+		logger.Message.Fatal(string(out))
 	}
 	logger.Info.Println(string(out))
 }
@@ -120,6 +130,7 @@ func pullVolumeset(volumeSetId string, fli string){
 		logger.Message.Println(string(out))
 		logger.Error.Fatal(err)
 	}
+	// Pull cant happen without Sync so ambigous check logic not needed.
 	logger.Info.Println(string(out))
 }
 
@@ -154,7 +165,13 @@ func createVolumeFromSnapshot(volumeName string, volumeSet string, snapshotId st
 	cmd := exec.Command("sh", "-c", createCmd)
 	createOut, err := cmd.Output()
 	if err != nil {
-		logger.Error.Fatal(err)
+		logger.Info.Println(err)
+		logger.Message.Fatal("Could not create clone of snapshot: ",
+			snapshotId, " ", string(createOut))
+	}
+	if strings.Contains(string(createOut), "Ambigous"){
+		logger.Message.Println(string(createOut))
+		logger.Message.Fatal("Found ambigous match while creating volume from snapshot")
 	}
 	var path = strings.TrimSpace(string(createOut))
 	logger.Info.Println(path)

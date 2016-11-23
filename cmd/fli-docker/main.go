@@ -174,7 +174,7 @@ func main() {
 			if os.Args[1] == "run" {
 				if tokenfile == "" {
 					logger.Info.Println("token not specified with -t")
-					logger.Message.Fatal("Need to set '-tokenfile'")
+					logger.Message.Fatal("Need to set '-t' for auth token")
 				}
 
 				if zpool != "chq" {
@@ -228,7 +228,7 @@ func main() {
 					// If we are pushing snapshots, we need tokenfile location.
 					if tokenfile == "" {
 						logger.Info.Println("token not specified with -t")
-						logger.Message.Fatal("Need to set '-tokenfile'")
+						logger.Message.Fatal("Need to set '-t' for auth token")
 					}
 
 					if zpool != "chq" {
@@ -327,7 +327,7 @@ func main() {
 				if tokenfile == "" {
 					// Need a tokenfile if its empty.
 					logger.Info.Println("token not specified with -t")
-					logger.Message.Fatal("Need to set '-tokenfile'")
+					logger.Message.Fatal("Need to set '-t' for auth token")
 				}else{
 					// If it was passed with -t, great, set it.
 					cli.SetFlockerHubTokenFile(tokenfile, fliCmd)

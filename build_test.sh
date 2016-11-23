@@ -5,8 +5,8 @@ set -e
 # Release information
 # Remember to update ``var FliDockerVersion`` in utils.go
 BUCKET_NAME="clusterhq-fli-docker"
-VERSION="0.2.1"
-UPLOAD_ON_BRANCH="0.2.1-release"
+VERSION="0.2.2-dev"
+UPLOAD_ON_BRANCH="0.2.2-release"
 
 function PreflightUbuntu
 {

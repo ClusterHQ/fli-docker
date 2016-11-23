@@ -165,8 +165,9 @@ func createVolumeFromSnapshot(volumeName string, volumeSet string, snapshotId st
 	cmd := exec.Command("sh", "-c", createCmd)
 	createOut, err := cmd.Output()
 	if err != nil {
+		logger.Info.Println(err)
 		logger.Message.Fatal("Could not create clone of snapshot: ",
-			snapshotId, string(createOut), err)
+			snapshotId, " ", string(createOut))
 	}
 	if strings.Contains(string(createOut), "Ambigous"){
 		logger.Message.Println(string(createOut))
